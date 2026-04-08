@@ -1,35 +1,35 @@
-name: NAV diario + Dashboard
+name: Update NAV data
 
 on:
   schedule:
-    - cron: "15 6 * * 1-5"
+    - cron: "0 6 * * 1-5"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  nav-check:
+  update-nav:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
 
-      - name: Configurar Python
-        uses: actions/setup-python@v5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Instalar dependencias
-        run: pip install requests pandas
+      - name: Install dependencies
+        run: |
+          pip install requests pandas
 
-      - name: Ejecutar sistema
+      - name: Run script
         run: python nav_check.py
 
-      - name: Commit histórico y latest
+      - name: Commit changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/nav_history.csv data/latest.json
-          git diff --staged --quiet || git commit -m "Actualizar NAV y dashboard"
+          git add data/latest.json data/nav_history.csv
+          git diff --cached --quiet || git commit -m "Update NAV"
           git push
