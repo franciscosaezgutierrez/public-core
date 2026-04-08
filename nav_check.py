@@ -10,17 +10,26 @@ CSV_PATH = "data/nav_history.csv"
 LATEST_PATH = "data/latest.json"
 
 def get_nav():
-    r = requests.get(API_URL, timeout=30, headers={"User-Agent":"Mozilla/5.0"})
+    r = requests.get(API_URL, timeout=30, headers={"User-Agent": "Mozilla/5.0"})
     r.raise_for_status()
     data = r.json()
-    nav = data["chart"]["result"][0]["meta"].get("regularMarketPrice")
+    result = data["chart"]["result"][0]
+
+    nav = result["meta"].get("regularMarketPrice")
     if nav is None:
-        nav = data["chart"]["result"][0]["indicators"]["quote"][0]["close"][0]
-    return float(nav)
+        nav = result["indicators"]["quote"][0]["close"][0]
+
+    nav_date = result["meta"].get("regularMarketTime")
+    if nav_date is not None:
+        nav_date = datetime.fromtimestamp(nav_date, tz=timezone.utc)
+    else:
+        nav_date = datetime.now(timezone.utc)
+
+    return float(nav), nav_date
 
 def load_history():
     if not os.path.exists(CSV_PATH):
-        return pd.DataFrame(columns=["timestamp","nav","max52","drop_pct","scenario","signal"])
+        return pd.DataFrame(columns=["timestamp", "nav", "max52", "drop_pct", "scenario", "signal"])
     return pd.read_csv(CSV_PATH, parse_dates=["timestamp"])
 
 def compute_max52(history, nav, now):
@@ -39,12 +48,14 @@ def classify(nav, max52):
         scenario = "E4A Correccion"
     else:
         scenario = "E3 Sobrevaloracion"
+
     if nav <= TRIGGER_COMPRA:
         signal = "COMPRAR"
     elif nav <= TRIGGER_PREALERTA:
         signal = "PREALERTA"
     else:
         signal = "ESPERAR"
+
     return drop, scenario, signal
 
 def append_csv(now, nav, max52, drop, scenario, signal):
@@ -53,25 +64,34 @@ def append_csv(now, nav, max52, drop, scenario, signal):
     with open(CSV_PATH, "a", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         if not file_exists:
-            writer.writerow(["timestamp","nav","max52","drop_pct","scenario","signal"])
-        writer.writerow([now.isoformat(), round(nav,2), round(max52,2), round(drop,5), scenario, signal])
+            writer.writerow(["timestamp", "nav", "max52", "drop_pct", "scenario", "signal"])
+        writer.writerow([now.isoformat(), round(nav, 2), round(max52, 2), round(drop, 5), scenario, signal])
 
 def save_latest(now, nav, max52, drop, scenario, signal):
-    payload = {"timestamp": now.isoformat(), "nav": round(nav,2), "max52": round(max52,2), "drop_pct": round(drop,5), "scenario": scenario, "signal": signal}
+    payload = {
+        "timestamp": now.isoformat(),
+        "nav_date": now.date().isoformat(),
+        "nav": round(nav, 2),
+        "max52": round(max52, 2),
+        "drop_pct": round(drop, 5),
+        "scenario": scenario,
+        "signal": signal
+    }
     with open(LATEST_PATH, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, indent=2)
 
 def main():
-    now = datetime.now(timezone.utc)
-    nav = get_nav()
+    nav, nav_time = get_nav()
     history = load_history()
-    max52 = compute_max52(history, nav, now)
+    max52 = compute_max52(history, nav, nav_time)
     drop, scenario, signal = classify(nav, max52)
-    append_csv(now, nav, max52, drop, scenario, signal)
-    save_latest(now, nav, max52, drop, scenario, signal)
-    print("NAV:", round(nav,2))
-    print("MAX52:", round(max52,2))
-    print("DROP:", round(drop*100,2), "%")
+    append_csv(nav_time, nav, max52, drop, scenario, signal)
+    save_latest(nav_time, nav, max52, drop, scenario, signal)
+
+    print("NAV:", round(nav, 2))
+    print("NAV DATE:", nav_time.date().isoformat())
+    print("MAX52:", round(max52, 2))
+    print("DROP:", round(drop * 100, 2), "%")
     print("SCENARIO:", scenario)
     print("SIGNAL:", signal)
 
