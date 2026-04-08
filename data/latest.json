@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-04-07T08:00:00+00:00",
-  "nav": 54.30,
-  "max52": 56.38,
-  "drop_pct": -0.03689,
+  "timestamp": "2026-04-08T12:01:27.424829+00:00",
+  "nav": 54.47,
+  "max52": 55.48,
+  "drop_pct": -0.01829,
   "scenario": "E3 Sobrevaloracion",
   "signal": "ESPERAR"
 }
