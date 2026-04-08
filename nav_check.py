@@ -46,13 +46,8 @@ def load_history():
 
     df = pd.read_csv(CSV_PATH)
 
-    # 🔴 SOLUCIÓN CLAVE (error original)
     df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce", utc=True)
-
-    # limpiar filas inválidas
     df = df.dropna(subset=["timestamp"]).copy()
-
-    # asegurar tipo numérico
     df["nav"] = pd.to_numeric(df["nav"], errors="coerce")
 
     return df
@@ -62,10 +57,10 @@ def compute_max52(history, nav, now):
     if history.empty:
         return nav
 
-    cutoff = now - timedelta(days=364)
+    cutoff_date = (now - timedelta(days=364)).date()
 
     recent = (
-        history.loc[history["timestamp"] >= cutoff, "nav"]
+        history.loc[history["timestamp"].dt.date >= cutoff_date, "nav"]
         .dropna()
         .astype(float)
         .tolist()
