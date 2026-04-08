@@ -1,0 +1,14 @@
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;background:#0b1020;color:#edf2f7}
+.container{max-width:1180px;margin:0 auto;padding:32px 20px 56px}.hero{display:flex;justify-content:space-between;gap:24px;align-items:flex-start;margin-bottom:24px}
+.eyebrow{letter-spacing:.12em;text-transform:uppercase;color:#93a4c3;font-size:12px;margin:0 0 8px}h1{margin:0;font-size:40px;line-height:1.05}
+.sub{max-width:720px;color:#b8c4dc}.card{background:linear-gradient(180deg,#131a2e,#0f1528);border:1px solid #222c48;border-radius:22px;padding:22px;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+.status-card{min-width:220px;background:linear-gradient(180deg,#18213b,#11192d);border:1px solid #32446f;border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:10px}
+.label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#8ea3c7}.status-card strong{font-size:24px}.grid{display:grid;gap:18px}
+.top-grid{grid-template-columns:repeat(4,1fr);margin-bottom:18px}.mid-grid{grid-template-columns:1.1fr .9fr;margin-bottom:18px}.kpi strong{display:block;font-size:30px;margin:6px 0 4px}
+.kpi small,.card small{color:#90a0bf}.card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}.card-head h2{margin:0;font-size:18px}
+.pill{padding:8px 12px;border-radius:999px;background:#1e2a49;color:#d6e4ff;border:1px solid #334875;font-size:12px}.state-list{display:grid;gap:14px}
+.state-list div,.scenario-table .row{display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid #202a45}.state-list div:last-child,.scenario-table .row:last-child{border-bottom:none}
+.state-list span,.scenario-table small{color:#96a9ca}.chart-card{margin-bottom:18px}.levels{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.level{background:#0b1224;border:1px solid #202b48;border-radius:18px;padding:16px;text-align:center}.level span{display:block;color:#8ea3c7;font-size:13px;margin-bottom:6px}.level strong{font-size:22px}
+.signal-esperar{color:#c7d2e8}.signal-prealerta{color:#ffd166}.signal-comprar{color:#7cf29a}.signal-crisis{color:#ff8a8a}
+@media (max-width:900px){.hero{flex-direction:column}.top-grid,.mid-grid,.levels{grid-template-columns:1fr}}
