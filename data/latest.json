@@ -7,7 +7,7 @@
   "drop_percent_display": -2.12,
   "scenario": "Escenario 2",
   "signal": "ESPERAR",
-  "vix": null,
+  "vix": 21.62,
   "phase": "Fase 0 · Normal",
   "entry_label": "Sin entrada",
   "next_trigger": "-5%",
@@ -21,7 +21,7 @@
     "value_3m_ago": null,
     "trend_3m": null
   },
-  "macro_signal": "CAPE OK · PMI n/d · LEI n/d · VIX n/d",
+  "macro_signal": "CAPE OK · PMI n/d · LEI n/d · VIX normal",
   "score_components": {
     "cape": 0,
     "pmi": 0,

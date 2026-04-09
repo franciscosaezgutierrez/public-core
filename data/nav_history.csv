@@ -2,4 +2,4 @@ timestamp,nav,max52,drop_pct,scenario,signal,vix,phase,cape,pmi,lei,score
 2026-04-04 08:00:00+00:00,55.48,56.38,-0.01596,E3 Sobrevaloracion,ESPERAR,,,,,,
 2026-04-05 08:00:00+00:00,55.02,56.38,-0.02412,E3 Sobrevaloracion,ESPERAR,,,,,,
 2026-04-06 08:00:00+00:00,54.71,56.38,-0.02962,E3 Sobrevaloracion,ESPERAR,,,,,,
-2026-04-07 20:00:00+00:00,54.3,55.48,-0.02121,Escenario 2,ESPERAR,,Fase 0 · Normal,1.5,,,0.0
+2026-04-07 20:00:00+00:00,54.3,55.48,-0.02121,Escenario 2,ESPERAR,21.62,Fase 0 · Normal,1.5,,,0.0
