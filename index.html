@@ -183,7 +183,24 @@
         <span class="pill" id="newMoneyPill">—</span>
       </div>
 
+      <div class="simulator-grid scenario-grid">
+        <div class="sim-field">
+          <label for="scenarioSelector">Escenario para dinero nuevo</label>
+          <select id="scenarioSelector">
+            <option value="auto">Automático (según sistema)</option>
+            <option value="1">Escenario 1 · Mercado barato</option>
+            <option value="2">Escenario 2 · Mercado neutral</option>
+            <option value="3">Escenario 3 · Mercado caro</option>
+            <option value="defensivo">Modo defensivo</option>
+          </select>
+        </div>
+      </div>
+
       <div class="state-list">
+        <div>
+          <span>Escenario aplicado</span>
+          <strong id="newMoneyScenarioApplied">—</strong>
+        </div>
         <div>
           <span>Invertir ahora</span>
           <strong id="newMoneyInvestNow">—</strong>
