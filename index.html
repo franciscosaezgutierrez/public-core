@@ -3,19 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard NAV Vanguard</title>
+  <title>Dashboard Rotación Cartera</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
     <header class="hero">
       <div>
-        <p class="eyebrow">Sistema mecánico de rotación</p>
-        <h1>Dashboard NAV Vanguard</h1>
-        <p class="sub">Panel estático para GitHub Pages. Lee <code>data/latest.json</code> y <code>data/nav_history.csv</code>.</p>
+        <p class="eyebrow">Sistema de Rotación de Cartera</p>
+        <h1>Dashboard Operativo</h1>
+        <p class="sub">
+          Precio + volatilidad. Señal mecánica basada en NAV, drawdown y VIX.
+        </p>
       </div>
+
       <div class="status-card">
-        <span class="label">Señal</span>
+        <span class="label">Señal actual</span>
         <strong id="signalBadge">Cargando...</strong>
         <span id="scenarioText">—</span>
       </div>
@@ -27,43 +30,100 @@
         <strong id="navValue">—</strong>
         <small>Fecha NAV: <span id="navDate">—</span></small>
       </article>
-      <article class="card kpi"><span class="label">Máximo 52 semanas</span><strong id="maxValue">—</strong><small>Calculado con histórico</small></article>
-      <article class="card kpi"><span class="label">Caída</span><strong id="dropValue">—</strong><small>Desde máximo 52 semanas</small></article>
-      <article class="card kpi"><span class="label">Próximo trigger</span><strong id="triggerValue">50,74 €</strong><small id="triggerDistance">—</small></article>
+
+      <article class="card kpi">
+        <span class="label">Máximo 52 semanas</span>
+        <strong id="maxValue">—</strong>
+        <small>Rolling 52 semanas</small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">Drawdown</span>
+        <strong id="dropValue">—</strong>
+        <small>Desde máximo 52 semanas</small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">VIX</span>
+        <strong id="vixValue">—</strong>
+        <small>Volatilidad implícita</small>
+      </article>
+    </section>
+
+    <section class="grid top-grid">
+      <article class="card kpi">
+        <span class="label">Escenario</span>
+        <strong id="scenarioValue">—</strong>
+        <small>Precio / estructura</small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">Fase operativa</span>
+        <strong id="phaseValue">—</strong>
+        <small>Normal / preparación / entradas</small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">Entrada actual</span>
+        <strong id="entryValue">—</strong>
+        <small>Tramo operativo</small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">Score</span>
+        <strong id="scoreValue">—</strong>
+        <small id="scoreText">—</small>
+      </article>
     </section>
 
     <section class="grid mid-grid">
       <article class="card">
-        <div class="card-head"><h2>Estado actual</h2><span class="pill" id="scenarioPill">—</span></div>
+        <div class="card-head">
+          <h2>Estado operativo</h2>
+          <span class="pill" id="scenarioPill">—</span>
+        </div>
+
         <div class="state-list">
           <div><span>Acción</span><strong id="actionValue">—</strong></div>
-          <div><span>Prealerta</span><strong>51,00 €</strong></div>
-          <div><span>Compra</span><strong>50,74 €</strong></div>
+          <div><span>Siguiente trigger</span><strong id="nextTrigger">—</strong></div>
+          <div><span>Actualización</span><strong id="updatedText">—</strong></div>
         </div>
       </article>
+
       <article class="card">
-        <div class="card-head"><h2>Escenarios</h2></div>
-        <div class="scenario-table">
-          <div class="row"><span>E3</span><small>Sobrevaloración</small><strong>No comprar</strong></div>
-          <div class="row"><span>E4A</span><small>Corrección</small><strong>Comprar gradual</strong></div>
-          <div class="row"><span>E4B</span><small>Crisis</small><strong>Comprar fuerte</strong></div>
+        <div class="card-head">
+          <h2>Asignación objetivo</h2>
+        </div>
+
+        <div class="state-list">
+          <div><span>Renta variable</span><strong id="allocRv">—</strong></div>
+          <div><span>Bonos</span><strong id="allocBonds">—</strong></div>
+          <div><span>Liquidez</span><strong id="allocCash">—</strong></div>
+          <div><span>Oro</span><strong id="allocGold">—</strong></div>
         </div>
       </article>
     </section>
 
     <section class="card chart-card">
-      <div class="card-head"><h2>Histórico NAV</h2><small id="updatedText">Actualización: —</small></div>
+      <div class="card-head">
+        <h2>Histórico NAV</h2>
+        <small>Con niveles operativos</small>
+      </div>
       <canvas id="navChart" height="110"></canvas>
     </section>
 
     <section class="card">
-      <div class="card-head"><h2>Tramos operativos</h2></div>
+      <div class="card-head">
+        <h2>Niveles de entrada</h2>
+      </div>
+
       <div class="levels">
-        <div class="level"><span>-10%</span><strong>50,74 €</strong></div>
-        <div class="level"><span>-15%</span><strong>47,92 €</strong></div>
-        <div class="level"><span>-20%</span><strong>45,10 €</strong></div>
-        <div class="level"><span>-25%</span><strong>42,28 €</strong></div>
-        <div class="level"><span>-30%</span><strong>39,46 €</strong></div>
+        <div class="level"><span>Preparación</span><strong>-5%</strong></div>
+        <div class="level"><span>Entrada inicial</span><strong>-10%</strong></div>
+        <div class="level"><span>Segunda entrada</span><strong>-15%</strong></div>
+        <div class="level"><span>Entrada fuerte</span><strong>-20%</strong></div>
+        <div class="level"><span>Muy fuerte</span><strong>-25%</strong></div>
+        <div class="level"><span>Máxima</span><strong>-30%</strong></div>
       </div>
     </section>
   </div>
