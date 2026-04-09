@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard Rotación Cartera</title>
+  <title>Dashboard Rotación Cartera v3</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
     <header class="hero">
       <div>
-        <p class="eyebrow">SISTEMA DE ROTACIÓN DE CARTERA</p>
+        <p class="eyebrow">SISTEMA DE ROTACIÓN DE CARTERA · V3</p>
         <h1>Dashboard Operativo</h1>
         <p class="sub">
-          Precio + volatilidad. Señal mecánica basada en NAV, drawdown y VIX.
+          Macro + precio + volatilidad. CAPE, PMI, LEI, VIX y drawdown.
         </p>
       </div>
 
@@ -52,9 +52,35 @@
 
     <section class="grid top-grid">
       <article class="card kpi">
+        <span class="label">CAPE</span>
+        <strong id="capeValue">—</strong>
+        <small>Shiller PE / PE10</small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">PMI</span>
+        <strong id="pmiValue">—</strong>
+        <small>Proxy manufacturas</small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">LEI</span>
+        <strong id="leiValue">—</strong>
+        <small id="leiTrendText">—</small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">SCORE</span>
+        <strong id="scoreValue">—</strong>
+        <small id="scoreText">—</small>
+      </article>
+    </section>
+
+    <section class="grid top-grid">
+      <article class="card kpi">
         <span class="label">ESCENARIO</span>
         <strong id="scenarioValue">—</strong>
-        <small>Precio / estructura</small>
+        <small>Macro + precio</small>
       </article>
 
       <article class="card kpi">
@@ -70,9 +96,9 @@
       </article>
 
       <article class="card kpi">
-        <span class="label">SCORE</span>
-        <strong id="scoreValue">—</strong>
-        <small id="scoreText">—</small>
+        <span class="label">MACRO SIGNAL</span>
+        <strong id="macroSignalValue">—</strong>
+        <small>Lectura rápida</small>
       </article>
     </section>
 
@@ -139,30 +165,12 @@
       </div>
 
       <div class="levels">
-        <div class="level">
-          <span>Preparación</span>
-          <strong>-5%</strong>
-        </div>
-        <div class="level">
-          <span>Entrada inicial</span>
-          <strong>-10%</strong>
-        </div>
-        <div class="level">
-          <span>Segunda entrada</span>
-          <strong>-15%</strong>
-        </div>
-        <div class="level">
-          <span>Entrada fuerte</span>
-          <strong>-20%</strong>
-        </div>
-        <div class="level">
-          <span>Muy fuerte</span>
-          <strong>-25%</strong>
-        </div>
-        <div class="level">
-          <span>Máxima</span>
-          <strong>-30%</strong>
-        </div>
+        <div class="level"><span>Preparación</span><strong>-5%</strong></div>
+        <div class="level"><span>Entrada inicial</span><strong>-10%</strong></div>
+        <div class="level"><span>Segunda entrada</span><strong>-15%</strong></div>
+        <div class="level"><span>Entrada fuerte</span><strong>-20%</strong></div>
+        <div class="level"><span>Muy fuerte</span><strong>-25%</strong></div>
+        <div class="level"><span>Máxima</span><strong>-30%</strong></div>
       </div>
     </section>
   </div>
