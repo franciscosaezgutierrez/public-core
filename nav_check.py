@@ -126,25 +126,32 @@ def get_cape():
     try:
         html = http_get(MULTPL_CAPE_URL).text
 
-        matches = re.findall(
-            r"([A-Z][a-z]{2}\s+\d{1,2},\s+\d{4})\s+([0-9]+(?:\.[0-9]+)?)",
-            html
-        )
-
-        if not matches:
+        marker = "Date Value"
+        pos = html.find(marker)
+        if pos == -1:
             return None, None
 
-        for date_str, value_str in matches:
-            value = float(value_str)
+        table_text = html[pos:]
 
-            if 5 <= value <= 100:
-                cape_date = datetime.strptime(date_str, "%b %d, %Y").date().isoformat()
-                return value, cape_date
+        match = re.search(
+            r"([A-Z][a-z]{2}\s+\d{1,2},\s+\d{4})\s+([0-9]+(?:\.[0-9]+)?)",
+            table_text
+        )
+
+        if not match:
+            return None, None
+
+        date_str = match.group(1)
+        value = float(match.group(2))
+
+        if not (5 <= value <= 100):
+            return None, None
+
+        cape_date = datetime.strptime(date_str, "%b %d, %Y").date().isoformat()
+        return value, cape_date
 
     except Exception:
-        pass
-
-    return None, None
+        return None, None
 
 
 def get_pmi():
