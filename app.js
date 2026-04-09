@@ -84,6 +84,174 @@ function buildLevelLine(length, value) {
   return Array.from({ length }, () => value);
 }
 
+function pctTextToDecimal(text) {
+  if (!text || typeof text !== "string") return null;
+
+  const match = text.match(/(\d+(?:[.,]\d+)?)\s*%/);
+  if (!match) return null;
+
+  const numberText = match[1].replace(",", ".");
+  const value = Number(numberText);
+  if (isNaN(value)) return null;
+
+  return value / 100;
+}
+
+function buildNewMoneyPlan(latest) {
+  const phase = (latest.phase || "").toLowerCase();
+  const entryLabel = latest.entry_label || "Sin trigger";
+  const dropPct = Number(latest.drop_pct);
+  const vix = Number(latest.vix);
+  const scenario = String(latest.scenario || "");
+
+  if (phase.includes("entradas") && !isNaN(dropPct) && !isNaN(vix) && dropPct <= -0.10 && vix > 20) {
+    let investNow = "25% del dinero nuevo";
+    let reserve = "75% para siguientes tramos";
+    let note = `Trigger activo: ${entryLabel}. Ejecutar solo un tramo.`;
+
+    if (dropPct <= -0.15 && dropPct > -0.20) {
+      investNow = "35% del dinero nuevo";
+      reserve = "65% para siguientes tramos";
+    } else if (dropPct <= -0.20 && dropPct > -0.25) {
+      investNow = "50% del dinero nuevo";
+      reserve = "50% para siguientes tramos";
+    } else if (dropPct <= -0.25 && dropPct > -0.30) {
+      investNow = "60% del dinero nuevo";
+      reserve = "40% para siguientes tramos";
+    } else if (dropPct <= -0.30) {
+      investNow = "75% del dinero nuevo";
+      reserve = "25% de colchón final";
+    }
+
+    return {
+      mode: "TRAMO ACTIVO",
+      investNow,
+      reserve,
+      destination: "70% Vanguard Global Stock Index · 30% Robeco BP Global Premium",
+      reserveDestination: "DWS Euro Ultra Short",
+      note,
+      investNowPct: pctTextToDecimal(investNow) ?? 0,
+      reservePct: pctTextToDecimal(reserve) ?? 1,
+      destinationCorePct: 0.70,
+      destinationQualityPct: 0.30
+    };
+  }
+
+  if (scenario.includes("1")) {
+    return {
+      mode: "MERCADO BARATO",
+      investNow: "90% del dinero nuevo",
+      reserve: "10% en liquidez",
+      destination: "75% Vanguard Global Stock Index · 25% Robeco BP Global Premium",
+      reserveDestination: "DWS Euro Ultra Short",
+      note: "Entorno expansivo. Prioridad: aumentar exposición core.",
+      investNowPct: 0.90,
+      reservePct: 0.10,
+      destinationCorePct: 0.75,
+      destinationQualityPct: 0.25
+    };
+  }
+
+  if (scenario.includes("2")) {
+    return {
+      mode: "MERCADO NEUTRAL",
+      investNow: "70% del dinero nuevo",
+      reserve: "30% en liquidez",
+      destination: "70% Vanguard Global Stock Index · 30% Robeco BP Global Premium",
+      reserveDestination: "DWS Euro Ultra Short",
+      note: "Desaceleración. Mantener algo de munición.",
+      investNowPct: 0.70,
+      reservePct: 0.30,
+      destinationCorePct: 0.70,
+      destinationQualityPct: 0.30
+    };
+  }
+
+  if (scenario.includes("3")) {
+    return {
+      mode: "MERCADO CARO",
+      investNow: "50% del dinero nuevo",
+      reserve: "50% en liquidez",
+      destination: "70% Vanguard Global Stock Index · 30% Robeco BP Global Premium",
+      reserveDestination: "DWS Euro Ultra Short",
+      note: "No aumentar riesgo agresivamente. Evitar emergentes y Kopernik con dinero nuevo.",
+      investNowPct: 0.50,
+      reservePct: 0.50,
+      destinationCorePct: 0.70,
+      destinationQualityPct: 0.30
+    };
+  }
+
+  return {
+    mode: "MODO DEFENSIVO",
+    investNow: "0% sin trigger válido",
+    reserve: "100% en liquidez",
+    destination: "Esperar confirmación de entrada",
+    reserveDestination: "DWS Euro Ultra Short",
+    note: "Sin caída válida o sin VIX de confirmación.",
+    investNowPct: 0,
+    reservePct: 1,
+    destinationCorePct: 0,
+    destinationQualityPct: 0
+  };
+}
+
+function calculateNewMoneyBreakdown(amount, plan) {
+  const total = Number(amount);
+
+  if (isNaN(total) || total < 0) {
+    return null;
+  }
+
+  const investNowAmount = total * plan.investNowPct;
+  const reserveAmount = total * plan.reservePct;
+  const vanguardAmount = investNowAmount * plan.destinationCorePct;
+  const robecoAmount = investNowAmount * plan.destinationQualityPct;
+  const dwsAmount = reserveAmount;
+
+  return {
+    total,
+    investNowAmount,
+    reserveAmount,
+    vanguardAmount,
+    robecoAmount,
+    dwsAmount
+  };
+}
+
+function renderSimulator(plan) {
+  const input = document.getElementById("newMoneyAmountInput");
+  if (!input) return;
+
+  const amount = Number(input.value);
+  const breakdown = calculateNewMoneyBreakdown(amount, plan);
+
+  if (!breakdown) {
+    setText("simInvestNowAmount", "—");
+    setText("simReserveAmount", "—");
+    setText("simVanguardAmount", "—");
+    setText("simRobecoAmount", "—");
+    setText("simDwsAmount", "—");
+    return;
+  }
+
+  setText("simInvestNowAmount", euro(breakdown.investNowAmount));
+  setText("simReserveAmount", euro(breakdown.reserveAmount));
+  setText("simVanguardAmount", euro(breakdown.vanguardAmount));
+  setText("simRobecoAmount", euro(breakdown.robecoAmount));
+  setText("simDwsAmount", euro(breakdown.dwsAmount));
+}
+
+function setupSimulator(plan) {
+  const input = document.getElementById("newMoneyAmountInput");
+  const button = document.getElementById("newMoneyCalcButton");
+
+  if (!input || !button) return;
+
+  button.addEventListener("click", () => renderSimulator(plan));
+  input.addEventListener("input", () => renderSimulator(plan));
+}
+
 async function fetchJson(url) {
   const response = await fetch(url, { cache: "no-store" });
   if (!response.ok) {
@@ -141,6 +309,20 @@ async function loadDashboard() {
   setText("allocBonds", latest.allocations?.bonos ?? "—");
   setText("allocCash", latest.allocations?.liquidez ?? "—");
   setText("allocGold", latest.allocations?.oro ?? "—");
+
+  setText("capeSource", latest.sources?.cape || "—");
+  setText("pmiSource", latest.sources?.pmi || "—");
+  setText("leiSource", latest.sources?.lei || "—");
+
+  const newMoney = buildNewMoneyPlan(latest);
+  setText("newMoneyPill", newMoney.mode);
+  setText("newMoneyInvestNow", newMoney.investNow);
+  setText("newMoneyReserve", newMoney.reserve);
+  setText("newMoneyDestination", newMoney.destination);
+  setText("newMoneyReserveDestination", newMoney.reserveDestination);
+  setText("newMoneyNote", newMoney.note);
+
+  setupSimulator(newMoney);
 
   const signalBadge = document.getElementById("signalBadge");
   if (signalBadge) {
