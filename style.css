@@ -18,6 +18,10 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   font-family: Inter, Arial, sans-serif;
@@ -57,6 +61,7 @@ h1 {
   margin: 0;
   color: var(--muted);
   max-width: 760px;
+  line-height: 1.5;
 }
 
 .status-card {
@@ -95,6 +100,11 @@ h1 {
   border-radius: 18px;
   padding: 18px;
   box-shadow: var(--shadow);
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.card:hover {
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 .kpi strong {
@@ -102,6 +112,8 @@ h1 {
   font-size: 30px;
   margin-top: 8px;
   margin-bottom: 8px;
+  line-height: 1.1;
+  word-break: break-word;
 }
 
 .label {
@@ -111,6 +123,12 @@ h1 {
 
 small {
   color: var(--muted);
+  display: block;
+  line-height: 1.45;
+}
+
+small + small {
+  margin-top: 4px;
 }
 
 .card-head {
@@ -185,6 +203,49 @@ small {
   width: 100%;
 }
 
+/* Enlaces integrados en KPIs y tarjetas */
+.card a,
+.status-card a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(142, 163, 199, 0.12);
+  border: 1px solid rgba(142, 163, 199, 0.18);
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  transition: all 0.18s ease;
+}
+
+.card a:hover,
+.status-card a:hover {
+  color: var(--text);
+  background: rgba(232, 238, 249, 0.08);
+  border-color: rgba(232, 238, 249, 0.24);
+  text-decoration: none;
+}
+
+.card a:focus-visible,
+.status-card a:focus-visible {
+  outline: 2px solid rgba(232, 238, 249, 0.35);
+  outline-offset: 2px;
+}
+
+.card a:active,
+.status-card a:active {
+  transform: translateY(1px);
+}
+
+/* Si el enlace está dentro de small, queda alineado y discreto */
+small a {
+  margin-top: 2px;
+}
+
+/* Estados de señal */
 .signal-comprar-fuerte,
 .signal-comprar,
 .signal-vigilar,
@@ -263,5 +324,10 @@ small {
 
   .container {
     padding: 18px;
+  }
+
+  .state-list > div {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
