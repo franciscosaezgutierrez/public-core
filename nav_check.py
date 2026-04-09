@@ -1,4 +1,3 @@
-import csv
 import json
 import os
 import re
@@ -54,17 +53,43 @@ def get_fred_series(series_id):
     url = FRED_CSV_URL.format(series_id=series_id)
     df = pd.read_csv(url)
 
-    if "DATE" not in df.columns or series_id not in df.columns:
-        raise ValueError(f"Serie FRED inválida: {series_id}")
-
-    df["DATE"] = pd.to_datetime(df["DATE"], errors="coerce")
-    df[series_id] = pd.to_numeric(df[series_id], errors="coerce")
-    df = df.dropna(subset=["DATE", series_id]).copy()
-
     if df.empty:
         raise ValueError(f"Serie FRED vacía: {series_id}")
 
-    return df.rename(columns={"DATE": "date", series_id: "value"})
+    df.columns = [str(c).strip() for c in df.columns]
+
+    date_col = None
+    for col in df.columns:
+        if col.upper() == "DATE":
+            date_col = col
+            break
+
+    if date_col is None:
+        raise ValueError(
+            f"No se encontró columna DATE en FRED para {series_id}. Columnas: {list(df.columns)}"
+        )
+
+    value_col = None
+    if series_id in df.columns:
+        value_col = series_id
+    else:
+        non_date_cols = [c for c in df.columns if c != date_col]
+        if non_date_cols:
+            value_col = non_date_cols[0]
+
+    if value_col is None:
+        raise ValueError(
+            f"No se encontró columna de valores en FRED para {series_id}. Columnas: {list(df.columns)}"
+        )
+
+    df[date_col] = pd.to_datetime(df[date_col], errors="coerce")
+    df[value_col] = pd.to_numeric(df[value_col], errors="coerce")
+    df = df.dropna(subset=[date_col, value_col]).copy()
+
+    if df.empty:
+        raise ValueError(f"Serie FRED sin datos válidos: {series_id}")
+
+    return df.rename(columns={date_col: "date", value_col: "value"})
 
 
 def get_latest_fred_value(series_id):
@@ -82,22 +107,23 @@ def get_cape():
     ]
 
     for pattern in patterns:
-        m = re.search(pattern, html, flags=re.IGNORECASE)
-        if m:
-            return float(m.group(1))
+        match = re.search(pattern, html, flags=re.IGNORECASE)
+        if match:
+            return float(match.group(1))
 
     raise ValueError("No se pudo extraer el CAPE desde Multpl")
 
 
 def get_vix():
-    value, obs_date = get_latest_fred_value("VIXCLS")
-    return float(value), obs_date
+    df = get_fred_series("VIXCLS")
+    row = df.iloc[-1]
+    return float(row["value"]), row["date"]
 
 
 def get_pmi():
     """
     Proxy operativo PMI:
-    usa la serie FRED NAPM (PMI manufacturero) si está disponible.
+    usa la serie FRED NAPM si está disponible.
     Si falla, devuelve None y el sistema sigue funcionando.
     """
     try:
@@ -109,7 +135,7 @@ def get_pmi():
 
 def get_lei():
     """
-    LEI proxy operativo:
+    Proxy operativo LEI:
     usa OECD CLI normalized para EE.UU. desde FRED.
     """
     df = get_fred_series("USALOLITONOSTSAM")
@@ -232,6 +258,8 @@ def get_macro_signal(cape, pmi, lei_trend_3m, vix):
 
     if cape is not None:
         flags.append("CAPE alto" if cape > 35 else "CAPE controlado")
+    else:
+        flags.append("CAPE sin dato")
 
     if pmi is not None:
         flags.append("PMI débil" if pmi < 50 else "PMI expansivo")
@@ -245,6 +273,8 @@ def get_macro_signal(cape, pmi, lei_trend_3m, vix):
 
     if vix is not None:
         flags.append("VIX estrés" if vix > 25 else "VIX normal")
+    else:
+        flags.append("VIX sin dato")
 
     return " · ".join(flags)
 
@@ -391,10 +421,31 @@ def save_latest(
 
 def main():
     nav, nav_time = get_nav()
-    vix, _ = get_vix()
-    cape = get_cape()
-    pmi, _ = get_pmi()
-    lei_payload = get_lei()
+
+    try:
+        vix, _ = get_vix()
+    except Exception:
+        vix = None
+
+    try:
+        cape = get_cape()
+    except Exception:
+        cape = None
+
+    try:
+        pmi, _ = get_pmi()
+    except Exception:
+        pmi = None
+
+    try:
+        lei_payload = get_lei()
+    except Exception:
+        lei_payload = {
+            "value": None,
+            "date": None,
+            "value_3m_ago": None,
+            "trend_3m": None
+        }
 
     history = load_history()
     max52 = compute_max52(history, nav, nav_time)
