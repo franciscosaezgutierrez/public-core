@@ -97,14 +97,30 @@ function pctTextToDecimal(text) {
   return value / 100;
 }
 
-function buildNewMoneyPlan(latest) {
+function normalizeScenarioValue(value) {
+  if (value === "1" || value === "2" || value === "3" || value === "defensivo" || value === "auto") {
+    return value;
+  }
+  return "auto";
+}
+
+function buildNewMoneyPlan(latest, scenarioOverride = "auto") {
+  const selectedScenario = normalizeScenarioValue(scenarioOverride);
   const phase = (latest.phase || "").toLowerCase();
   const entryLabel = latest.entry_label || "Sin trigger";
   const dropPct = Number(latest.drop_pct);
   const vix = Number(latest.vix);
-  const scenario = String(latest.scenario || "");
+  const realScenario = String(latest.scenario || "");
+  const effectiveScenario = selectedScenario === "auto" ? realScenario : selectedScenario;
 
-  if (phase.includes("entradas") && !isNaN(dropPct) && !isNaN(vix) && dropPct <= -0.10 && vix > 20) {
+  if (
+    selectedScenario === "auto" &&
+    phase.includes("entradas") &&
+    !isNaN(dropPct) &&
+    !isNaN(vix) &&
+    dropPct <= -0.10 &&
+    vix > 20
+  ) {
     let investNow = "25% del dinero nuevo";
     let reserve = "75% para siguientes tramos";
     let note = `Trigger activo: ${entryLabel}. Ejecutar solo un tramo.`;
@@ -125,6 +141,7 @@ function buildNewMoneyPlan(latest) {
 
     return {
       mode: "TRAMO ACTIVO",
+      scenarioAppliedText: `${realScenario} · Automático`,
       investNow,
       reserve,
       destination: "70% Vanguard Global Stock Index · 30% Robeco BP Global Premium",
@@ -137,9 +154,10 @@ function buildNewMoneyPlan(latest) {
     };
   }
 
-  if (scenario.includes("1")) {
+  if (String(effectiveScenario).includes("1")) {
     return {
-      mode: "MERCADO BARATO",
+      mode: selectedScenario === "auto" ? "MERCADO BARATO" : "SIMULACIÓN",
+      scenarioAppliedText: selectedScenario === "auto" ? "Escenario 1 · Automático" : "Escenario 1 · Manual",
       investNow: "90% del dinero nuevo",
       reserve: "10% en liquidez",
       destination: "75% Vanguard Global Stock Index · 25% Robeco BP Global Premium",
@@ -152,9 +170,10 @@ function buildNewMoneyPlan(latest) {
     };
   }
 
-  if (scenario.includes("2")) {
+  if (String(effectiveScenario).includes("2")) {
     return {
-      mode: "MERCADO NEUTRAL",
+      mode: selectedScenario === "auto" ? "MERCADO NEUTRAL" : "SIMULACIÓN",
+      scenarioAppliedText: selectedScenario === "auto" ? "Escenario 2 · Automático" : "Escenario 2 · Manual",
       investNow: "70% del dinero nuevo",
       reserve: "30% en liquidez",
       destination: "70% Vanguard Global Stock Index · 30% Robeco BP Global Premium",
@@ -167,9 +186,10 @@ function buildNewMoneyPlan(latest) {
     };
   }
 
-  if (scenario.includes("3")) {
+  if (String(effectiveScenario).includes("3")) {
     return {
-      mode: "MERCADO CARO",
+      mode: selectedScenario === "auto" ? "MERCADO CARO" : "SIMULACIÓN",
+      scenarioAppliedText: selectedScenario === "auto" ? "Escenario 3 · Automático" : "Escenario 3 · Manual",
       investNow: "50% del dinero nuevo",
       reserve: "50% en liquidez",
       destination: "70% Vanguard Global Stock Index · 30% Robeco BP Global Premium",
@@ -183,7 +203,8 @@ function buildNewMoneyPlan(latest) {
   }
 
   return {
-    mode: "MODO DEFENSIVO",
+    mode: selectedScenario === "auto" ? "MODO DEFENSIVO" : "SIMULACIÓN",
+    scenarioAppliedText: selectedScenario === "auto" ? "Defensivo · Automático" : "Defensivo · Manual",
     investNow: "0% sin trigger válido",
     reserve: "100% en liquidez",
     destination: "Esperar confirmación de entrada",
@@ -242,14 +263,45 @@ function renderSimulator(plan) {
   setText("simDwsAmount", euro(breakdown.dwsAmount));
 }
 
-function setupSimulator(plan) {
+function renderNewMoneySection(plan) {
+  setText("newMoneyPill", plan.mode);
+  setText("newMoneyScenarioApplied", plan.scenarioAppliedText);
+  setText("newMoneyInvestNow", plan.investNow);
+  setText("newMoneyReserve", plan.reserve);
+  setText("newMoneyDestination", plan.destination);
+  setText("newMoneyReserveDestination", plan.reserveDestination);
+  setText("newMoneyNote", plan.note);
+  renderSimulator(plan);
+}
+
+function setupScenarioSelector(latest) {
+  const selector = document.getElementById("scenarioSelector");
+  if (!selector) return;
+
+  const updatePlan = () => {
+    const plan = buildNewMoneyPlan(latest, selector.value);
+    renderNewMoneySection(plan);
+  };
+
+  selector.addEventListener("change", updatePlan);
+
+  updatePlan();
+}
+
+function setupSimulator(latest) {
   const input = document.getElementById("newMoneyAmountInput");
   const button = document.getElementById("newMoneyCalcButton");
+  const selector = document.getElementById("scenarioSelector");
 
-  if (!input || !button) return;
+  if (!input || !button || !selector) return;
 
-  button.addEventListener("click", () => renderSimulator(plan));
-  input.addEventListener("input", () => renderSimulator(plan));
+  const update = () => {
+    const plan = buildNewMoneyPlan(latest, selector.value);
+    renderSimulator(plan);
+  };
+
+  button.addEventListener("click", update);
+  input.addEventListener("input", update);
 }
 
 async function fetchJson(url) {
@@ -314,15 +366,8 @@ async function loadDashboard() {
   setText("pmiSource", latest.sources?.pmi || "—");
   setText("leiSource", latest.sources?.lei || "—");
 
-  const newMoney = buildNewMoneyPlan(latest);
-  setText("newMoneyPill", newMoney.mode);
-  setText("newMoneyInvestNow", newMoney.investNow);
-  setText("newMoneyReserve", newMoney.reserve);
-  setText("newMoneyDestination", newMoney.destination);
-  setText("newMoneyReserveDestination", newMoney.reserveDestination);
-  setText("newMoneyNote", newMoney.note);
-
-  setupSimulator(newMoney);
+  setupScenarioSelector(latest);
+  setupSimulator(latest);
 
   const signalBadge = document.getElementById("signalBadge");
   if (signalBadge) {
