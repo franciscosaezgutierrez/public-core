@@ -144,13 +144,20 @@ function buildNewMoneyPlan(latest, scenarioOverride = "auto") {
       scenarioAppliedText: `${realScenario} · Automático`,
       investNow,
       reserve,
-      destination: "70% Vanguard Global Stock Index · 30% Robeco BP Global Premium",
+      destination: "Vanguard + Robeco BP + Kopernik + Emergentes",
       reserveDestination: "DWS Euro Ultra Short",
       note,
       investNowPct: pctTextToDecimal(investNow) ?? 0,
       reservePct: pctTextToDecimal(reserve) ?? 1,
-      destinationCorePct: 0.70,
-      destinationQualityPct: 0.30
+
+      investVanguardPct: 0.50,
+      investRobecoBpPct: 0.20,
+      investKopernikPct: 0.15,
+      investEmergingPct: 0.15,
+      investDncaPct: 0.00,
+
+      reserveDncaPct: 0.00,
+      reserveDwsPct: 1.00
     };
   }
 
@@ -160,13 +167,20 @@ function buildNewMoneyPlan(latest, scenarioOverride = "auto") {
       scenarioAppliedText: selectedScenario === "auto" ? "Escenario 1 · Automático" : "Escenario 1 · Manual",
       investNow: "90% del dinero nuevo",
       reserve: "10% en liquidez",
-      destination: "75% Vanguard Global Stock Index · 25% Robeco BP Global Premium",
+      destination: "Vanguard + Robeco BP + Kopernik + Emergentes",
       reserveDestination: "DWS Euro Ultra Short",
-      note: "Entorno expansivo. Prioridad: aumentar exposición core.",
+      note: "Mercado favorable. Se permite ampliar satélites.",
       investNowPct: 0.90,
       reservePct: 0.10,
-      destinationCorePct: 0.75,
-      destinationQualityPct: 0.25
+
+      investVanguardPct: 0.50,
+      investRobecoBpPct: 0.20,
+      investKopernikPct: 0.15,
+      investEmergingPct: 0.15,
+      investDncaPct: 0.00,
+
+      reserveDncaPct: 0.00,
+      reserveDwsPct: 1.00
     };
   }
 
@@ -176,13 +190,20 @@ function buildNewMoneyPlan(latest, scenarioOverride = "auto") {
       scenarioAppliedText: selectedScenario === "auto" ? "Escenario 2 · Automático" : "Escenario 2 · Manual",
       investNow: "70% del dinero nuevo",
       reserve: "30% en liquidez",
-      destination: "70% Vanguard Global Stock Index · 30% Robeco BP Global Premium",
+      destination: "Vanguard + Robeco BP + algo de Kopernik/Emergentes",
       reserveDestination: "DWS Euro Ultra Short",
-      note: "Desaceleración. Mantener algo de munición.",
+      note: "Neutral. Satélites reducidos.",
       investNowPct: 0.70,
       reservePct: 0.30,
-      destinationCorePct: 0.70,
-      destinationQualityPct: 0.30
+
+      investVanguardPct: 0.55,
+      investRobecoBpPct: 0.25,
+      investKopernikPct: 0.10,
+      investEmergingPct: 0.10,
+      investDncaPct: 0.00,
+
+      reserveDncaPct: 0.00,
+      reserveDwsPct: 1.00
     };
   }
 
@@ -192,28 +213,42 @@ function buildNewMoneyPlan(latest, scenarioOverride = "auto") {
       scenarioAppliedText: selectedScenario === "auto" ? "Escenario 3 · Automático" : "Escenario 3 · Manual",
       investNow: "50% del dinero nuevo",
       reserve: "50% en liquidez",
-      destination: "70% Vanguard Global Stock Index · 30% Robeco BP Global Premium",
+      destination: "Vanguard + Robeco BP",
       reserveDestination: "DWS Euro Ultra Short",
-      note: "No aumentar riesgo agresivamente. Evitar emergentes y Kopernik con dinero nuevo.",
+      note: "Mercado caro. No usar dinero nuevo en Kopernik ni Emergentes. DNCA solo por rebalanceo.",
       investNowPct: 0.50,
       reservePct: 0.50,
-      destinationCorePct: 0.70,
-      destinationQualityPct: 0.30
+
+      investVanguardPct: 0.70,
+      investRobecoBpPct: 0.30,
+      investKopernikPct: 0.00,
+      investEmergingPct: 0.00,
+      investDncaPct: 0.00,
+
+      reserveDncaPct: 0.00,
+      reserveDwsPct: 1.00
     };
   }
 
   return {
     mode: selectedScenario === "auto" ? "MODO DEFENSIVO" : "SIMULACIÓN",
     scenarioAppliedText: selectedScenario === "auto" ? "Defensivo · Automático" : "Defensivo · Manual",
-    investNow: "0% sin trigger válido",
-    reserve: "100% en liquidez",
-    destination: "Esperar confirmación de entrada",
-    reserveDestination: "DWS Euro Ultra Short",
-    note: "Sin caída válida o sin VIX de confirmación.",
-    investNowPct: 0,
-    reservePct: 1,
-    destinationCorePct: 0,
-    destinationQualityPct: 0
+    investNow: "0% o mínimo táctico",
+    reserve: "100% conservador",
+    destination: "Sin riesgo adicional",
+    reserveDestination: "DNCA + DWS Euro Ultra Short",
+    note: "Modo defensivo. Sin satélites de riesgo.",
+    investNowPct: 0.00,
+    reservePct: 1.00,
+
+    investVanguardPct: 0.00,
+    investRobecoBpPct: 0.00,
+    investKopernikPct: 0.00,
+    investEmergingPct: 0.00,
+    investDncaPct: 0.00,
+
+    reserveDncaPct: 0.30,
+    reserveDwsPct: 0.70
   };
 }
 
@@ -226,16 +261,25 @@ function calculateNewMoneyBreakdown(amount, plan) {
 
   const investNowAmount = total * plan.investNowPct;
   const reserveAmount = total * plan.reservePct;
-  const vanguardAmount = investNowAmount * plan.destinationCorePct;
-  const robecoAmount = investNowAmount * plan.destinationQualityPct;
-  const dwsAmount = reserveAmount;
+
+  const vanguardAmount = investNowAmount * (plan.investVanguardPct || 0);
+  const robecoBpAmount = investNowAmount * (plan.investRobecoBpPct || 0);
+  const kopernikAmount = investNowAmount * (plan.investKopernikPct || 0);
+  const emergingAmount = investNowAmount * (plan.investEmergingPct || 0);
+  const dncaAmount =
+    (investNowAmount * (plan.investDncaPct || 0)) +
+    (reserveAmount * (plan.reserveDncaPct || 0));
+  const dwsAmount = reserveAmount * (plan.reserveDwsPct || 0);
 
   return {
     total,
     investNowAmount,
     reserveAmount,
     vanguardAmount,
-    robecoAmount,
+    robecoBpAmount,
+    kopernikAmount,
+    emergingAmount,
+    dncaAmount,
     dwsAmount
   };
 }
@@ -252,6 +296,9 @@ function renderSimulator(plan) {
     setText("simReserveAmount", "—");
     setText("simVanguardAmount", "—");
     setText("simRobecoAmount", "—");
+    setText("simKopernikAmount", "—");
+    setText("simEmergingAmount", "—");
+    setText("simDncaAmount", "—");
     setText("simDwsAmount", "—");
     return;
   }
@@ -259,7 +306,10 @@ function renderSimulator(plan) {
   setText("simInvestNowAmount", euro(breakdown.investNowAmount));
   setText("simReserveAmount", euro(breakdown.reserveAmount));
   setText("simVanguardAmount", euro(breakdown.vanguardAmount));
-  setText("simRobecoAmount", euro(breakdown.robecoAmount));
+  setText("simRobecoAmount", euro(breakdown.robecoBpAmount));
+  setText("simKopernikAmount", euro(breakdown.kopernikAmount));
+  setText("simEmergingAmount", euro(breakdown.emergingAmount));
+  setText("simDncaAmount", euro(breakdown.dncaAmount));
   setText("simDwsAmount", euro(breakdown.dwsAmount));
 }
 
@@ -284,7 +334,6 @@ function setupScenarioSelector(latest) {
   };
 
   selector.addEventListener("change", updatePlan);
-
   updatePlan();
 }
 
