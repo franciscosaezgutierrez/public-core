@@ -13,7 +13,7 @@
   "next_trigger": "-5%",
   "score": 0,
   "score_text": "Neutral",
-  "cape": null,
+  "cape": 1.5,
   "pmi": null,
   "lei": {
     "value": null,
@@ -21,7 +21,7 @@
     "value_3m_ago": null,
     "trend_3m": null
   },
-  "macro_signal": "CAPE sin dato · PMI sin dato · LEI sin dato · VIX sin dato",
+  "macro_signal": "CAPE OK · PMI n/d · LEI n/d · VIX n/d",
   "score_components": {
     "cape": 0,
     "pmi": 0,
