@@ -1,6 +1,5 @@
 import json
 import os
-import re
 from datetime import datetime, timedelta, timezone
 
 import pandas as pd
@@ -8,11 +7,10 @@ import requests
 
 NAV_URL = "https://query1.finance.yahoo.com/v8/finance/chart/0P00000RQC.F?interval=1d&range=1d"
 VIX_URL = "https://query1.finance.yahoo.com/v8/finance/chart/^VIX?interval=1d&range=1d"
-FRED_CSV_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}"
-MULTPL_CAPE_URL = "https://www.multpl.com/shiller-pe/table/by-month"
 
 CSV_PATH = "data/nav_history.csv"
 LATEST_PATH = "data/latest.json"
+MANUAL_MACRO_PATH = "data/manual_macro.json"
 
 
 def http_get(url):
@@ -73,123 +71,32 @@ def get_vix():
         return None, None
 
 
-def get_fred_series(series_id):
-    url = FRED_CSV_URL.format(series_id=series_id)
-    df = pd.read_csv(url)
-
-    if df.empty:
-        raise ValueError(f"Serie FRED vacía: {series_id}")
-
-    df.columns = [str(c).strip() for c in df.columns]
-
-    date_col = None
-    for col in df.columns:
-        if col.upper() == "DATE":
-            date_col = col
-            break
-
-    if date_col is None:
-        raise ValueError(
-            f"No se encontró columna DATE en FRED para {series_id}. Columnas: {list(df.columns)}"
-        )
-
-    value_col = None
-    if series_id in df.columns:
-        value_col = series_id
-    else:
-        non_date_cols = [c for c in df.columns if c != date_col]
-        if non_date_cols:
-            value_col = non_date_cols[0]
-
-    if value_col is None:
-        raise ValueError(
-            f"No se encontró columna de valores en FRED para {series_id}. Columnas: {list(df.columns)}"
-        )
-
-    df[date_col] = pd.to_datetime(df[date_col], errors="coerce")
-    df[value_col] = pd.to_numeric(df[value_col], errors="coerce")
-    df = df.dropna(subset=[date_col, value_col]).copy()
-
-    if df.empty:
-        raise ValueError(f"Serie FRED sin datos válidos: {series_id}")
-
-    return df.rename(columns={date_col: "date", value_col: "value"})
-
-
-def get_latest_fred_value(series_id):
-    df = get_fred_series(series_id)
-    row = df.iloc[-1]
-    return float(row["value"]), row["date"]
-
-
-def get_cape():
-    try:
-        html = http_get(MULTPL_CAPE_URL).text
-
-        marker = "Date Value"
-        pos = html.find(marker)
-        if pos == -1:
-            return None, None
-
-        table_text = html[pos:]
-
-        match = re.search(
-            r"([A-Z][a-z]{2}\s+\d{1,2},\s+\d{4})\s+([0-9]+(?:\.[0-9]+)?)",
-            table_text
-        )
-
-        if not match:
-            return None, None
-
-        date_str = match.group(1)
-        value = float(match.group(2))
-
-        if not (5 <= value <= 100):
-            return None, None
-
-        cape_date = datetime.strptime(date_str, "%b %d, %Y").date().isoformat()
-        return value, cape_date
-
-    except Exception:
-        return None, None
-
-
-def get_pmi():
-    candidate_series = [
-        "NAPM",
-        "NAPMNOI"
-    ]
-
-    for series_id in candidate_series:
-        try:
-            value, obs_date = get_latest_fred_value(series_id)
-            return float(value), obs_date
-        except Exception:
-            continue
-
-    return None, None
-
-
-def get_lei():
-    try:
-        df = get_fred_series("USALOLITONOSTSAM")
-
-        current = df.iloc[-1]
-        previous_3m = df.iloc[-4] if len(df) >= 4 else df.iloc[0]
-
+def load_manual_macro():
+    if not os.path.exists(MANUAL_MACRO_PATH):
         return {
-            "value": float(current["value"]),
-            "date": current["date"],
-            "value_3m_ago": float(previous_3m["value"]),
-            "trend_3m": float(current["value"] - previous_3m["value"])
+            "cape": None,
+            "cape_date": None,
+            "pmi": None,
+            "pmi_date": None,
+            "lei_value": None,
+            "lei_date": None,
+            "lei_value_3m_ago": None,
+            "lei_trend_3m": None
         }
-    except Exception:
-        return {
-            "value": None,
-            "date": None,
-            "value_3m_ago": None,
-            "trend_3m": None
-        }
+
+    with open(MANUAL_MACRO_PATH, "r", encoding="utf-8") as f:
+        raw = json.load(f)
+
+    return {
+        "cape": float(raw["cape"]) if raw.get("cape") is not None else None,
+        "cape_date": raw.get("cape_date"),
+        "pmi": float(raw["pmi"]) if raw.get("pmi") is not None else None,
+        "pmi_date": raw.get("pmi_date"),
+        "lei_value": float(raw["lei_value"]) if raw.get("lei_value") is not None else None,
+        "lei_date": raw.get("lei_date"),
+        "lei_value_3m_ago": float(raw["lei_value_3m_ago"]) if raw.get("lei_value_3m_ago") is not None else None,
+        "lei_trend_3m": float(raw["lei_trend_3m"]) if raw.get("lei_trend_3m") is not None else None
+    }
 
 
 def load_history():
@@ -429,7 +336,7 @@ def append_csv(now, nav, max52, drop, scenario, signal, vix, phase, cape, pmi, l
 def save_latest(
     now, nav, max52, drop, scenario, signal, vix, phase,
     entry_label, next_trigger, score, score_text, allocations,
-    cape, cape_date, pmi, lei_payload, macro_signal, score_components
+    cape, cape_date, pmi, pmi_date, lei_payload, macro_signal, score_components
 ):
     payload = {
         "timestamp": now.isoformat(),
@@ -449,9 +356,10 @@ def save_latest(
         "cape": round(cape, 2) if cape is not None else None,
         "cape_date": cape_date,
         "pmi": round(pmi, 2) if pmi is not None else None,
+        "pmi_date": pmi_date,
         "lei": {
             "value": round(lei_payload["value"], 4) if lei_payload["value"] is not None else None,
-            "date": lei_payload["date"].strftime("%Y-%m-%d") if lei_payload["date"] is not None else None,
+            "date": lei_payload["date"],
             "value_3m_ago": round(lei_payload["value_3m_ago"], 4) if lei_payload["value_3m_ago"] is not None else None,
             "trend_3m": round(lei_payload["trend_3m"], 4) if lei_payload["trend_3m"] is not None else None
         },
@@ -468,9 +376,19 @@ def save_latest(
 def main():
     nav, nav_time = get_nav()
     vix, _ = get_vix()
-    cape, cape_date = get_cape()
-    pmi, _ = get_pmi()
-    lei_payload = get_lei()
+    manual = load_manual_macro()
+
+    cape = manual["cape"]
+    cape_date = manual["cape_date"]
+    pmi = manual["pmi"]
+    pmi_date = manual["pmi_date"]
+
+    lei_payload = {
+        "value": manual["lei_value"],
+        "date": manual["lei_date"],
+        "value_3m_ago": manual["lei_value_3m_ago"],
+        "trend_3m": manual["lei_trend_3m"]
+    }
 
     history = load_history()
     max52 = compute_max52(history, nav, nav_time)
@@ -495,7 +413,7 @@ def main():
     save_latest(
         nav_time, nav, max52, drop, scenario, signal, vix, phase,
         entry_label, next_trigger, score, score_text, allocations,
-        cape, cape_date, pmi, lei_payload, macro_signal, score_components
+        cape, cape_date, pmi, pmi_date, lei_payload, macro_signal, score_components
     )
 
     print("NAV:", round(nav, 2))
@@ -505,7 +423,9 @@ def main():
     print("CAPE:", round(cape, 2) if cape is not None else "n/a")
     print("CAPE DATE:", cape_date if cape_date is not None else "n/a")
     print("PMI:", round(pmi, 2) if pmi is not None else "n/a")
+    print("PMI DATE:", pmi_date if pmi_date is not None else "n/a")
     print("LEI:", round(lei_payload["value"], 4) if lei_payload["value"] is not None else "n/a")
+    print("LEI DATE:", lei_payload["date"] if lei_payload["date"] is not None else "n/a")
     print("LEI 3M TREND:", round(lei_payload["trend_3m"], 4) if lei_payload["trend_3m"] is not None else "n/a")
     print("SCENARIO:", scenario)
     print("PHASE:", phase)
