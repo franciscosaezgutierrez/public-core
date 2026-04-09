@@ -203,6 +203,61 @@ small + small {
   width: 100%;
 }
 
+.simulator-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.sim-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sim-field label {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.sim-field input {
+  width: 100%;
+  min-height: 46px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  font-size: 16px;
+  outline: none;
+}
+
+.sim-field input:focus {
+  border-color: rgba(232, 238, 249, 0.28);
+}
+
+.sim-button-wrap {
+  justify-content: flex-end;
+}
+
+.sim-button-wrap button {
+  min-height: 46px;
+  padding: 0 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(232, 238, 249, 0.12);
+  background: var(--panel-2);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sim-button-wrap button:hover {
+  border-color: rgba(232, 238, 249, 0.24);
+  background: rgba(255, 255, 255, 0.04);
+}
+
 /* Enlaces integrados en KPIs y tarjetas */
 .card a,
 .status-card a {
@@ -240,7 +295,6 @@ small + small {
   transform: translateY(1px);
 }
 
-/* Si el enlace está dentro de small, queda alineado y discreto */
 small a {
   margin-top: 2px;
 }
@@ -306,6 +360,10 @@ small a {
 
   .hero {
     flex-direction: column;
+  }
+
+  .simulator-grid {
+    grid-template-columns: 1fr;
   }
 }
 
