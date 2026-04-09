@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard Rotación Cartera v3</title>
+  <title>Dashboard Rotación Cartera</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
     <header class="hero">
       <div>
-        <p class="eyebrow">SISTEMA DE ROTACIÓN DE CARTERA · V3</p>
+        <p class="eyebrow">SISTEMA DE ROTACIÓN DE CARTERA</p>
         <h1>Dashboard Operativo</h1>
         <p class="sub">
-          Macro + precio + volatilidad. CAPE, PMI, LEI, VIX y drawdown.
+          Precio + volatilidad + macro manual. Señal mecánica basada en NAV, drawdown, VIX y datos macro cargados manualmente.
         </p>
       </div>
 
@@ -46,7 +46,7 @@
       <article class="card kpi">
         <span class="label">VIX</span>
         <strong id="vixValue">—</strong>
-        <small>Volatilidad implícita</small>
+        <small>Automático desde Yahoo</small>
       </article>
     </section>
 
@@ -55,18 +55,21 @@
         <span class="label">CAPE</span>
         <strong id="capeValue">—</strong>
         <small>Shiller PE / PE10</small>
+        <small id="capeSource">—</small>
       </article>
 
       <article class="card kpi">
         <span class="label">PMI</span>
         <strong id="pmiValue">—</strong>
-        <small>Proxy manufacturas</small>
+        <small>Indicador macro</small>
+        <small id="pmiSource">—</small>
       </article>
 
       <article class="card kpi">
         <span class="label">LEI</span>
         <strong id="leiValue">—</strong>
         <small id="leiTrendText">—</small>
+        <small id="leiSource">—</small>
       </article>
 
       <article class="card kpi">
@@ -165,12 +168,30 @@
       </div>
 
       <div class="levels">
-        <div class="level"><span>Preparación</span><strong>-5%</strong></div>
-        <div class="level"><span>Entrada inicial</span><strong>-10%</strong></div>
-        <div class="level"><span>Segunda entrada</span><strong>-15%</strong></div>
-        <div class="level"><span>Entrada fuerte</span><strong>-20%</strong></div>
-        <div class="level"><span>Muy fuerte</span><strong>-25%</strong></div>
-        <div class="level"><span>Máxima</span><strong>-30%</strong></div>
+        <div class="level">
+          <span>Preparación</span>
+          <strong>-5%</strong>
+        </div>
+        <div class="level">
+          <span>Entrada inicial</span>
+          <strong>-10%</strong>
+        </div>
+        <div class="level">
+          <span>Segunda entrada</span>
+          <strong>-15%</strong>
+        </div>
+        <div class="level">
+          <span>Entrada fuerte</span>
+          <strong>-20%</strong>
+        </div>
+        <div class="level">
+          <span>Muy fuerte</span>
+          <strong>-25%</strong>
+        </div>
+        <div class="level">
+          <span>Máxima</span>
+          <strong>-30%</strong>
+        </div>
       </div>
     </section>
   </div>
