@@ -7,6 +7,7 @@ import pandas as pd
 import requests
 
 NAV_URL = "https://query1.finance.yahoo.com/v8/finance/chart/0P00000RQC.F?interval=1d&range=1d"
+VIX_URL = "https://query1.finance.yahoo.com/v8/finance/chart/^VIX?interval=1d&range=1d"
 FRED_CSV_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}"
 MULTPL_CAPE_URL = "https://www.multpl.com/shiller-pe"
 
@@ -47,6 +48,26 @@ def get_nav():
         nav_time = datetime.now(timezone.utc)
 
     return float(nav), nav_time
+
+
+def get_vix():
+    data = http_get(VIX_URL).json()
+    result = data["chart"]["result"][0]
+
+    vix = result["meta"].get("regularMarketPrice")
+    if vix is None:
+        vix = get_last_valid_close(result)
+
+    if vix is None:
+        return None, None
+
+    vix_ts = result["meta"].get("regularMarketTime")
+    if vix_ts is not None:
+        vix_time = datetime.fromtimestamp(vix_ts, tz=timezone.utc)
+    else:
+        vix_time = datetime.now(timezone.utc)
+
+    return float(vix), vix_time
 
 
 def get_fred_series(series_id):
@@ -118,23 +139,10 @@ def get_cape():
     return None
 
 
-def get_vix():
-    try:
-        df = get_fred_series("VIXCLS")
-        row = df.iloc[-1]
-        return float(row["value"]), row["date"]
-    except Exception:
-        return None, None
-
-
 def get_pmi():
-    """
-    Proxy operativo PMI.
-    Intenta varias series. Si no encuentra ninguna, devuelve None.
-    """
     candidate_series = [
-        "NAPM",     # ISM PMI clásico si está accesible
-        "NAPMNOI"   # fallback
+        "NAPM",
+        "NAPMNOI"
     ]
 
     for series_id in candidate_series:
@@ -148,10 +156,6 @@ def get_pmi():
 
 
 def get_lei():
-    """
-    Proxy operativo LEI:
-    usa OECD CLI normalized para EE.UU. desde FRED.
-    """
     try:
         df = get_fred_series("USALOLITONOSTSAM")
 
