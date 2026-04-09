@@ -4,6 +4,19 @@
   "nav": 54.3,
   "max52": 55.48,
   "drop_pct": -0.02121,
-  "scenario": "E3 Sobrevaloracion",
-  "signal": "ESPERAR"
+  "drop_percent_display": -2.12,
+  "scenario": "Escenario 3",
+  "signal": "ESPERAR",
+  "vix": 21.55,
+  "phase": "Fase 0 · Normal",
+  "entry_label": "Sin entrada",
+  "next_trigger": "-5%",
+  "score": 0,
+  "score_text": "Neutral",
+  "allocations": {
+    "rv": "60–62%",
+    "bonos": "12–15%",
+    "liquidez": "15–18%",
+    "oro": "3–5%"
+  }
 }
