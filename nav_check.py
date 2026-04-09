@@ -51,23 +51,26 @@ def get_nav():
 
 
 def get_vix():
-    data = http_get(VIX_URL).json()
-    result = data["chart"]["result"][0]
+    try:
+        data = http_get(VIX_URL).json()
+        result = data["chart"]["result"][0]
 
-    vix = result["meta"].get("regularMarketPrice")
-    if vix is None:
-        vix = get_last_valid_close(result)
+        vix = result["meta"].get("regularMarketPrice")
+        if vix is None:
+            vix = get_last_valid_close(result)
 
-    if vix is None:
+        if vix is None:
+            return None, None
+
+        vix_ts = result["meta"].get("regularMarketTime")
+        if vix_ts is not None:
+            vix_time = datetime.fromtimestamp(vix_ts, tz=timezone.utc)
+        else:
+            vix_time = datetime.now(timezone.utc)
+
+        return float(vix), vix_time
+    except Exception:
         return None, None
-
-    vix_ts = result["meta"].get("regularMarketTime")
-    if vix_ts is not None:
-        vix_time = datetime.fromtimestamp(vix_ts, tz=timezone.utc)
-    else:
-        vix_time = datetime.now(timezone.utc)
-
-    return float(vix), vix_time
 
 
 def get_fred_series(series_id):
@@ -125,14 +128,16 @@ def get_cape():
 
         patterns = [
             r"Current Shiller PE Ratio:\s*([0-9]+(?:\.[0-9]+)?)",
-            r"Shiller PE Ratio:\s*([0-9]+(?:\.[0-9]+)?)",
-            r"([0-9]+\.[0-9]+)"
+            r"Shiller PE Ratio:\s*([0-9]+(?:\.[0-9]+)?)"
         ]
 
         for pattern in patterns:
             match = re.search(pattern, html, flags=re.IGNORECASE)
             if match:
-                return float(match.group(1))
+                value = float(match.group(1))
+
+                if 5 <= value <= 100:
+                    return value
     except Exception:
         pass
 
@@ -323,7 +328,10 @@ def get_scenario(drop, cape, pmi, lei_trend_3m, vix):
     ):
         return "Escenario 2"
 
-    if cape is not None and cape > 35:
+    if cape is not None and cape > 35 and drop > -0.10:
+        return "Escenario 3"
+
+    if drop > -0.10:
         return "Escenario 3"
 
     return "Escenario 2"
@@ -495,3 +503,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
