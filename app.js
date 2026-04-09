@@ -9,6 +9,17 @@ function euro(value) {
   }).format(Number(value));
 }
 
+function num(value, digits = 2) {
+  if (value === null || value === undefined || value === "" || isNaN(Number(value))) {
+    return "—";
+  }
+
+  return new Intl.NumberFormat("es-ES", {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits
+  }).format(Number(value));
+}
+
 function pctFromDecimal(value) {
   if (value === null || value === undefined || value === "" || isNaN(Number(value))) {
     return "—";
@@ -65,6 +76,7 @@ function signalClass(signal) {
   if (signal === "COMPRAR") return "signal-comprar";
   if (signal === "VIGILAR VIX") return "signal-vigilar";
   if (signal === "PREPARAR LIQUIDEZ") return "signal-preparar";
+  if (signal === "DEFENSIVO") return "signal-esperar";
   return "signal-esperar";
 }
 
@@ -97,13 +109,27 @@ async function loadDashboard() {
   setText("navDate", formatDate(latest.nav_date || latest.timestamp));
   setText("maxValue", euro(latest.max52));
   setText("dropValue", pctFromDecimal(latest.drop_pct));
-  setText("vixValue", latest.vix ?? "—");
+  setText("vixValue", num(latest.vix, 2));
+
+  setText("capeValue", num(latest.cape, 2));
+  setText("pmiValue", num(latest.pmi, 2));
+  setText("leiValue", num(latest.lei?.value, 4));
+
+  const leiTrend = latest.lei?.trend_3m;
+  if (leiTrend === null || leiTrend === undefined || isNaN(Number(leiTrend))) {
+    setText("leiTrendText", "Sin tendencia");
+  } else {
+    const sign = Number(leiTrend) > 0 ? "+" : "";
+    setText("leiTrendText", `3M: ${sign}${num(leiTrend, 4)}`);
+  }
+
+  setText("scoreValue", latest.score ?? "—");
+  setText("scoreText", latest.score_text ?? "—");
 
   setText("scenarioValue", latest.scenario ?? "—");
   setText("phaseValue", latest.phase ?? "—");
   setText("entryValue", latest.entry_label ?? "—");
-  setText("scoreValue", latest.score ?? "—");
-  setText("scoreText", latest.score_text ?? "—");
+  setText("macroSignalValue", latest.macro_signal ?? "—");
 
   setText("scenarioText", latest.scenario ?? "—");
   setText("scenarioPill", latest.scenario ?? "—");
@@ -123,9 +149,7 @@ async function loadDashboard() {
   }
 
   const chartEl = document.getElementById("navChart");
-  if (!chartEl) return;
-
-  if (!history.length) return;
+  if (!chartEl || !history.length) return;
 
   const labels = history.map(r => formatDate(r.timestamp));
   const navValues = history.map(r => Number(r.nav));
