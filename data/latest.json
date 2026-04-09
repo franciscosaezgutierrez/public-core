@@ -5,18 +5,33 @@
   "max52": 55.48,
   "drop_pct": -0.02121,
   "drop_percent_display": -2.12,
-  "scenario": "Escenario 3",
+  "scenario": "Escenario 2",
   "signal": "ESPERAR",
-  "vix": 21.45,
+  "vix": null,
   "phase": "Fase 0 · Normal",
   "entry_label": "Sin entrada",
   "next_trigger": "-5%",
   "score": 0,
   "score_text": "Neutral",
+  "cape": null,
+  "pmi": null,
+  "lei": {
+    "value": null,
+    "date": null,
+    "value_3m_ago": null,
+    "trend_3m": null
+  },
+  "macro_signal": "CAPE sin dato · PMI sin dato · LEI sin dato · VIX sin dato",
+  "score_components": {
+    "cape": 0,
+    "pmi": 0,
+    "lei": 0,
+    "vix": 0
+  },
   "allocations": {
-    "rv": "60–62%",
-    "bonos": "12–15%",
-    "liquidez": "15–18%",
-    "oro": "3–5%"
+    "rv": "65–67%",
+    "bonos": "~13%",
+    "liquidez": "~13%",
+    "oro": "3–4%"
   }
 }
