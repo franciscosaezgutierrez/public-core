@@ -99,38 +99,52 @@ def get_latest_fred_value(series_id):
 
 
 def get_cape():
-    html = http_get(MULTPL_CAPE_URL).text
+    try:
+        html = http_get(MULTPL_CAPE_URL).text
 
-    patterns = [
-        r"Current Shiller PE Ratio:\s*([0-9]+(?:\.[0-9]+)?)",
-        r"Shiller PE Ratio:\s*([0-9]+(?:\.[0-9]+)?)"
-    ]
+        patterns = [
+            r"Current Shiller PE Ratio:\s*([0-9]+(?:\.[0-9]+)?)",
+            r"Shiller PE Ratio:\s*([0-9]+(?:\.[0-9]+)?)",
+            r"([0-9]+\.[0-9]+)"
+        ]
 
-    for pattern in patterns:
-        match = re.search(pattern, html, flags=re.IGNORECASE)
-        if match:
-            return float(match.group(1))
+        for pattern in patterns:
+            match = re.search(pattern, html, flags=re.IGNORECASE)
+            if match:
+                return float(match.group(1))
+    except Exception:
+        pass
 
-    raise ValueError("No se pudo extraer el CAPE desde Multpl")
+    return None
 
 
 def get_vix():
-    df = get_fred_series("VIXCLS")
-    row = df.iloc[-1]
-    return float(row["value"]), row["date"]
+    try:
+        df = get_fred_series("VIXCLS")
+        row = df.iloc[-1]
+        return float(row["value"]), row["date"]
+    except Exception:
+        return None, None
 
 
 def get_pmi():
     """
-    Proxy operativo PMI:
-    usa la serie FRED NAPM si está disponible.
-    Si falla, devuelve None y el sistema sigue funcionando.
+    Proxy operativo PMI.
+    Intenta varias series. Si no encuentra ninguna, devuelve None.
     """
-    try:
-        value, obs_date = get_latest_fred_value("NAPM")
-        return float(value), obs_date
-    except Exception:
-        return None, None
+    candidate_series = [
+        "NAPM",     # ISM PMI clásico si está accesible
+        "NAPMNOI"   # fallback
+    ]
+
+    for series_id in candidate_series:
+        try:
+            value, obs_date = get_latest_fred_value(series_id)
+            return float(value), obs_date
+        except Exception:
+            continue
+
+    return None, None
 
 
 def get_lei():
@@ -138,16 +152,25 @@ def get_lei():
     Proxy operativo LEI:
     usa OECD CLI normalized para EE.UU. desde FRED.
     """
-    df = get_fred_series("USALOLITONOSTSAM")
-    current = df.iloc[-1]
-    previous_3m = df.iloc[-4] if len(df) >= 4 else df.iloc[0]
+    try:
+        df = get_fred_series("USALOLITONOSTSAM")
 
-    return {
-        "value": float(current["value"]),
-        "date": current["date"],
-        "value_3m_ago": float(previous_3m["value"]),
-        "trend_3m": float(current["value"] - previous_3m["value"])
-    }
+        current = df.iloc[-1]
+        previous_3m = df.iloc[-4] if len(df) >= 4 else df.iloc[0]
+
+        return {
+            "value": float(current["value"]),
+            "date": current["date"],
+            "value_3m_ago": float(previous_3m["value"]),
+            "trend_3m": float(current["value"] - previous_3m["value"])
+        }
+    except Exception:
+        return {
+            "value": None,
+            "date": None,
+            "value_3m_ago": None,
+            "trend_3m": None
+        }
 
 
 def load_history():
@@ -256,25 +279,25 @@ def score_label(score):
 def get_macro_signal(cape, pmi, lei_trend_3m, vix):
     flags = []
 
-    if cape is not None:
-        flags.append("CAPE alto" if cape > 35 else "CAPE controlado")
+    if cape is None:
+        flags.append("CAPE n/d")
     else:
-        flags.append("CAPE sin dato")
+        flags.append("CAPE alto" if cape > 35 else "CAPE OK")
 
-    if pmi is not None:
-        flags.append("PMI débil" if pmi < 50 else "PMI expansivo")
+    if pmi is None:
+        flags.append("PMI n/d")
     else:
-        flags.append("PMI sin dato")
+        flags.append("PMI débil" if pmi < 50 else "PMI OK")
 
-    if lei_trend_3m is not None:
-        flags.append("LEI negativo" if lei_trend_3m < 0 else "LEI positivo")
+    if lei_trend_3m is None:
+        flags.append("LEI n/d")
     else:
-        flags.append("LEI sin dato")
+        flags.append("LEI negativo" if lei_trend_3m < 0 else "LEI OK")
 
-    if vix is not None:
-        flags.append("VIX estrés" if vix > 25 else "VIX normal")
+    if vix is None:
+        flags.append("VIX n/d")
     else:
-        flags.append("VIX sin dato")
+        flags.append("VIX alto" if vix > 25 else "VIX normal")
 
     return " · ".join(flags)
 
@@ -421,31 +444,10 @@ def save_latest(
 
 def main():
     nav, nav_time = get_nav()
-
-    try:
-        vix, _ = get_vix()
-    except Exception:
-        vix = None
-
-    try:
-        cape = get_cape()
-    except Exception:
-        cape = None
-
-    try:
-        pmi, _ = get_pmi()
-    except Exception:
-        pmi = None
-
-    try:
-        lei_payload = get_lei()
-    except Exception:
-        lei_payload = {
-            "value": None,
-            "date": None,
-            "value_3m_ago": None,
-            "trend_3m": None
-        }
+    vix, _ = get_vix()
+    cape = get_cape()
+    pmi, _ = get_pmi()
+    lei_payload = get_lei()
 
     history = load_history()
     max52 = compute_max52(history, nav, nav_time)
