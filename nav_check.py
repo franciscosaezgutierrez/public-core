@@ -9,7 +9,7 @@ import requests
 NAV_URL = "https://query1.finance.yahoo.com/v8/finance/chart/0P00000RQC.F?interval=1d&range=1d"
 VIX_URL = "https://query1.finance.yahoo.com/v8/finance/chart/^VIX?interval=1d&range=1d"
 FRED_CSV_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}"
-MULTPL_CAPE_URL = "https://www.multpl.com/shiller-pe"
+MULTPL_CAPE_URL = "https://www.multpl.com/shiller-pe/table/by-month"
 
 CSV_PATH = "data/nav_history.csv"
 LATEST_PATH = "data/latest.json"
@@ -126,22 +126,25 @@ def get_cape():
     try:
         html = http_get(MULTPL_CAPE_URL).text
 
-        patterns = [
-            r"Current Shiller PE Ratio:\s*([0-9]+(?:\.[0-9]+)?)",
-            r"Shiller PE Ratio:\s*([0-9]+(?:\.[0-9]+)?)"
-        ]
+        matches = re.findall(
+            r"([A-Z][a-z]{2}\s+\d{1,2},\s+\d{4})\s+([0-9]+(?:\.[0-9]+)?)",
+            html
+        )
 
-        for pattern in patterns:
-            match = re.search(pattern, html, flags=re.IGNORECASE)
-            if match:
-                value = float(match.group(1))
+        if not matches:
+            return None, None
 
-                if 5 <= value <= 100:
-                    return value
+        for date_str, value_str in matches:
+            value = float(value_str)
+
+            if 5 <= value <= 100:
+                cape_date = datetime.strptime(date_str, "%b %d, %Y").date().isoformat()
+                return value, cape_date
+
     except Exception:
         pass
 
-    return None
+    return None, None
 
 
 def get_pmi():
@@ -419,7 +422,7 @@ def append_csv(now, nav, max52, drop, scenario, signal, vix, phase, cape, pmi, l
 def save_latest(
     now, nav, max52, drop, scenario, signal, vix, phase,
     entry_label, next_trigger, score, score_text, allocations,
-    cape, pmi, lei_payload, macro_signal, score_components
+    cape, cape_date, pmi, lei_payload, macro_signal, score_components
 ):
     payload = {
         "timestamp": now.isoformat(),
@@ -437,6 +440,7 @@ def save_latest(
         "score": score,
         "score_text": score_text,
         "cape": round(cape, 2) if cape is not None else None,
+        "cape_date": cape_date,
         "pmi": round(pmi, 2) if pmi is not None else None,
         "lei": {
             "value": round(lei_payload["value"], 4) if lei_payload["value"] is not None else None,
@@ -457,7 +461,7 @@ def save_latest(
 def main():
     nav, nav_time = get_nav()
     vix, _ = get_vix()
-    cape = get_cape()
+    cape, cape_date = get_cape()
     pmi, _ = get_pmi()
     lei_payload = get_lei()
 
@@ -484,7 +488,7 @@ def main():
     save_latest(
         nav_time, nav, max52, drop, scenario, signal, vix, phase,
         entry_label, next_trigger, score, score_text, allocations,
-        cape, pmi, lei_payload, macro_signal, score_components
+        cape, cape_date, pmi, lei_payload, macro_signal, score_components
     )
 
     print("NAV:", round(nav, 2))
@@ -492,6 +496,7 @@ def main():
     print("DROP %:", round(drop * 100, 2))
     print("VIX:", round(vix, 2) if vix is not None else "n/a")
     print("CAPE:", round(cape, 2) if cape is not None else "n/a")
+    print("CAPE DATE:", cape_date if cape_date is not None else "n/a")
     print("PMI:", round(pmi, 2) if pmi is not None else "n/a")
     print("LEI:", round(lei_payload["value"], 4) if lei_payload["value"] is not None else "n/a")
     print("LEI 3M TREND:", round(lei_payload["trend_3m"], 4) if lei_payload["trend_3m"] is not None else "n/a")
@@ -503,6 +508,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
