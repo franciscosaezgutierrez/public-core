@@ -30,7 +30,7 @@
         <strong id="navValue">—</strong>
         <small>Fecha NAV: <span id="navDate">—</span></small>
         <small>
-          <a href="https://es.finance.yahoo.com/quote/0P00000RQC.F/" target="_blank">Fuente</a>
+          <a href="https://es.finance.yahoo.com/quote/0P00000RQC.F/" target="_blank" rel="noopener noreferrer">Fuente</a>
         </small>
       </article>
 
@@ -51,7 +51,7 @@
         <strong id="vixValue">—</strong>
         <small>Automático desde Yahoo</small>
         <small>
-          <a href="https://es.finance.yahoo.com/quote/%5EVIX/" target="_blank">Fuente</a>
+          <a href="https://es.finance.yahoo.com/quote/%5EVIX/" target="_blank" rel="noopener noreferrer">Fuente</a>
         </small>
       </article>
     </section>
@@ -63,7 +63,7 @@
         <small>Shiller PE / PE10</small>
         <small id="capeSource">—</small>
         <small>
-          <a href="https://www.multpl.com/shiller-pe" target="_blank">Fuente</a>
+          <a href="https://www.multpl.com/shiller-pe" target="_blank" rel="noopener noreferrer">Fuente</a>
         </small>
       </article>
 
@@ -73,7 +73,7 @@
         <small>Indicador macro</small>
         <small id="pmiSource">—</small>
         <small>
-          <a href="https://tradingeconomics.com/country-list/composite-pmi" target="_blank">Fuente</a>
+          <a href="https://tradingeconomics.com/country-list/composite-pmi" target="_blank" rel="noopener noreferrer">Fuente</a>
         </small>
       </article>
 
@@ -83,7 +83,7 @@
         <small id="leiTrendText">—</small>
         <small id="leiSource">—</small>
         <small>
-          <a href="https://tradingeconomics.com/united-states/leading-economic-index" target="_blank">Fuente</a>
+          <a href="https://tradingeconomics.com/united-states/leading-economic-index" target="_blank" rel="noopener noreferrer">Fuente</a>
         </small>
       </article>
 
@@ -179,6 +179,84 @@
 
     <section class="card">
       <div class="card-head">
+        <h2>Dinero nuevo</h2>
+        <span class="pill" id="newMoneyPill">—</span>
+      </div>
+
+      <div class="state-list">
+        <div>
+          <span>Invertir ahora</span>
+          <strong id="newMoneyInvestNow">—</strong>
+        </div>
+        <div>
+          <span>Reservar</span>
+          <strong id="newMoneyReserve">—</strong>
+        </div>
+        <div>
+          <span>Destino inversión</span>
+          <strong id="newMoneyDestination">—</strong>
+        </div>
+        <div>
+          <span>Destino reserva</span>
+          <strong id="newMoneyReserveDestination">—</strong>
+        </div>
+        <div>
+          <span>Nota operativa</span>
+          <strong id="newMoneyNote">—</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Simulador dinero nuevo</h2>
+        <span class="pill">Euros</span>
+      </div>
+
+      <div class="simulator-grid">
+        <div class="sim-field">
+          <label for="newMoneyAmountInput">Importe a aportar</label>
+          <input
+            id="newMoneyAmountInput"
+            type="number"
+            min="0"
+            step="1"
+            placeholder="Ej. 600"
+            inputmode="decimal"
+          />
+        </div>
+
+        <div class="sim-field sim-button-wrap">
+          <button id="newMoneyCalcButton" type="button">Calcular</button>
+        </div>
+      </div>
+
+      <div class="state-list">
+        <div>
+          <span>Invertir ahora</span>
+          <strong id="simInvestNowAmount">—</strong>
+        </div>
+        <div>
+          <span>Reservar</span>
+          <strong id="simReserveAmount">—</strong>
+        </div>
+        <div>
+          <span>Vanguard Global Stock Index</span>
+          <strong id="simVanguardAmount">—</strong>
+        </div>
+        <div>
+          <span>Robeco BP Global Premium</span>
+          <strong id="simRobecoAmount">—</strong>
+        </div>
+        <div>
+          <span>DWS Euro Ultra Short</span>
+          <strong id="simDwsAmount">—</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
         <h2>Niveles de entrada</h2>
       </div>
 
@@ -191,7 +269,6 @@
         <div class="level"><span>Máxima</span><strong>-30%</strong></div>
       </div>
     </section>
-
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
