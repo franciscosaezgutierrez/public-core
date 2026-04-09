@@ -1,9 +1,9 @@
 {
-  "timestamp": "2026-04-06T20:00:00+00:00",
-  "nav_date": "2026-04-06",
-  "nav": 54.47,
+  "timestamp": "2026-04-07T20:00:00+00:00",
+  "nav_date": "2026-04-07",
+  "nav": 54.3,
   "max52": 55.48,
-  "drop_pct": -0.01829,
+  "drop_pct": -0.02121,
   "scenario": "E3 Sobrevaloracion",
   "signal": "ESPERAR"
 }
