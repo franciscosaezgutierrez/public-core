@@ -84,12 +84,25 @@
       "reserve": 0.1,
       "destination": "Core + calidad",
       "reserve_destination": "Liquidez"
+    },
+    "defensive_use": {
+      "enabled_if_cash_above_target": true,
+      "requires_no_rv_increase": true,
+      "dnca": 0.6,
+      "jupiter": 0.4
     }
   },
   "rebalance_rules": {
     "deviation_tolerance_pp": 4,
     "review_monthly": true,
-    "review_structural_quarterly": true
+    "review_structural_quarterly": true,
+    "tolerances": {
+      "core": 5,
+      "quality": 4,
+      "dnca": 3,
+      "jupiter": 2,
+      "gold": 1
+    }
   },
   "flash_crash_rules": {
     "activation": "-4% diario o -7% en 3 sesiones",
@@ -101,16 +114,19 @@
     "trigger_cape_gt": 42,
     "trigger_vix_lt": 15,
     "market_plus_20_from_low_required": true,
+    "market_plus_20_from_low": false,
+    "market_low_reference": 55.3586,
+    "market_rebound_from_low": 0.0,
     "action": "Aumentar liquidez 5–10% y reducir RV progresivamente",
-    "active_now_partial": false,
-    "note": "La condición de mercado +20% desde mínimo no se verifica automáticamente con los datos actuales."
+    "active_now": false
   },
   "hard_rules": [
     "No comprar sin trigger",
     "No vender en caídas",
-    "No usar oro para financiar RV",
-    "No romper liquidez mínima",
-    "No actuar por emociones"
+    "No usar oro para financiar compras",
+    "No comprar DNCA ni Jupiter en caídas",
+    "No usar Jupiter como liquidez estructural",
+    "No mezclar dinero nuevo y rotación"
   ],
   "data_freshness": {
     "cape_days": 0,
@@ -128,5 +144,46 @@
     "cape": "Manual · Multpl",
     "pmi": "Manual · Composite PMI",
     "lei": "Manual · Leading Index"
+  },
+  "cash_policy": {
+    "high_cape_target": "15–20%",
+    "medium_cape_target": "12–15%",
+    "low_cape_target": "10–12%"
+  },
+  "operational_mapping": {
+    "liquidity_assets": [
+      "DWS Euro Ultra Short",
+      "Groupama Trésorerie"
+    ],
+    "rv_assets": [
+      "Vanguard Global Stock",
+      "Robeco BP Global Premium",
+      "Heptagon Kopernik",
+      "Robeco Emerging",
+      "Plan Pensiones CaixaBank"
+    ],
+    "non_operational_assets": [
+      "Plan Pensiones CaixaBank"
+    ],
+    "gold_asset": "Invesco Physical Gold"
+  },
+  "real_cash_pct": 0.16,
+  "target_cash_pct_upper": 0.2,
+  "operational_checklist": [
+    "¿Drawdown ≥ -10%?",
+    "¿VIX > 20?",
+    "¿Liquidez suficiente?",
+    "¿No es dinero nuevo?"
+  ],
+  "pause_mode": {
+    "active": true,
+    "rule": "No actuar si drawdown < -10% y VIX < 20"
+  },
+  "decision_status": {
+    "blocked": true,
+    "reasons": [
+      "PMI > 1 día",
+      "LEI > 1 día"
+    ]
   }
 }
