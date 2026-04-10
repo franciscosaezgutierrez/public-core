@@ -479,17 +479,41 @@ function getRotationPlanByDrawdown(drawdown, vixConfirmed) {
   };
 }
 
-function calculateRotationBreakdown(dwsAmount, dncaAmount, drawdown, vixConfirmed) {
+function getRotationTrafficLight(drawdown, vixConfirmed) {
+  if (drawdown <= -0.10 && vixConfirmed) {
+    return {
+      light: "VERDE",
+      status: "Ejecutar rotación"
+    };
+  }
+
+  if (drawdown <= -0.10 && !vixConfirmed) {
+    return {
+      light: "AMARILLO",
+      status: "Vigilar. Falta confirmación VIX"
+    };
+  }
+
+  return {
+    light: "ROJO",
+    status: "No hacer nada"
+  };
+}
+
+function calculateRotationBreakdown(dwsAmount, dncaAmount, drawdown, vixConfirmed, alreadyExecutedAmount = 0) {
   const dws = Number(dwsAmount);
   const dnca = Number(dncaAmount);
-  const totalAvailable = (isNaN(dws) ? 0 : dws) + (isNaN(dnca) ? 0 : dnca);
+  const alreadyExecuted = Number(alreadyExecutedAmount);
 
-  if (isNaN(dws) || isNaN(dnca) || dws < 0 || dnca < 0) {
+  if (isNaN(dws) || isNaN(dnca) || isNaN(alreadyExecuted) || dws < 0 || dnca < 0 || alreadyExecuted < 0) {
     return null;
   }
 
+  const totalAvailable = dws + dnca;
+  const remainingCapital = Math.max(0, totalAvailable - alreadyExecuted);
+
   const plan = getRotationPlanByDrawdown(drawdown, vixConfirmed);
-  const amountToRotate = totalAvailable * plan.rotatePct;
+  const amountToRotate = remainingCapital * plan.rotatePct;
 
   const fromDws = Math.min(dws, amountToRotate);
   const fromDnca = Math.max(0, amountToRotate - fromDws);
@@ -500,11 +524,41 @@ function calculateRotationBreakdown(dwsAmount, dncaAmount, drawdown, vixConfirme
   const toKopernik = amountToRotate * plan.kopernikPct;
   const toEmerging = amountToRotate * plan.emergingPct;
 
+  let executionOrder = plan.note;
+
+  if (plan.enabled && amountToRotate > 0) {
+    const steps = [];
+
+    if (fromDws > 0.009) {
+      steps.push(`1. Traspasar ${euro(fromDws)} desde DWS`);
+    }
+
+    if (fromDnca > 0.009) {
+      steps.push(`${steps.length + 1}. Traspasar ${euro(fromDnca)} desde DNCA`);
+    }
+
+    const buys = [
+      { name: "Vanguard", amount: toVanguard },
+      { name: "Robeco BP", amount: toRobeco },
+      { name: "Jupiter", amount: toJupiter },
+      { name: "Kopernik", amount: toKopernik },
+      { name: "Emergentes", amount: toEmerging }
+    ].filter(item => item.amount > 0.009);
+
+    if (buys.length) {
+      steps.push(`${steps.length + 1}. Comprar: ${buys.map(item => `${item.name} ${euro(item.amount)}`).join(" · ")}`);
+    }
+
+    executionOrder = steps.join(" | ");
+  }
+
   return {
     enabled: plan.enabled,
     label: plan.label,
     rotatePct: plan.rotatePct,
     totalAvailable,
+    alreadyExecuted,
+    remainingCapital,
     amountToRotate,
     fromDws,
     fromDnca,
@@ -514,6 +568,7 @@ function calculateRotationBreakdown(dwsAmount, dncaAmount, drawdown, vixConfirme
     toKopernik,
     toEmerging,
     note: plan.note,
+    executionOrder,
     vixConfirmed
   };
 }
@@ -521,13 +576,17 @@ function calculateRotationBreakdown(dwsAmount, dncaAmount, drawdown, vixConfirme
 function renderRotationSummary(latest) {
   const dropPct = Number(latest.drop_pct);
   const vix = Number(latest.vix);
-  const plan = getRotationPlanByDrawdown(dropPct, vix > 20);
+  const vixConfirmed = vix > 20;
+  const plan = getRotationPlanByDrawdown(dropPct, vixConfirmed);
+  const traffic = getRotationTrafficLight(dropPct, vixConfirmed);
 
   setText("rotationCurrentDrawdown", pctFromDecimal(dropPct));
   setText("rotationTriggerText", plan.label);
   setText("rotationCurrentVix", num(vix, 2));
-  setText("rotationVixValidation", vix > 20 ? "Sí" : "No");
+  setText("rotationVixValidation", vixConfirmed ? "Sí" : "No");
   setText("rotationActionText", plan.enabled ? `Activable · ${plan.label}` : plan.note);
+  setText("rotationTrafficLight", traffic.light);
+  setText("rotationStatusText", traffic.status);
 
   const pillEl = document.getElementById("rotationPill");
   if (pillEl) {
@@ -540,12 +599,21 @@ function renderRotationCalculator(latest) {
   const dncaInput = document.getElementById("rotationDncaInput");
   const drawdownSelector = document.getElementById("rotationDrawdownSelector");
   const vixSelector = document.getElementById("rotationVixSelector");
+  const executedInput = document.getElementById("rotationExecutedInput");
 
-  if (!dwsInput || !dncaInput || !drawdownSelector || !vixSelector) return;
+  if (!dwsInput || !dncaInput || !drawdownSelector || !vixSelector || !executedInput) return;
 
   const drawdown = normalizeDrawdownValue(drawdownSelector.value, latest.drop_pct);
   const vixConfirmed = resolveVixConfirmation(vixSelector.value, latest.vix);
-  const result = calculateRotationBreakdown(dwsInput.value, dncaInput.value, drawdown, vixConfirmed);
+  const alreadyExecuted = Number(executedInput.value) || 0;
+
+  const result = calculateRotationBreakdown(
+    dwsInput.value,
+    dncaInput.value,
+    drawdown,
+    vixConfirmed,
+    alreadyExecuted
+  );
 
   const totalAvailableDisplay = (Number(dwsInput.value) || 0) + (Number(dncaInput.value) || 0);
   setText("rotationCapitalAvailable", euro(totalAvailableDisplay));
@@ -561,6 +629,9 @@ function renderRotationCalculator(latest) {
     setText("rotationToJupiter", "—");
     setText("rotationToKopernik", "—");
     setText("rotationToEmerging", "—");
+    setText("rotationAlreadyExecuted", "—");
+    setText("rotationRemainingCapital", "—");
+    setText("rotationExecutionOrder", "—");
     setText("rotationNote", "Introduzca importes válidos.");
     return;
   }
@@ -575,6 +646,9 @@ function renderRotationCalculator(latest) {
   setText("rotationToJupiter", euro(result.toJupiter));
   setText("rotationToKopernik", euro(result.toKopernik));
   setText("rotationToEmerging", euro(result.toEmerging));
+  setText("rotationAlreadyExecuted", euro(result.alreadyExecuted));
+  setText("rotationRemainingCapital", euro(result.remainingCapital));
+  setText("rotationExecutionOrder", result.executionOrder);
   setText("rotationNote", result.note);
 }
 
@@ -583,9 +657,10 @@ function setupRotationSimulator(latest) {
   const dncaInput = document.getElementById("rotationDncaInput");
   const drawdownSelector = document.getElementById("rotationDrawdownSelector");
   const vixSelector = document.getElementById("rotationVixSelector");
+  const executedInput = document.getElementById("rotationExecutedInput");
   const button = document.getElementById("rotationCalcButton");
 
-  if (!dwsInput || !dncaInput || !drawdownSelector || !vixSelector || !button) return;
+  if (!dwsInput || !dncaInput || !drawdownSelector || !vixSelector || !executedInput || !button) return;
 
   const update = () => renderRotationCalculator(latest);
 
@@ -593,6 +668,7 @@ function setupRotationSimulator(latest) {
   dncaInput.addEventListener("input", update);
   drawdownSelector.addEventListener("change", update);
   vixSelector.addEventListener("change", update);
+  executedInput.addEventListener("input", update);
   button.addEventListener("click", update);
 
   renderRotationSummary(latest);
@@ -786,4 +862,6 @@ loadDashboard().catch(err => {
   if (scenarioText) {
     scenarioText.textContent = err.message;
   }
+
+  console.error(err);
 });
