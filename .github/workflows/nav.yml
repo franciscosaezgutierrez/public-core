@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   update-nav:
-    runs-on: ubuntu-lunsatest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
