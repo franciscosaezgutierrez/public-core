@@ -1,10 +1,483 @@
-{
-  "cape": 39.14,
-  "cape_date": "2026-04-08",
-  "pmi": 50.3,
-  "pmi_date": "2026-04-01",
-  "lei_value": 97.5,
-  "lei_date": "2026-04-01",
-  "lei_value_3m_ago": 98.2,
-  "lei_trend_3m": -0.7
-}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Rotación Cartera</title>
+  <link rel="stylesheet" href="style.css?v=20260410-3" />
+</head>
+<body>
+  <div class="container">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">SISTEMA DE ROTACIÓN DE CARTERA</p>
+        <h1>Dashboard Operativo</h1>
+        <p class="sub">
+          Precio + volatilidad + macro manual. Señal mecánica basada en NAV, drawdown, VIX y datos macro cargados manualmente.
+        </p>
+      </div>
+
+      <div class="status-card">
+        <span class="label">SEÑAL ACTUAL</span>
+        <strong id="signalBadge">Cargando...</strong>
+        <span id="scenarioText">—</span>
+      </div>
+    </header>
+
+    <section class="grid top-grid">
+      <article class="card kpi">
+        <span class="label">NAV ACTUAL</span>
+        <strong id="navValue">—</strong>
+        <small>Fecha NAV: <span id="navDate">—</span></small>
+        <small>
+          <a href="https://es.finance.yahoo.com/quote/0P00000RQC.F/" target="_blank" rel="noopener noreferrer">Fuente</a>
+        </small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">MÁXIMO 52 SEMANAS</span>
+        <strong id="maxValue">—</strong>
+        <small>Rolling 52 semanas</small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">DRAWDOWN</span>
+        <strong id="dropValue">—</strong>
+        <small>Desde máximo 52 semanas</small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">VIX</span>
+        <strong id="vixValue">—</strong>
+        <small>Automático desde Yahoo</small>
+        <small>
+          <a href="https://es.finance.yahoo.com/quote/%5EVIX/" target="_blank" rel="noopener noreferrer">Fuente</a>
+        </small>
+      </article>
+    </section>
+
+    <section class="grid top-grid">
+      <article class="card kpi">
+        <span class="label">CAPE</span>
+        <strong id="capeValue">—</strong>
+        <small>Shiller PE / PE10</small>
+        <small id="capeSource">—</small>
+        <small>
+          <a href="https://www.multpl.com/shiller-pe" target="_blank" rel="noopener noreferrer">Fuente</a>
+        </small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">PMI</span>
+        <strong id="pmiValue">—</strong>
+        <small>Indicador macro</small>
+        <small id="pmiSource">—</small>
+        <small>
+          <a href="https://tradingeconomics.com/country-list/composite-pmi" target="_blank" rel="noopener noreferrer">Fuente</a>
+        </small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">LEI</span>
+        <strong id="leiValue">—</strong>
+        <small id="leiTrendText">—</small>
+        <small id="leiSource">—</small>
+        <small>
+          <a href="https://tradingeconomics.com/united-states/leading-economic-index" target="_blank" rel="noopener noreferrer">Fuente</a>
+        </small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">SCORE</span>
+        <strong id="scoreValue">—</strong>
+        <small id="scoreText">—</small>
+      </article>
+    </section>
+
+    <section class="grid top-grid">
+      <article class="card kpi">
+        <span class="label">ESCENARIO</span>
+        <strong id="scenarioValue">—</strong>
+        <small>Macro + precio</small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">FASE OPERATIVA</span>
+        <strong id="phaseValue">—</strong>
+        <small>Normal / preparación / entradas</small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">ENTRADA ACTUAL</span>
+        <strong id="entryValue">—</strong>
+        <small>Tramo operativo</small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">MACRO SIGNAL</span>
+        <strong id="macroSignalValue">—</strong>
+        <small>Lectura rápida</small>
+      </article>
+    </section>
+
+    <section class="grid mid-grid">
+      <article class="card">
+        <div class="card-head">
+          <h2>Estado operativo</h2>
+          <span class="pill" id="scenarioPill">—</span>
+        </div>
+
+        <div class="state-list">
+          <div>
+            <span>Acción</span>
+            <strong id="actionValue">—</strong>
+          </div>
+          <div>
+            <span>Siguiente trigger</span>
+            <strong id="nextTrigger">—</strong>
+          </div>
+          <div>
+            <span>Actualización</span>
+            <strong id="updatedText">—</strong>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h2>Asignación objetivo</h2>
+        </div>
+
+        <div class="state-list">
+          <div>
+            <span>Renta variable</span>
+            <strong id="allocRv">—</strong>
+          </div>
+          <div>
+            <span>Bonos</span>
+            <strong id="allocBonds">—</strong>
+          </div>
+          <div>
+            <span>Liquidez</span>
+            <strong id="allocCash">—</strong>
+          </div>
+          <div>
+            <span>Oro</span>
+            <strong id="allocGold">—</strong>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="card chart-card">
+      <div class="card-head">
+        <h2>Histórico NAV</h2>
+        <small>Con niveles operativos</small>
+      </div>
+      <canvas id="navChart" height="110"></canvas>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Dinero nuevo</h2>
+        <span class="pill" id="newMoneyPill">—</span>
+      </div>
+
+      <div class="simulator-grid scenario-grid">
+        <div class="sim-field">
+          <label for="scenarioSelector">Escenario para dinero nuevo</label>
+          <select id="scenarioSelector">
+            <option value="auto">Automático (según sistema)</option>
+            <option value="1">Escenario 1 · Mercado barato</option>
+            <option value="2">Escenario 2 · Mercado neutral</option>
+            <option value="3">Escenario 3 · Mercado caro</option>
+            <option value="defensivo">Modo defensivo</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="state-list">
+        <div>
+          <span>Escenario aplicado</span>
+          <strong id="newMoneyScenarioApplied">—</strong>
+        </div>
+        <div>
+          <span>Invertir ahora</span>
+          <strong id="newMoneyInvestNow">—</strong>
+        </div>
+        <div>
+          <span>Reservar</span>
+          <strong id="newMoneyReserve">—</strong>
+        </div>
+        <div>
+          <span>Destino inversión</span>
+          <strong id="newMoneyDestination">—</strong>
+        </div>
+        <div>
+          <span>Destino reserva</span>
+          <strong id="newMoneyReserveDestination">—</strong>
+        </div>
+        <div>
+          <span>Nota operativa</span>
+          <strong id="newMoneyNote">—</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Simulador dinero nuevo</h2>
+        <span class="pill">Euros</span>
+      </div>
+
+      <div class="simulator-grid">
+        <div class="sim-field">
+          <label for="newMoneyAmountInput">Importe a aportar</label>
+          <input
+            id="newMoneyAmountInput"
+            type="number"
+            min="0"
+            step="1"
+            placeholder="Ej. 600"
+            inputmode="decimal"
+          />
+        </div>
+
+        <div class="sim-field sim-button-wrap">
+          <button id="newMoneyCalcButton" type="button">Calcular</button>
+        </div>
+      </div>
+
+      <div class="state-list">
+        <div>
+          <span>Invertir ahora</span>
+          <strong id="simInvestNowAmount">—</strong>
+        </div>
+        <div>
+          <span>Reservar</span>
+          <strong id="simReserveAmount">—</strong>
+        </div>
+        <div>
+          <span>Vanguard Global Stock Index</span>
+          <strong id="simVanguardAmount">—</strong>
+        </div>
+        <div>
+          <span>Robeco BP Global Premium</span>
+          <strong id="simRobecoAmount">—</strong>
+        </div>
+        <div>
+          <span>Jupiter Global Equity Absolute Return</span>
+          <strong id="simJupiterAmount">—</strong>
+        </div>
+        <div>
+          <span>Heptagon Kopernik</span>
+          <strong id="simKopernikAmount">—</strong>
+        </div>
+        <div>
+          <span>Robeco QI Emerging Conservative</span>
+          <strong id="simEmergingAmount">—</strong>
+        </div>
+        <div>
+          <span>DNCA Alpha Bonds</span>
+          <strong id="simDncaAmount">—</strong>
+        </div>
+        <div>
+          <span>DWS Euro Ultra Short</span>
+          <strong id="simDwsAmount">—</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Rotación por caída</h2>
+        <span class="pill" id="rotationPill">—</span>
+      </div>
+
+      <div class="state-list">
+        <div>
+          <span>Drawdown actual</span>
+          <strong id="rotationCurrentDrawdown">—</strong>
+        </div>
+        <div>
+          <span>Trigger actual</span>
+          <strong id="rotationTriggerText">—</strong>
+        </div>
+        <div>
+          <span>VIX</span>
+          <strong id="rotationCurrentVix">—</strong>
+        </div>
+        <div>
+          <span>Validación VIX</span>
+          <strong id="rotationVixValidation">—</strong>
+        </div>
+        <div>
+          <span>Capital disponible estimado</span>
+          <strong id="rotationCapitalAvailable">—</strong>
+        </div>
+        <div>
+          <span>Acción sugerida</span>
+          <strong id="rotationActionText">—</strong>
+        </div>
+        <div>
+          <span>Semáforo</span>
+          <strong id="rotationTrafficLight">—</strong>
+        </div>
+        <div>
+          <span>Estado operativo</span>
+          <strong id="rotationStatusText">—</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Simulador rotación por caída</h2>
+        <span class="pill">Tramos</span>
+      </div>
+
+      <div class="simulator-grid simulator-grid-3">
+        <div class="sim-field">
+          <label for="rotationDwsInput">Liquidez disponible en DWS</label>
+          <input
+            id="rotationDwsInput"
+            type="number"
+            min="0"
+            step="1"
+            placeholder="Ej. 3000"
+            inputmode="decimal"
+          />
+        </div>
+
+        <div class="sim-field">
+          <label for="rotationDncaInput">DNCA utilizable</label>
+          <input
+            id="rotationDncaInput"
+            type="number"
+            min="0"
+            step="1"
+            placeholder="Ej. 2000"
+            inputmode="decimal"
+          />
+        </div>
+
+        <div class="sim-field">
+          <label for="rotationDrawdownSelector">Nivel de caída</label>
+          <select id="rotationDrawdownSelector">
+            <option value="auto">Automático (según sistema)</option>
+            <option value="-0.10">-10% · Entrada inicial</option>
+            <option value="-0.15">-15% · Segunda entrada</option>
+            <option value="-0.20">-20% · Entrada fuerte</option>
+            <option value="-0.25">-25% · Entrada muy fuerte</option>
+            <option value="-0.30">-30% · Entrada máxima</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="simulator-grid simulator-grid-3">
+        <div class="sim-field">
+          <label for="rotationVixSelector">Confirmación VIX</label>
+          <select id="rotationVixSelector">
+            <option value="auto">Automático (VIX actual)</option>
+            <option value="yes">Sí, validado</option>
+            <option value="no">No, sin validar</option>
+          </select>
+        </div>
+
+        <div class="sim-field">
+          <label for="rotationExecutedInput">Ya ejecutado en esta caída</label>
+          <input
+            id="rotationExecutedInput"
+            type="number"
+            min="0"
+            step="1"
+            placeholder="Ej. 1500"
+            inputmode="decimal"
+          />
+        </div>
+
+        <div class="sim-field sim-button-wrap">
+          <button id="rotationCalcButton" type="button">Calcular rotación</button>
+        </div>
+      </div>
+
+      <div class="state-list">
+        <div>
+          <span>Capital disponible total</span>
+          <strong id="rotationTotalAvailableAmount">—</strong>
+        </div>
+        <div>
+          <span>% a rotar</span>
+          <strong id="rotationRotatePctText">—</strong>
+        </div>
+        <div>
+          <span>Importe a rotar</span>
+          <strong id="rotationAmountToRotate">—</strong>
+        </div>
+        <div>
+          <span>Origen desde DWS</span>
+          <strong id="rotationFromDws">—</strong>
+        </div>
+        <div>
+          <span>Origen desde DNCA</span>
+          <strong id="rotationFromDnca">—</strong>
+        </div>
+        <div>
+          <span>Vanguard Global Stock Index</span>
+          <strong id="rotationToVanguard">—</strong>
+        </div>
+        <div>
+          <span>Robeco BP Global Premium</span>
+          <strong id="rotationToRobeco">—</strong>
+        </div>
+        <div>
+          <span>Jupiter Global Equity Absolute Return</span>
+          <strong id="rotationToJupiter">—</strong>
+        </div>
+        <div>
+          <span>Heptagon Kopernik</span>
+          <strong id="rotationToKopernik">—</strong>
+        </div>
+        <div>
+          <span>Robeco QI Emerging Conservative</span>
+          <strong id="rotationToEmerging">—</strong>
+        </div>
+        <div>
+          <span>Capital ya ejecutado en la caída</span>
+          <strong id="rotationAlreadyExecuted">—</strong>
+        </div>
+        <div>
+          <span>Capital pendiente</span>
+          <strong id="rotationRemainingCapital">—</strong>
+        </div>
+        <div>
+          <span>Orden de ejecución</span>
+          <strong id="rotationExecutionOrder">—</strong>
+        </div>
+        <div>
+          <span>Nota rotación</span>
+          <strong id="rotationNote">—</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Niveles de entrada</h2>
+      </div>
+
+      <div class="levels">
+        <div class="level"><span>Preparación</span><strong>-5%</strong></div>
+        <div class="level"><span>Entrada inicial</span><strong>-10%</strong></div>
+        <div class="level"><span>Segunda entrada</span><strong>-15%</strong></div>
+        <div class="level"><span>Entrada fuerte</span><strong>-20%</strong></div>
+        <div class="level"><span>Muy fuerte</span><strong>-25%</strong></div>
+        <div class="level"><span>Máxima</span><strong>-30%</strong></div>
+      </div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="app.js?v=20260410-3"></script>
+</body>
+</html>
