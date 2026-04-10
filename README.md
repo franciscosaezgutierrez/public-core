@@ -1,15 +1,14 @@
-# Dashboard NAV Vanguard
+# Sistema de Rotación
 
-Panel web estático para GitHub Pages.
+Dashboard basado en reglas mecánicas:
 
-## Publicación
-1. Sube estos archivos a un repositorio.
-2. Activa **GitHub Pages** desde la rama principal.
-3. El dashboard leerá:
-   - `data/latest.json`
-   - `data/nav_history.csv`
+- Escenarios por CAPE / PMI / LEI
+- Rotación por drawdown
+- Control de liquidez
+- Validación de límites
 
-## Flujo
-- `nav_check.py` actualiza los datos
-- GitHub Actions ejecuta el proceso cada día laborable
-- El dashboard se refresca solo con el nuevo commit
+## Uso
+Abrir index.html o desplegar en GitHub Pages.
+
+## Datos
+Editar data/latest.json
