@@ -286,6 +286,143 @@
 
     <section class="card">
       <div class="card-head">
+        <h2>Rotación por caída</h2>
+        <span class="pill" id="rotationPill">—</span>
+      </div>
+
+      <div class="state-list">
+        <div>
+          <span>Drawdown actual</span>
+          <strong id="rotationCurrentDrawdown">—</strong>
+        </div>
+        <div>
+          <span>Trigger actual</span>
+          <strong id="rotationTriggerText">—</strong>
+        </div>
+        <div>
+          <span>VIX</span>
+          <strong id="rotationCurrentVix">—</strong>
+        </div>
+        <div>
+          <span>Validación VIX</span>
+          <strong id="rotationVixValidation">—</strong>
+        </div>
+        <div>
+          <span>Capital disponible estimado</span>
+          <strong id="rotationCapitalAvailable">—</strong>
+        </div>
+        <div>
+          <span>Acción sugerida</span>
+          <strong id="rotationActionText">—</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Simulador rotación por caída</h2>
+        <span class="pill">Tramos</span>
+      </div>
+
+      <div class="simulator-grid simulator-grid-3">
+        <div class="sim-field">
+          <label for="rotationDwsInput">Liquidez disponible en DWS</label>
+          <input
+            id="rotationDwsInput"
+            type="number"
+            min="0"
+            step="1"
+            placeholder="Ej. 3000"
+            inputmode="decimal"
+          />
+        </div>
+
+        <div class="sim-field">
+          <label for="rotationDncaInput">DNCA utilizable</label>
+          <input
+            id="rotationDncaInput"
+            type="number"
+            min="0"
+            step="1"
+            placeholder="Ej. 2000"
+            inputmode="decimal"
+          />
+        </div>
+
+        <div class="sim-field">
+          <label for="rotationDrawdownSelector">Nivel de caída</label>
+          <select id="rotationDrawdownSelector">
+            <option value="auto">Automático (según sistema)</option>
+            <option value="-0.10">-10% · Entrada inicial</option>
+            <option value="-0.15">-15% · Segunda entrada</option>
+            <option value="-0.20">-20% · Entrada fuerte</option>
+            <option value="-0.25">-25% · Entrada muy fuerte</option>
+            <option value="-0.30">-30% · Entrada máxima</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="simulator-grid simulator-grid-3">
+        <div class="sim-field">
+          <label for="rotationVixSelector">Confirmación VIX</label>
+          <select id="rotationVixSelector">
+            <option value="auto">Automático (VIX actual)</option>
+            <option value="yes">Sí, validado</option>
+            <option value="no">No, sin validar</option>
+          </select>
+        </div>
+
+        <div class="sim-field sim-button-wrap">
+          <button id="rotationCalcButton" type="button">Calcular rotación</button>
+        </div>
+      </div>
+
+      <div class="state-list">
+        <div>
+          <span>Capital disponible total</span>
+          <strong id="rotationTotalAvailableAmount">—</strong>
+        </div>
+        <div>
+          <span>% a rotar</span>
+          <strong id="rotationRotatePctText">—</strong>
+        </div>
+        <div>
+          <span>Importe a rotar</span>
+          <strong id="rotationAmountToRotate">—</strong>
+        </div>
+        <div>
+          <span>Origen desde DWS</span>
+          <strong id="rotationFromDws">—</strong>
+        </div>
+        <div>
+          <span>Origen desde DNCA</span>
+          <strong id="rotationFromDnca">—</strong>
+        </div>
+        <div>
+          <span>Vanguard Global Stock Index</span>
+          <strong id="rotationToVanguard">—</strong>
+        </div>
+        <div>
+          <span>Robeco BP Global Premium</span>
+          <strong id="rotationToRobeco">—</strong>
+        </div>
+        <div>
+          <span>Heptagon Kopernik</span>
+          <strong id="rotationToKopernik">—</strong>
+        </div>
+        <div>
+          <span>Robeco QI Emerging Conservative</span>
+          <strong id="rotationToEmerging">—</strong>
+        </div>
+        <div>
+          <span>Nota rotación</span>
+          <strong id="rotationNote">—</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
         <h2>Niveles de entrada</h2>
       </div>
 
