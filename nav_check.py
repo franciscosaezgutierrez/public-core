@@ -53,6 +53,12 @@ NEW_MONEY_RULES = {
         "destination": "Core + calidad",
         "reserve_destination": "Liquidez",
     },
+    "defensive_use": {
+        "enabled_if_cash_above_target": True,
+        "requires_no_rv_increase": True,
+        "dnca": 0.60,
+        "jupiter": 0.40,
+    },
 }
 
 
@@ -341,8 +347,49 @@ def days_old(reference_dt, date_text):
         return None
 
 
-def detect_risk_reduction(cape, vix):
-    return bool(cape is not None and cape > 42 and vix is not None and vix < 15)
+def detect_market_plus_20_from_low(history, nav, now):
+    if history.empty:
+        return False, None, None
+
+    cutoff_date = (now - timedelta(days=364)).date()
+    recent = history.loc[history["timestamp"].dt.date >= cutoff_date, "nav"].dropna().astype(float)
+    if recent.empty:
+        return False, None, None
+
+    low = min(float(recent.min()), float(nav))
+    if low <= 0:
+        return False, low, None
+
+    increase = (float(nav) / low) - 1
+    return increase >= 0.20, low, increase
+
+
+def detect_risk_reduction(cape, vix, market_plus_20):
+    return bool(cape is not None and cape > 42 and vix is not None and vix < 15 and market_plus_20)
+
+
+def compute_decision_block(data_freshness, nav_available, vix_available):
+    reasons = []
+    if not nav_available:
+        reasons.append("Sin NAV")
+    if not vix_available:
+        reasons.append("Sin VIX")
+
+    labels = {
+        "cape_days": "CAPE",
+        "pmi_days": "PMI",
+        "lei_days": "LEI",
+        "nav_days": "NAV",
+        "vix_days": "VIX",
+    }
+    for key, value in (data_freshness or {}).items():
+        if value is not None and value > 1:
+            reasons.append(f"{labels.get(key, key)} > 1 día")
+
+    return {
+        "blocked": len(reasons) > 0,
+        "reasons": reasons,
+    }
 
 
 def validate_composition():
@@ -433,11 +480,20 @@ def main():
     scenario = get_scenario(drop_pct, cape, pmi, lei_trend_3m, vix)
     phase = get_phase(drop_pct)
     action = get_action(drop_pct, vix, score)
+    market_plus_20, market_low_reference, market_rebound = detect_market_plus_20_from_low(history, nav, nav_time)
 
     prior_rotation = previous.get("rotation_state", {}) if isinstance(previous, dict) else {}
     composition_issues = validate_composition()
 
     now_iso = nav_time.isoformat()
+    data_freshness = {
+        "cape_days": days_old(nav_time, macro["cape_date"]),
+        "pmi_days": days_old(nav_time, macro["pmi_date"]),
+        "lei_days": days_old(nav_time, lei_date),
+        "nav_days": 0,
+        "vix_days": days_old(nav_time, iso_date(vix_time)) if vix_time else None,
+    }
+    decision_status = compute_decision_block(data_freshness, nav_available=nav is not None, vix_available=vix is not None)
 
     payload = {
         "timestamp": now_iso,
@@ -480,10 +536,34 @@ def main():
             "Emergentes / small caps",
         ],
         "new_money_rules": NEW_MONEY_RULES,
+        "cash_policy": {
+            "high_cape_target": "15–20%",
+            "medium_cape_target": "12–15%",
+            "low_cape_target": "10–12%",
+        },
+        "operational_mapping": {
+            "liquidity_assets": ["DWS Euro Ultra Short", "Groupama Trésorerie"],
+            "rv_assets": [
+                "Vanguard Global Stock",
+                "Robeco BP Global Premium",
+                "Heptagon Kopernik",
+                "Robeco Emerging",
+                "Plan Pensiones CaixaBank",
+            ],
+            "non_operational_assets": ["Plan Pensiones CaixaBank"],
+            "gold_asset": "Invesco Physical Gold",
+        },
         "rebalance_rules": {
             "deviation_tolerance_pp": 4,
             "review_monthly": True,
             "review_structural_quarterly": True,
+            "tolerances": {
+                "core": 5,
+                "quality": 4,
+                "dnca": 3,
+                "jupiter": 2,
+                "gold": 1,
+            },
         },
         "flash_crash_rules": {
             "activation": "-4% diario o -7% en 3 sesiones",
@@ -495,24 +575,32 @@ def main():
             "trigger_cape_gt": 42,
             "trigger_vix_lt": 15,
             "market_plus_20_from_low_required": True,
+            "market_plus_20_from_low": market_plus_20,
+            "market_low_reference": round(market_low_reference, 4) if market_low_reference is not None else None,
+            "market_rebound_from_low": round(market_rebound, 6) if market_rebound is not None else None,
             "action": "Aumentar liquidez 5–10% y reducir RV progresivamente",
-            "active_now_partial": detect_risk_reduction(cape, vix),
-            "note": "La condición de mercado +20% desde mínimo no se verifica automáticamente con los datos actuales.",
+            "active_now": detect_risk_reduction(cape, vix, market_plus_20),
         },
         "hard_rules": [
             "No comprar sin trigger",
             "No vender en caídas",
-            "No usar oro para financiar RV",
-            "No romper liquidez mínima",
-            "No actuar por emociones",
+            "No usar oro para financiar compras",
+            "No comprar DNCA ni Jupiter en caídas",
+            "No usar Jupiter como liquidez estructural",
+            "No mezclar dinero nuevo y rotación",
         ],
-        "data_freshness": {
-            "cape_days": days_old(nav_time, macro["cape_date"]),
-            "pmi_days": days_old(nav_time, macro["pmi_date"]),
-            "lei_days": days_old(nav_time, lei_date),
-            "nav_days": 0,
-            "vix_days": days_old(nav_time, iso_date(vix_time)) if vix_time else None,
+        "operational_checklist": [
+            "¿Drawdown ≥ -10%?",
+            "¿VIX > 20?",
+            "¿Liquidez suficiente?",
+            "¿No es dinero nuevo?",
+        ],
+        "pause_mode": {
+            "active": bool(drop_pct > -0.10 and (vix is not None and vix < 20)),
+            "rule": "No actuar si drawdown < -10% y VIX < 20",
         },
+        "data_freshness": data_freshness,
+        "decision_status": decision_status,
         "rotation_state": {
             "executed_levels": prior_rotation.get("executed_levels", []),
             "last_execution_date": prior_rotation.get("last_execution_date"),
