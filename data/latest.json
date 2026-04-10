@@ -7,7 +7,7 @@
   "drop_percent_display": 0.0,
   "scenario": "Escenario 3",
   "signal": "DEFENSIVO",
-  "vix": 19.9,
+  "vix": 19.98,
   "vix_date": "2026-04-10",
   "phase": "Fase 0 · Normal",
   "entry_label": "Sin entrada",
@@ -168,11 +168,9 @@
     "vix_days": 0
   },
   "decision_status": {
-    "blocked": true,
-    "reasons": [
-      "PMI > 1 día",
-      "LEI > 1 día"
-    ]
+    "blocked": false,
+    "reasons": [],
+    "warnings": []
   },
   "rotation_state": {
     "executed_levels": [],
