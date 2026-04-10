@@ -444,6 +444,20 @@
         </div>
 
         <div class="sim-field">
+          <label for="rotationJupiterInput">Jupiter utilizable si fuese necesario</label>
+          <input
+            id="rotationJupiterInput"
+            type="number"
+            min="0"
+            step="1"
+            placeholder="Ej. 1000"
+            inputmode="decimal"
+          />
+        </div>
+      </div>
+
+      <div class="simulator-grid simulator-grid-3">
+        <div class="sim-field">
           <label for="rotationDrawdownSelector">Nivel de caída</label>
           <select id="rotationDrawdownSelector">
             <option value="auto">Automático (según sistema)</option>
@@ -454,9 +468,7 @@
             <option value="-0.30">-30% · Entrada máxima</option>
           </select>
         </div>
-      </div>
 
-      <div class="simulator-grid simulator-grid-3">
         <div class="sim-field">
           <label for="rotationVixSelector">Confirmación VIX</label>
           <select id="rotationVixSelector">
@@ -474,6 +486,20 @@
             min="0"
             step="1"
             placeholder="Ej. 1500"
+            inputmode="decimal"
+          />
+        </div>
+      </div>
+
+      <div class="simulator-grid simulator-grid-3">
+        <div class="sim-field">
+          <label for="rotationMinCashInput">Liquidez mínima a conservar</label>
+          <input
+            id="rotationMinCashInput"
+            type="number"
+            min="0"
+            step="1"
+            placeholder="Ej. 1000"
             inputmode="decimal"
           />
         </div>
@@ -505,6 +531,10 @@
           <strong id="rotationFromDnca">—</strong>
         </div>
         <div>
+          <span>Origen desde Jupiter</span>
+          <strong id="rotationFromJupiter">—</strong>
+        </div>
+        <div>
           <span>Vanguard Global Stock Index</span>
           <strong id="rotationToVanguard">—</strong>
         </div>
@@ -514,7 +544,7 @@
         </div>
         <div>
           <span>Jupiter Global Equity Absolute Return</span>
-          <strong id="rotationToJupiter">—</strong>
+          <strong id="rotationToJupiter">0,00 €</strong>
         </div>
         <div>
           <span>Heptagon Kopernik</span>
@@ -560,6 +590,6 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="app.js?v=20260410-4"></script>
+  <script src="app.js?v=20260410-5"></script>
 </body>
 </html>
