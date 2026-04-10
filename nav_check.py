@@ -35,9 +35,24 @@ BASE_COMPOSITION_S3 = {
 }
 
 NEW_MONEY_RULES = {
-    "caro": {"invest": 0.50, "reserve": 0.50, "destination": "Core + calidad", "reserve_destination": "Liquidez"},
-    "neutral": {"invest": 0.70, "reserve": 0.30, "destination": "Core + calidad", "reserve_destination": "Liquidez"},
-    "barato": {"invest": 0.90, "reserve": 0.10, "destination": "Core + calidad", "reserve_destination": "Liquidez"},
+    "caro": {
+        "invest": 0.50,
+        "reserve": 0.50,
+        "destination": "Core + calidad",
+        "reserve_destination": "Liquidez",
+    },
+    "neutral": {
+        "invest": 0.70,
+        "reserve": 0.30,
+        "destination": "Core + calidad",
+        "reserve_destination": "Liquidez",
+    },
+    "barato": {
+        "invest": 0.90,
+        "reserve": 0.10,
+        "destination": "Core + calidad",
+        "reserve_destination": "Liquidez",
+    },
 }
 
 
@@ -59,7 +74,11 @@ def get_nav():
     if nav is None:
         raise ValueError("No se pudo obtener el NAV")
     nav_ts = result["meta"].get("regularMarketTime")
-    nav_time = datetime.fromtimestamp(nav_ts, tz=timezone.utc) if nav_ts is not None else datetime.now(timezone.utc)
+    nav_time = (
+        datetime.fromtimestamp(nav_ts, tz=timezone.utc)
+        if nav_ts is not None
+        else datetime.now(timezone.utc)
+    )
     return float(nav), nav_time
 
 
@@ -71,7 +90,11 @@ def get_vix():
         if vix is None:
             return None, None
         vix_ts = result["meta"].get("regularMarketTime")
-        vix_time = datetime.fromtimestamp(vix_ts, tz=timezone.utc) if vix_ts is not None else datetime.now(timezone.utc)
+        vix_time = (
+            datetime.fromtimestamp(vix_ts, tz=timezone.utc)
+            if vix_ts is not None
+            else datetime.now(timezone.utc)
+        )
         return float(vix), vix_time
     except Exception:
         return None, None
@@ -89,8 +112,10 @@ def load_manual_macro():
             "lei_value_3m_ago": None,
             "lei_trend_3m": None,
         }
+
     with open(MANUAL_MACRO_PATH, "r", encoding="utf-8") as f:
         raw = json.load(f)
+
     return {
         "cape": float(raw["cape"]) if raw.get("cape") is not None else None,
         "cape_date": raw.get("cape_date"),
@@ -98,28 +123,56 @@ def load_manual_macro():
         "pmi_date": raw.get("pmi_date"),
         "lei_value": float(raw["lei_value"]) if raw.get("lei_value") is not None else None,
         "lei_date": raw.get("lei_date"),
-        "lei_value_3m_ago": float(raw["lei_value_3m_ago"]) if raw.get("lei_value_3m_ago") is not None else None,
-        "lei_trend_3m": float(raw["lei_trend_3m"]) if raw.get("lei_trend_3m") is not None else None,
+        "lei_value_3m_ago": (
+            float(raw["lei_value_3m_ago"])
+            if raw.get("lei_value_3m_ago") is not None
+            else None
+        ),
+        "lei_trend_3m": (
+            float(raw["lei_trend_3m"]) if raw.get("lei_trend_3m") is not None else None
+        ),
     }
 
 
 def load_history():
+    expected_columns = [
+        "timestamp",
+        "nav",
+        "max52",
+        "drop_pct",
+        "scenario",
+        "signal",
+        "vix",
+        "phase",
+        "cape",
+        "pmi",
+        "lei",
+        "score",
+    ]
+
     if not os.path.exists(CSV_PATH):
-        return pd.DataFrame(columns=["timestamp", "nav", "max52", "drop_pct", "scenario", "signal", "vix", "phase", "cape", "pmi", "lei", "score"])
+        return pd.DataFrame(columns=expected_columns)
+
     df = pd.read_csv(CSV_PATH)
+
     if "timestamp" not in df.columns:
-        return pd.DataFrame(columns=["timestamp", "nav", "max52", "drop_pct", "scenario", "signal", "vix", "phase", "cape", "pmi", "lei", "score"])
+        return pd.DataFrame(columns=expected_columns)
+
     df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce", utc=True)
-    df = df.dropna(subset=["timestamp"]).copy()
-    for col in ["nav", "max52", "drop_pct", "vix", "cape", "pmi", "lei", "score"]:
+
+    numeric_cols = ["nav", "max52", "drop_pct", "vix", "cape", "pmi", "lei", "score"]
+    for col in numeric_cols:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    df = df.dropna(subset=["timestamp"]).copy()
     return df
 
 
 def load_previous_latest():
     if not os.path.exists(LATEST_PATH):
         return {}
+
     try:
         with open(LATEST_PATH, "r", encoding="utf-8") as f:
             return json.load(f)
@@ -130,8 +183,14 @@ def load_previous_latest():
 def compute_max52(history, nav, now):
     if history.empty:
         return nav
+
     cutoff_date = (now - timedelta(days=364)).date()
-    recent = history.loc[history["timestamp"].dt.date >= cutoff_date, "nav"].dropna().astype(float).tolist()
+    recent = (
+        history.loc[history["timestamp"].dt.date >= cutoff_date, "nav"]
+        .dropna()
+        .astype(float)
+        .tolist()
+    )
     recent.append(nav)
     return max(recent)
 
@@ -196,19 +255,47 @@ def score_label(score):
 
 def get_macro_signal(cape, pmi, lei_trend_3m, vix):
     flags = []
-    flags.append("CAPE alto" if cape is not None and cape > 35 else "CAPE OK" if cape is not None else "CAPE n/d")
-    flags.append("PMI débil" if pmi is not None and pmi < 50 else "PMI OK" if pmi is not None else "PMI n/d")
-    flags.append("LEI negativo" if lei_trend_3m is not None and lei_trend_3m < 0 else "LEI OK" if lei_trend_3m is not None else "LEI n/d")
-    flags.append("VIX alto" if vix is not None and vix > 25 else "VIX normal" if vix is not None else "VIX n/d")
+    flags.append(
+        "CAPE alto"
+        if cape is not None and cape > 35
+        else "CAPE OK" if cape is not None else "CAPE n/d"
+    )
+    flags.append(
+        "PMI débil"
+        if pmi is not None and pmi < 50
+        else "PMI OK" if pmi is not None else "PMI n/d"
+    )
+    flags.append(
+        "LEI negativo"
+        if lei_trend_3m is not None and lei_trend_3m < 0
+        else "LEI OK" if lei_trend_3m is not None else "LEI n/d"
+    )
+    flags.append(
+        "VIX alto"
+        if vix is not None and vix > 25
+        else "VIX normal" if vix is not None else "VIX n/d"
+    )
     return " · ".join(flags)
 
 
 def get_scenario(drop, cape, pmi, lei_trend_3m, vix):
     if drop <= -0.10 or (vix is not None and vix > 30):
         return "Escenario 4"
-    if cape is not None and cape < 28 and pmi is not None and pmi > 52 and lei_trend_3m is not None and lei_trend_3m >= 0:
+    if (
+        cape is not None
+        and cape < 28
+        and pmi is not None
+        and pmi > 52
+        and lei_trend_3m is not None
+        and lei_trend_3m >= 0
+    ):
         return "Escenario 1"
-    if cape is not None and 28 <= cape <= 35 and lei_trend_3m is not None and lei_trend_3m < 0:
+    if (
+        cape is not None
+        and 28 <= cape <= 35
+        and lei_trend_3m is not None
+        and lei_trend_3m < 0
+    ):
         return "Escenario 2"
     return "Escenario 3"
 
@@ -260,34 +347,60 @@ def detect_risk_reduction(cape, vix):
 
 def validate_composition():
     issues = []
+
     if BASE_COMPOSITION_S3["heptagon_kopernik"] > SYSTEM_LIMITS["concentrated_asset_max"]:
         issues.append("Kopernik supera límite concentrado")
-    if BASE_COMPOSITION_S3["robeco_qi_emerging_conservative"] > SYSTEM_LIMITS["emerging_max"]:
+    if (
+        BASE_COMPOSITION_S3["robeco_qi_emerging_conservative"]
+        > SYSTEM_LIMITS["emerging_max"]
+    ):
         issues.append("Emergentes supera límite")
     if BASE_COMPOSITION_S3["invesco_physical_gold"] > SYSTEM_LIMITS["gold_max"]:
         issues.append("Oro supera máximo")
     if BASE_COMPOSITION_S3["dnca_alpha_bonds"] > SYSTEM_LIMITS["bond_max_s3"]:
         issues.append("Bonos superan máximo de escenario 3")
+
     return issues
 
 
 def save_history_row(history, row):
     flat = {
-        "timestamp": row["timestamp"],
-        "nav": row["nav"],
-        "max52": row["max52"],
-        "drop_pct": row["drop_pct"],
-        "scenario": row["scenario"],
-        "signal": row["signal"],
-        "vix": row["vix"],
-        "phase": row["phase"],
-        "cape": row["cape"],
-        "pmi": row["pmi"],
-        "lei": row["lei"]["value"],
-        "score": row["score"],
+        "timestamp": row.get("timestamp"),
+        "nav": row.get("nav"),
+        "max52": row.get("max52"),
+        "drop_pct": row.get("drop_pct"),
+        "scenario": row.get("scenario"),
+        "signal": row.get("signal"),
+        "vix": row.get("vix"),
+        "phase": row.get("phase"),
+        "cape": row.get("cape"),
+        "pmi": row.get("pmi"),
+        "lei": (
+            row.get("lei", {}).get("value")
+            if isinstance(row.get("lei"), dict)
+            else row.get("lei")
+        ),
+        "score": row.get("score"),
     }
-    df = pd.concat([history, pd.DataFrame([flat])], ignore_index=True)
-    df = df.sort_values("timestamp").drop_duplicates(subset=["timestamp"], keep="last")
+
+    new_row_df = pd.DataFrame([flat])
+    df = pd.concat([history, new_row_df], ignore_index=True)
+
+    if "timestamp" not in df.columns:
+        df["timestamp"] = pd.NaT
+
+    df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce", utc=True)
+
+    numeric_cols = ["nav", "max52", "drop_pct", "vix", "cape", "pmi", "lei", "score"]
+    for col in numeric_cols:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    df = df.dropna(subset=["timestamp"]).copy()
+    df = df.sort_values("timestamp").drop_duplicates(
+        subset=["timestamp"], keep="last"
+    )
+
     os.makedirs(os.path.dirname(CSV_PATH), exist_ok=True)
     df.to_csv(CSV_PATH, index=False)
 
@@ -301,6 +414,7 @@ def save_latest(payload):
 def main():
     history = load_history()
     previous = load_previous_latest()
+
     nav, nav_time = get_nav()
     vix, vix_time = get_vix()
     macro = load_manual_macro()
@@ -324,6 +438,7 @@ def main():
     composition_issues = validate_composition()
 
     now_iso = nav_time.isoformat()
+
     payload = {
         "timestamp": now_iso,
         "nav_date": iso_date(nav_time),
