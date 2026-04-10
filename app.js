@@ -353,6 +353,232 @@ function setupSimulator(latest) {
   input.addEventListener("input", update);
 }
 
+function normalizeDrawdownValue(value, fallbackDropPct) {
+  if (value === "auto") {
+    return Number(fallbackDropPct);
+  }
+
+  const parsed = Number(value);
+  if (isNaN(parsed)) {
+    return Number(fallbackDropPct);
+  }
+
+  return parsed;
+}
+
+function resolveVixConfirmation(selectionValue, latestVix) {
+  if (selectionValue === "yes") return true;
+  if (selectionValue === "no") return false;
+  return Number(latestVix) > 20;
+}
+
+function getRotationPlanByDrawdown(drawdown, vixConfirmed) {
+  if (!vixConfirmed) {
+    return {
+      enabled: false,
+      label: "Sin activación",
+      rotatePct: 0,
+      vanguardPct: 0,
+      robecoBpPct: 0,
+      kopernikPct: 0,
+      emergingPct: 0,
+      note: "Sin validación VIX. No ejecutar rotación."
+    };
+  }
+
+  if (drawdown <= -0.30) {
+    return {
+      enabled: true,
+      label: "Entrada máxima",
+      rotatePct: 0.15,
+      vanguardPct: 0.40,
+      robecoBpPct: 0.20,
+      kopernikPct: 0.20,
+      emergingPct: 0.20,
+      note: "Último tramo. Mayor peso en satélites."
+    };
+  }
+
+  if (drawdown <= -0.25) {
+    return {
+      enabled: true,
+      label: "Entrada muy fuerte",
+      rotatePct: 0.25,
+      vanguardPct: 0.45,
+      robecoBpPct: 0.20,
+      kopernikPct: 0.20,
+      emergingPct: 0.15,
+      note: "Tramo agresivo. Se abre más peso en Kopernik."
+    };
+  }
+
+  if (drawdown <= -0.20) {
+    return {
+      enabled: true,
+      label: "Entrada fuerte",
+      rotatePct: 0.30,
+      vanguardPct: 0.50,
+      robecoBpPct: 0.20,
+      kopernikPct: 0.15,
+      emergingPct: 0.15,
+      note: "Tramo principal. Ampliar core y satélites."
+    };
+  }
+
+  if (drawdown <= -0.15) {
+    return {
+      enabled: true,
+      label: "Segunda entrada",
+      rotatePct: 0.20,
+      vanguardPct: 0.60,
+      robecoBpPct: 0.25,
+      kopernikPct: 0.05,
+      emergingPct: 0.10,
+      note: "Entrada intermedia. Vanguard sigue siendo prioritario."
+    };
+  }
+
+  if (drawdown <= -0.10) {
+    return {
+      enabled: true,
+      label: "Entrada inicial",
+      rotatePct: 0.10,
+      vanguardPct: 0.70,
+      robecoBpPct: 0.30,
+      kopernikPct: 0.00,
+      emergingPct: 0.00,
+      note: "Primer tramo. Sin satélites todavía."
+    };
+  }
+
+  return {
+    enabled: false,
+    label: "Sin trigger",
+    rotatePct: 0,
+    vanguardPct: 0,
+    robecoBpPct: 0,
+    kopernikPct: 0,
+    emergingPct: 0,
+    note: "No hay caída suficiente para activar rotación."
+  };
+}
+
+function calculateRotationBreakdown(dwsAmount, dncaAmount, drawdown, vixConfirmed) {
+  const dws = Number(dwsAmount);
+  const dnca = Number(dncaAmount);
+  const totalAvailable = (isNaN(dws) ? 0 : dws) + (isNaN(dnca) ? 0 : dnca);
+
+  if (isNaN(dws) || isNaN(dnca) || dws < 0 || dnca < 0) {
+    return null;
+  }
+
+  const plan = getRotationPlanByDrawdown(drawdown, vixConfirmed);
+  const amountToRotate = totalAvailable * plan.rotatePct;
+
+  const fromDws = Math.min(dws, amountToRotate);
+  const fromDnca = Math.max(0, amountToRotate - fromDws);
+
+  const toVanguard = amountToRotate * plan.vanguardPct;
+  const toRobeco = amountToRotate * plan.robecoBpPct;
+  const toKopernik = amountToRotate * plan.kopernikPct;
+  const toEmerging = amountToRotate * plan.emergingPct;
+
+  return {
+    enabled: plan.enabled,
+    label: plan.label,
+    rotatePct: plan.rotatePct,
+    totalAvailable,
+    amountToRotate,
+    fromDws,
+    fromDnca,
+    toVanguard,
+    toRobeco,
+    toKopernik,
+    toEmerging,
+    note: plan.note,
+    vixConfirmed
+  };
+}
+
+function renderRotationSummary(latest) {
+  const dropPct = Number(latest.drop_pct);
+  const vix = Number(latest.vix);
+  const plan = getRotationPlanByDrawdown(dropPct, vix > 20);
+
+  setText("rotationCurrentDrawdown", pctFromDecimal(dropPct));
+  setText("rotationTriggerText", plan.label);
+  setText("rotationCurrentVix", num(vix, 2));
+  setText("rotationVixValidation", vix > 20 ? "Sí" : "No");
+  setText("rotationActionText", plan.enabled ? `Activable · ${plan.label}` : plan.note);
+
+  const pillEl = document.getElementById("rotationPill");
+  if (pillEl) {
+    pillEl.textContent = plan.enabled ? plan.label : "Sin trigger";
+  }
+}
+
+function renderRotationCalculator(latest) {
+  const dwsInput = document.getElementById("rotationDwsInput");
+  const dncaInput = document.getElementById("rotationDncaInput");
+  const drawdownSelector = document.getElementById("rotationDrawdownSelector");
+  const vixSelector = document.getElementById("rotationVixSelector");
+
+  if (!dwsInput || !dncaInput || !drawdownSelector || !vixSelector) return;
+
+  const drawdown = normalizeDrawdownValue(drawdownSelector.value, latest.drop_pct);
+  const vixConfirmed = resolveVixConfirmation(vixSelector.value, latest.vix);
+  const result = calculateRotationBreakdown(dwsInput.value, dncaInput.value, drawdown, vixConfirmed);
+
+  const totalAvailableDisplay = (Number(dwsInput.value) || 0) + (Number(dncaInput.value) || 0);
+  setText("rotationCapitalAvailable", euro(totalAvailableDisplay));
+
+  if (!result) {
+    setText("rotationTotalAvailableAmount", "—");
+    setText("rotationRotatePctText", "—");
+    setText("rotationAmountToRotate", "—");
+    setText("rotationFromDws", "—");
+    setText("rotationFromDnca", "—");
+    setText("rotationToVanguard", "—");
+    setText("rotationToRobeco", "—");
+    setText("rotationToKopernik", "—");
+    setText("rotationToEmerging", "—");
+    setText("rotationNote", "Introduzca importes válidos.");
+    return;
+  }
+
+  setText("rotationTotalAvailableAmount", euro(result.totalAvailable));
+  setText("rotationRotatePctText", pctFromDecimal(result.rotatePct));
+  setText("rotationAmountToRotate", euro(result.amountToRotate));
+  setText("rotationFromDws", euro(result.fromDws));
+  setText("rotationFromDnca", euro(result.fromDnca));
+  setText("rotationToVanguard", euro(result.toVanguard));
+  setText("rotationToRobeco", euro(result.toRobeco));
+  setText("rotationToKopernik", euro(result.toKopernik));
+  setText("rotationToEmerging", euro(result.toEmerging));
+  setText("rotationNote", result.note);
+}
+
+function setupRotationSimulator(latest) {
+  const dwsInput = document.getElementById("rotationDwsInput");
+  const dncaInput = document.getElementById("rotationDncaInput");
+  const drawdownSelector = document.getElementById("rotationDrawdownSelector");
+  const vixSelector = document.getElementById("rotationVixSelector");
+  const button = document.getElementById("rotationCalcButton");
+
+  if (!dwsInput || !dncaInput || !drawdownSelector || !vixSelector || !button) return;
+
+  const update = () => renderRotationCalculator(latest);
+
+  dwsInput.addEventListener("input", update);
+  dncaInput.addEventListener("input", update);
+  drawdownSelector.addEventListener("change", update);
+  vixSelector.addEventListener("change", update);
+  button.addEventListener("click", update);
+
+  renderRotationSummary(latest);
+  renderRotationCalculator(latest);
+}
+
 async function fetchJson(url) {
   const response = await fetch(url, { cache: "no-store" });
   if (!response.ok) {
@@ -417,6 +643,7 @@ async function loadDashboard() {
 
   setupScenarioSelector(latest);
   setupSimulator(latest);
+  setupRotationSimulator(latest);
 
   const signalBadge = document.getElementById("signalBadge");
   if (signalBadge) {
