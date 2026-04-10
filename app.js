@@ -988,7 +988,8 @@ function getDecisionStatus(latest) {
   const status = latest?.decision_status || {};
   return {
     blocked: Boolean(status.blocked),
-    reasons: Array.isArray(status.reasons) ? status.reasons : []
+    reasons: Array.isArray(status.reasons) ? status.reasons : [],
+    warnings: Array.isArray(status.warnings) ? status.warnings : []
   };
 }
 
@@ -1131,6 +1132,9 @@ function buildNewMoneyPlan(latest, scenarioOverride = "auto") {
   if (isBlocked) {
     plan.note = `Bloqueado: ${decision.reasons.join(" | ")}`;
     plan.decisionStatusText = "Bloqueado";
+  } else if (decision.warnings.length) {
+    plan.note = `${plan.note} Advertencias: ${decision.warnings.join(" | ")}`;
+    plan.decisionStatusText = "Operativo con advertencias";
   } else {
     plan.decisionStatusText = "Operativo";
   }
@@ -1375,11 +1379,14 @@ function setupRotationSimulator(latest) {
   renderRotationCalculator(latest);
 }
 
-function freshnessLabel(days) {
+function freshnessLabel(days, kind = "macro") {
   if (days === null || days === undefined || isNaN(Number(days))) return "—";
-  if (days <= 1) return `Verde · ${days}d`;
-  if (days <= 3) return `Amarillo · ${days}d`;
-  return `Rojo · ${days}d`;
+  const value = Number(days);
+  const warn = kind === "market" ? 1 : 7;
+  const block = kind === "market" ? 3 : 35;
+  if (value <= warn) return `Verde · ${value}d`;
+  if (value <= block) return `Amarillo · ${value}d`;
+  return `Rojo · ${value}d`;
 }
 
 function renderFreshness(latest) {
@@ -1389,22 +1396,26 @@ function renderFreshness(latest) {
   const leiDays = latest.data_freshness?.lei_days ?? daysBetween(ref, latest.lei?.date);
   const navDays = latest.data_freshness?.nav_days ?? daysBetween(ref, latest.nav_date);
   const vixDays = latest.data_freshness?.vix_days ?? 0;
-  setText("freshCape", freshnessLabel(capeDays));
-  setText("freshPmi", freshnessLabel(pmiDays));
-  setText("freshLei", freshnessLabel(leiDays));
-  setText("freshNav", freshnessLabel(navDays));
-  setText("freshVix", freshnessLabel(vixDays));
+  setText("freshCape", freshnessLabel(capeDays, "macro"));
+  setText("freshPmi", freshnessLabel(pmiDays, "macro"));
+  setText("freshLei", freshnessLabel(leiDays, "macro"));
+  setText("freshNav", freshnessLabel(navDays, "market"));
+  setText("freshVix", freshnessLabel(vixDays, "market"));
   const decision = getDecisionStatus(latest);
   const pill = document.getElementById("freshnessPill");
-  if (pill) pill.textContent = decision.blocked ? "Bloquea" : "Operativa";
+  if (pill) pill.textContent = decision.blocked ? "Bloquea" : (decision.warnings.length ? "Avisa" : "Operativa");
 }
 
 function renderDecisionStatus(latest) {
   const decision = getDecisionStatus(latest);
-  setText("decisionBlockedText", decision.blocked ? "Bloqueado" : "Operativo");
-  setText("decisionReasons", decision.reasons.length ? decision.reasons.join(" | ") : "Sin bloqueo");
+  const statusText = decision.blocked ? "Bloqueado" : (decision.warnings.length ? "Operativo con advertencias" : "Operativo");
+  const detailText = decision.reasons.length
+    ? decision.reasons.join(" | ")
+    : (decision.warnings.length ? `Advertencias: ${decision.warnings.join(" | ")}` : "Sin bloqueo");
+  setText("decisionBlockedText", statusText);
+  setText("decisionReasons", detailText);
   const pill = document.getElementById("decisionPill");
-  if (pill) pill.textContent = decision.blocked ? "Bloqueado" : "OK";
+  if (pill) pill.textContent = decision.blocked ? "Bloqueado" : (decision.warnings.length ? "Aviso" : "OK");
 }
 
 function validateSystem(latest) {

@@ -370,25 +370,34 @@ def detect_risk_reduction(cape, vix, market_plus_20):
 
 def compute_decision_block(data_freshness, nav_available, vix_available):
     reasons = []
+    warnings = []
+
     if not nav_available:
         reasons.append("Sin NAV")
     if not vix_available:
         reasons.append("Sin VIX")
 
-    labels = {
-        "cape_days": "CAPE",
-        "pmi_days": "PMI",
-        "lei_days": "LEI",
-        "nav_days": "NAV",
-        "vix_days": "VIX",
+    thresholds = {
+        "nav_days": {"warn": 1, "block": 3, "label": "NAV"},
+        "vix_days": {"warn": 1, "block": 3, "label": "VIX"},
+        "cape_days": {"warn": 7, "block": 35, "label": "CAPE"},
+        "pmi_days": {"warn": 7, "block": 35, "label": "PMI"},
+        "lei_days": {"warn": 7, "block": 35, "label": "LEI"},
     }
-    for key, value in (data_freshness or {}).items():
-        if value is not None and value > 1:
-            reasons.append(f"{labels.get(key, key)} > 1 día")
+
+    for key, cfg in thresholds.items():
+        value = (data_freshness or {}).get(key)
+        if value is None:
+            continue
+        if value > cfg["block"]:
+            reasons.append(f'{cfg["label"]} > {cfg["block"]} días')
+        elif value > cfg["warn"]:
+            warnings.append(f'{cfg["label"]} > {cfg["warn"]} días')
 
     return {
         "blocked": len(reasons) > 0,
         "reasons": reasons,
+        "warnings": warnings,
     }
 
 
