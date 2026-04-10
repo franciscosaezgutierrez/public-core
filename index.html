@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard Rotación Cartera</title>
-  <link rel="stylesheet" href="style.css?v=20260410-2" />
+  <link rel="stylesheet" href="style.css?v=20260410-3" />
 </head>
 <body>
   <div class="container">
@@ -319,6 +319,14 @@
           <span>Acción sugerida</span>
           <strong id="rotationActionText">—</strong>
         </div>
+        <div>
+          <span>Semáforo</span>
+          <strong id="rotationTrafficLight">—</strong>
+        </div>
+        <div>
+          <span>Estado operativo</span>
+          <strong id="rotationStatusText">—</strong>
+        </div>
       </div>
     </section>
 
@@ -376,6 +384,18 @@
           </select>
         </div>
 
+        <div class="sim-field">
+          <label for="rotationExecutedInput">Ya ejecutado en esta caída</label>
+          <input
+            id="rotationExecutedInput"
+            type="number"
+            min="0"
+            step="1"
+            placeholder="Ej. 1500"
+            inputmode="decimal"
+          />
+        </div>
+
         <div class="sim-field sim-button-wrap">
           <button id="rotationCalcButton" type="button">Calcular rotación</button>
         </div>
@@ -423,6 +443,18 @@
           <strong id="rotationToEmerging">—</strong>
         </div>
         <div>
+          <span>Capital ya ejecutado en la caída</span>
+          <strong id="rotationAlreadyExecuted">—</strong>
+        </div>
+        <div>
+          <span>Capital pendiente</span>
+          <strong id="rotationRemainingCapital">—</strong>
+        </div>
+        <div>
+          <span>Orden de ejecución</span>
+          <strong id="rotationExecutionOrder">—</strong>
+        </div>
+        <div>
           <span>Nota rotación</span>
           <strong id="rotationNote">—</strong>
         </div>
@@ -446,6 +478,6 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="app.js?v=20260410-2"></script>
+  <script src="app.js?v=20260410-3"></script>
 </body>
 </html>
