@@ -41,7 +41,9 @@
     "cash_min": 0.1,
     "cash_max": 0.25,
     "gold_max": 0.07,
-    "bond_max": 0.15
+    "bond_max_s3": 0.15,
+    "emerging_max": 0.08,
+    "concentrated_asset_max": 0.12
   },
   "data_freshness": {
     "cape_days": 0,
@@ -54,5 +56,76 @@
     "executed_levels": [],
     "last_execution_date": null,
     "last_execution_amount": 0
+  },
+  "composition_target": {
+    "vanguard_global_stock": 0.29,
+    "robeco_bp_global_premium": 0.16,
+    "heptagon_kopernik": 0.065,
+    "robeco_qi_emerging_conservative": 0.065,
+    "plan_pensiones_caixabank": 0.025,
+    "dnca_alpha_bonds": 0.15,
+    "jupiter_global_equity_absolute_return": 0.08,
+    "dws_euro_ultra_short": 0.16,
+    "invesco_physical_gold": 0.04
+  },
+  "composition_validation": {
+    "valid": true,
+    "issues": []
+  },
+  "priority_of_purchase": [
+    "Fondo indexado global (core)",
+    "Fondo calidad (active global)",
+    "Emergentes / small caps"
+  ],
+  "new_money_rules": {
+    "caro": {
+      "invest": 0.5,
+      "reserve": 0.5,
+      "destination": "Core + calidad",
+      "reserve_destination": "Liquidez"
+    },
+    "neutral": {
+      "invest": 0.7,
+      "reserve": 0.3,
+      "destination": "Core + calidad",
+      "reserve_destination": "Liquidez"
+    },
+    "barato": {
+      "invest": 0.9,
+      "reserve": 0.1,
+      "destination": "Core + calidad",
+      "reserve_destination": "Liquidez"
+    }
+  },
+  "rebalance_rules": {
+    "deviation_tolerance_pp": 4,
+    "review_monthly": true,
+    "review_structural_quarterly": true
+  },
+  "flash_crash_rules": {
+    "activation": "-4% diario o -7% en 3 sesiones",
+    "buy_same_day": false,
+    "wait_hours": 48,
+    "follow_up": "Entrada progresiva"
+  },
+  "risk_reduction_rules": {
+    "trigger_cape_gt": 42,
+    "trigger_vix_lt": 15,
+    "market_plus_20_from_low_required": true,
+    "action": "Aumentar liquidez 5–10% y reducir RV progresivamente",
+    "active_now_partial": false,
+    "note": "La condición de mercado +20% desde mínimo no se verifica automáticamente con los datos actuales."
+  },
+  "hard_rules": [
+    "No comprar sin trigger",
+    "No vender en caídas",
+    "No usar oro para financiar RV",
+    "No romper liquidez mínima",
+    "No actuar por emociones"
+  ],
+  "sources": {
+    "cape": "Manual · Multpl",
+    "pmi": "Manual · Composite PMI",
+    "lei": "Manual · Leading Index"
   }
 }
