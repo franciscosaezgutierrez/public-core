@@ -123,8 +123,6 @@ function buildNewMoneyPlan(latest, scenarioOverride = "auto") {
   ) {
     let investNow = "25% del dinero nuevo";
     let reserve = "75% para siguientes tramos";
-    let note = `Trigger activo: ${entryLabel}. Ejecutar solo un tramo.`;
-
     if (dropPct <= -0.15 && dropPct > -0.20) {
       investNow = "35% del dinero nuevo";
       reserve = "65% para siguientes tramos";
@@ -144,19 +142,17 @@ function buildNewMoneyPlan(latest, scenarioOverride = "auto") {
       scenarioAppliedText: `${realScenario} · Automático`,
       investNow,
       reserve,
-      destination: "Vanguard + Robeco BP + Jupiter + Kopernik + Emergentes",
+      destination: "Core + calidad; satélites solo en tramos profundos",
       reserveDestination: "DWS Euro Ultra Short",
-      note,
+      note: `Trigger activo: ${entryLabel}. Prioridad: core → calidad → emergentes/small caps.`,
       investNowPct: pctTextToDecimal(investNow) ?? 0,
       reservePct: pctTextToDecimal(reserve) ?? 1,
-
-      investVanguardPct: 0.45,
-      investRobecoBpPct: 0.20,
-      investJupiterPct: 0.15,
-      investKopernikPct: 0.10,
-      investEmergingPct: 0.10,
+      investVanguardPct: 0.65,
+      investRobecoBpPct: 0.35,
+      investJupiterPct: 0.00,
+      investKopernikPct: dropPct <= -0.25 ? 0.10 : 0.00,
+      investEmergingPct: dropPct <= -0.15 ? 0.10 : 0.00,
       investDncaPct: 0.00,
-
       reserveDncaPct: 0.00,
       reserveDwsPct: 1.00
     };
@@ -168,19 +164,17 @@ function buildNewMoneyPlan(latest, scenarioOverride = "auto") {
       scenarioAppliedText: selectedScenario === "auto" ? "Escenario 1 · Automático" : "Escenario 1 · Manual",
       investNow: "90% del dinero nuevo",
       reserve: "10% en liquidez",
-      destination: "Vanguard + Robeco BP + Jupiter + Kopernik + Emergentes",
+      destination: "Core + calidad; ampliar emergentes/small caps de forma moderada",
       reserveDestination: "DWS Euro Ultra Short",
-      note: "Mercado favorable. Se permite ampliar satélites.",
+      note: "Mercado favorable. Mantener prioridad en core y calidad.",
       investNowPct: 0.90,
       reservePct: 0.10,
-
-      investVanguardPct: 0.40,
-      investRobecoBpPct: 0.20,
-      investJupiterPct: 0.20,
-      investKopernikPct: 0.10,
-      investEmergingPct: 0.10,
+      investVanguardPct: 0.55,
+      investRobecoBpPct: 0.30,
+      investJupiterPct: 0.00,
+      investKopernikPct: 0.075,
+      investEmergingPct: 0.075,
       investDncaPct: 0.00,
-
       reserveDncaPct: 0.00,
       reserveDwsPct: 1.00
     };
@@ -192,19 +186,17 @@ function buildNewMoneyPlan(latest, scenarioOverride = "auto") {
       scenarioAppliedText: selectedScenario === "auto" ? "Escenario 2 · Automático" : "Escenario 2 · Manual",
       investNow: "70% del dinero nuevo",
       reserve: "30% en liquidez",
-      destination: "Vanguard + Robeco BP + Jupiter + algo de Kopernik/Emergentes",
+      destination: "Core + calidad",
       reserveDestination: "DWS Euro Ultra Short",
-      note: "Neutral. Satélites reducidos.",
+      note: "Neutral. Satélites reducidos y subordinados.",
       investNowPct: 0.70,
       reservePct: 0.30,
-
-      investVanguardPct: 0.45,
-      investRobecoBpPct: 0.25,
-      investJupiterPct: 0.15,
+      investVanguardPct: 0.60,
+      investRobecoBpPct: 0.30,
+      investJupiterPct: 0.00,
       investKopernikPct: 0.05,
-      investEmergingPct: 0.10,
+      investEmergingPct: 0.05,
       investDncaPct: 0.00,
-
       reserveDncaPct: 0.00,
       reserveDwsPct: 1.00
     };
@@ -216,19 +208,17 @@ function buildNewMoneyPlan(latest, scenarioOverride = "auto") {
       scenarioAppliedText: selectedScenario === "auto" ? "Escenario 3 · Automático" : "Escenario 3 · Manual",
       investNow: "50% del dinero nuevo",
       reserve: "50% en liquidez",
-      destination: "Vanguard + Robeco BP + Jupiter",
+      destination: "Core + calidad",
       reserveDestination: "DWS Euro Ultra Short",
-      note: "Mercado caro. No usar dinero nuevo en Kopernik ni Emergentes. DNCA solo por rebalanceo.",
+      note: "Mercado caro. No usar dinero nuevo en Kopernik, emergentes ni oro.",
       investNowPct: 0.50,
       reservePct: 0.50,
-
-      investVanguardPct: 0.55,
-      investRobecoBpPct: 0.25,
-      investJupiterPct: 0.20,
+      investVanguardPct: 0.65,
+      investRobecoBpPct: 0.35,
+      investJupiterPct: 0.00,
       investKopernikPct: 0.00,
       investEmergingPct: 0.00,
       investDncaPct: 0.00,
-
       reserveDncaPct: 0.00,
       reserveDwsPct: 1.00
     };
@@ -238,22 +228,20 @@ function buildNewMoneyPlan(latest, scenarioOverride = "auto") {
     mode: selectedScenario === "auto" ? "MODO DEFENSIVO" : "SIMULACIÓN",
     scenarioAppliedText: selectedScenario === "auto" ? "Defensivo · Automático" : "Defensivo · Manual",
     investNow: "0% o mínimo táctico",
-    reserve: "100% conservador",
-    destination: "Sin riesgo adicional",
-    reserveDestination: "DNCA + DWS Euro Ultra Short",
-    note: "Modo defensivo. Sin satélites de riesgo.",
+    reserve: "100% en liquidez",
+    destination: "Sin compras salvo rebalanceo imprescindible",
+    reserveDestination: "DWS Euro Ultra Short",
+    note: "Conservar liquidez y no forzar entradas.",
     investNowPct: 0.00,
     reservePct: 1.00,
-
     investVanguardPct: 0.00,
     investRobecoBpPct: 0.00,
     investJupiterPct: 0.00,
     investKopernikPct: 0.00,
     investEmergingPct: 0.00,
     investDncaPct: 0.00,
-
-    reserveDncaPct: 0.30,
-    reserveDwsPct: 0.70
+    reserveDncaPct: 0.00,
+    reserveDwsPct: 1.00
   };
 }
 
@@ -401,71 +389,66 @@ function getRotationPlanByDrawdown(drawdown, vixConfirmed) {
       enabled: true,
       label: "Entrada máxima",
       rotatePct: 0.15,
-      vanguardPct: 0.35,
+      vanguardPct: 0.40,
       robecoBpPct: 0.20,
-      jupiterPct: 0.15,
-      kopernikPct: 0.15,
-      emergingPct: 0.15,
-      note: "Último tramo. Mayor peso en satélites."
+      jupiterPct: 0.00,
+      kopernikPct: 0.20,
+      emergingPct: 0.20,
+      note: "Último tramo. Mayor peso en satélites según prioridad del PDF."
     };
   }
-
   if (drawdown <= -0.25) {
     return {
       enabled: true,
       label: "Entrada muy fuerte",
       rotatePct: 0.25,
-      vanguardPct: 0.40,
-      robecoBpPct: 0.20,
-      jupiterPct: 0.15,
+      vanguardPct: 0.45,
+      robecoBpPct: 0.25,
+      jupiterPct: 0.00,
       kopernikPct: 0.15,
-      emergingPct: 0.10,
-      note: "Tramo agresivo. Se abre más peso en Kopernik."
+      emergingPct: 0.15,
+      note: "Tramo agresivo. Se abren satélites de forma clara."
     };
   }
-
   if (drawdown <= -0.20) {
     return {
       enabled: true,
       label: "Entrada fuerte",
       rotatePct: 0.30,
-      vanguardPct: 0.45,
-      robecoBpPct: 0.20,
-      jupiterPct: 0.15,
+      vanguardPct: 0.55,
+      robecoBpPct: 0.25,
+      jupiterPct: 0.00,
       kopernikPct: 0.10,
       emergingPct: 0.10,
-      note: "Tramo principal. Ampliar core y satélites."
+      note: "Tramo principal. Core y calidad siguen mandando."
     };
   }
-
   if (drawdown <= -0.15) {
     return {
       enabled: true,
       label: "Segunda entrada",
       rotatePct: 0.20,
-      vanguardPct: 0.50,
-      robecoBpPct: 0.20,
-      jupiterPct: 0.15,
-      kopernikPct: 0.05,
+      vanguardPct: 0.65,
+      robecoBpPct: 0.25,
+      jupiterPct: 0.00,
+      kopernikPct: 0.00,
       emergingPct: 0.10,
-      note: "Entrada intermedia. Vanguard sigue siendo prioritario."
+      note: "Entrada intermedia. Aparece emergentes de forma limitada."
     };
   }
-
   if (drawdown <= -0.10) {
     return {
       enabled: true,
       label: "Entrada inicial",
       rotatePct: 0.10,
-      vanguardPct: 0.60,
-      robecoBpPct: 0.25,
-      jupiterPct: 0.15,
+      vanguardPct: 0.70,
+      robecoBpPct: 0.30,
+      jupiterPct: 0.00,
       kopernikPct: 0.00,
       emergingPct: 0.00,
-      note: "Primer tramo. Jupiter entra como tercer pilar."
+      note: "Primer tramo. Solo core y calidad."
     };
   }
-
   return {
     enabled: false,
     label: "Sin trigger",
@@ -714,7 +697,7 @@ function getActiveRotationLevel(dropPct) {
 }
 
 function validateSystem(latest) {
-  const limits = latest.system_limits || { rv_max: 0.70, cash_min: 0.10, cash_max: 0.25, gold_max: 0.07, bond_max: 0.15 };
+  const limits = latest.system_limits || { rv_max: 0.70, cash_min: 0.10, cash_max: 0.25, gold_max: 0.07, bond_max_s3: 0.15, emerging_max: 0.08, concentrated_asset_max: 0.12 };
   const issues = [];
   const rvUpper = parseRangeUpper(latest.allocations?.rv);
   const bondUpper = parseRangeUpper(latest.allocations?.bonos);
@@ -722,14 +705,26 @@ function validateSystem(latest) {
   const cashUpper = parseRangeUpper(latest.allocations?.liquidez);
   const goldUpper = parseRangeUpper(latest.allocations?.oro);
   if (rvUpper !== null && rvUpper > limits.rv_max) issues.push(`RV objetivo supera ${pctFromDecimal(limits.rv_max)}`);
-  if (bondUpper !== null && bondUpper > (limits.bond_max ?? 0.15)) issues.push(`Bonos superan ${pctFromDecimal(limits.bond_max ?? 0.15)}`);
+  if (bondUpper !== null && bondUpper > (limits.bond_max_s3 ?? 0.15)) issues.push(`Bonos superan ${pctFromDecimal(limits.bond_max_s3 ?? 0.15)}`);
   if (cashLower !== null && cashLower < limits.cash_min) issues.push(`Liquidez mínima inferior a ${pctFromDecimal(limits.cash_min)}`);
   if (cashUpper !== null && cashUpper > limits.cash_max) issues.push(`Liquidez táctica supera ${pctFromDecimal(limits.cash_max)}`);
   if (goldUpper !== null && goldUpper > limits.gold_max) issues.push(`Oro supera ${pctFromDecimal(limits.gold_max)}`);
+
+  const comp = latest.composition_target || {};
+  const compEntries = Object.entries(comp);
+  compEntries.forEach(([key, value]) => {
+    if (typeof value === "number" && value > limits.concentrated_asset_max && !key.includes("gold") && !key.includes("dws")) {
+      issues.push(`${key} supera ${pctFromDecimal(limits.concentrated_asset_max)}`);
+    }
+  });
+  if (typeof comp.robeco_qi_emerging_conservative === "number" && comp.robeco_qi_emerging_conservative > limits.emerging_max) {
+    issues.push(`Emergentes supera ${pctFromDecimal(limits.emerging_max)}`);
+  }
+
   return {
     valid: issues.length === 0,
     issues,
-    limitsText: `RV ≤ ${pctFromDecimal(limits.rv_max)} · Liquidez ${pctFromDecimal(limits.cash_min)}–${pctFromDecimal(limits.cash_max)} · Oro ≤ ${pctFromDecimal(limits.gold_max)}`
+    limitsText: `RV ≤ ${pctFromDecimal(limits.rv_max)} · Liquidez ${pctFromDecimal(limits.cash_min)}–${pctFromDecimal(limits.cash_max)} · Oro ≤ ${pctFromDecimal(limits.gold_max)} · Emergentes ≤ ${pctFromDecimal(limits.emerging_max)} · Concentrado ≤ ${pctFromDecimal(limits.concentrated_asset_max)}`
   };
 }
 
@@ -783,6 +778,27 @@ function renderRotationState(latest) {
   setText("rotationLastExecution", lastDate ? `${formatDate(lastDate)} · ${euro(lastAmount || 0)}` : "Sin registro");
   const pill = document.getElementById("rotationStatePill");
   if (pill) pill.textContent = activeLevel;
+}
+
+
+function renderStructuralRules(latest) {
+  const c = latest.composition_target || {};
+  setText("compVanguard", pctFromDecimal(c.vanguard_global_stock));
+  setText("compRobecoBp", pctFromDecimal(c.robeco_bp_global_premium));
+  setText("compKopernik", pctFromDecimal(c.heptagon_kopernik));
+  setText("compEmerging", pctFromDecimal(c.robeco_qi_emerging_conservative));
+  setText("compPlan", pctFromDecimal(c.plan_pensiones_caixabank));
+  setText("compDnca", pctFromDecimal(c.dnca_alpha_bonds));
+  setText("compJupiter", pctFromDecimal(c.jupiter_global_equity_absolute_return));
+  setText("compDws", pctFromDecimal(c.dws_euro_ultra_short));
+  setText("compGold", pctFromDecimal(c.invesco_physical_gold));
+
+  setText("rebalanceText", "Desviación < ±4 pp: no actuar · revisión mensual · revisión estructural trimestral");
+  const flash = latest.flash_crash_rules || {};
+  setText("flashText", `${flash.activation || "—"} · no comprar el día del shock · esperar ${flash.wait_hours || "—"}h`);
+  const risk = latest.risk_reduction_rules || {};
+  setText("riskReductionText", `CAPE > ${risk.trigger_cape_gt ?? "—"} y VIX < ${risk.trigger_vix_lt ?? "—"} · ${risk.action || "—"}`);
+  setText("hardRulesText", Array.isArray(latest.hard_rules) ? latest.hard_rules.join(" · ") : "—");
 }
 
 async function fetchJson(url) {
@@ -851,6 +867,7 @@ async function loadDashboard() {
   renderWhyScenario(latest);
   renderFreshness(latest);
   renderRotationState(latest);
+  renderStructuralRules(latest);
 
   setupScenarioSelector(latest);
   setupSimulator(latest);

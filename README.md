@@ -33,3 +33,10 @@ Dashboard estático para GitHub Pages basado en reglas mecánicas de asignación
 - La rotación por caída requiere drawdown suficiente y validación de VIX.
 - El simulador de rotación permite reservar una liquidez mínima antes de calcular el tramo.
 - Si faltan campos opcionales de mejora, el dashboard sigue cargando y muestra `—` solo en esos bloques.
+
+## Alineación con el PDF
+- Composición base del escenario 3 incorporada en `data/latest.json`.
+- Dinero nuevo alineado a la prioridad `core -> calidad -> emergentes/small caps`.
+- Rotación por caída ajustada para no usar Jupiter como destino táctico de primeras entradas.
+- Reglas de rebalanceo, flash crash, reducción de riesgo y reglas críticas expuestas en el dashboard.
+- Workflow de GitHub Actions movido a `.github/workflows/update-nav.yml`.
