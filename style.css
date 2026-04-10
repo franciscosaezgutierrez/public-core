@@ -210,6 +210,10 @@ small + small {
   margin-bottom: 18px;
 }
 
+.simulator-grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .sim-field {
   display: flex;
   flex-direction: column;
@@ -366,7 +370,8 @@ small a {
     flex-direction: column;
   }
 
-  .simulator-grid {
+  .simulator-grid,
+  .simulator-grid-3 {
     grid-template-columns: 1fr;
   }
 }
