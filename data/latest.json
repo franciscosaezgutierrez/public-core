@@ -1,39 +1,5 @@
 {
-  "timestamp": "2026-04-08T20:00:00+00:00",
-  "nav_date": "2026-04-08",
-  "nav": 55.36,
-  "max52": 55.36,
-  "drop_pct": 0.0,
-  "drop_percent_display": 0.0,
   "scenario": "Escenario 3",
   "signal": "DEFENSIVO",
-  "vix": 19.55,
-  "phase": "Fase 0 · Normal",
-  "entry_label": "Sin entrada",
-  "next_trigger": "-5%",
-  "score": -2,
-  "score_text": "Defensivo",
-  "cape": 39.14,
-  "cape_date": "2026-04-08",
-  "pmi": 50.3,
-  "pmi_date": "2026-04-01",
-  "lei": {
-    "value": 97.5,
-    "date": "2026-04-01",
-    "value_3m_ago": 98.2,
-    "trend_3m": -0.7
-  },
-  "macro_signal": "CAPE alto · PMI OK · LEI negativo · VIX normal",
-  "score_components": {
-    "cape": -1,
-    "pmi": 0,
-    "lei": -1,
-    "vix": 0
-  },
-  "allocations": {
-    "rv": "60–62%",
-    "bonos": "12–15%",
-    "liquidez": "15–18%",
-    "oro": "3–5%"
-  }
+  "drop_pct": -0.05
 }
