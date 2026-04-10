@@ -1,41 +1,39 @@
-async function loadData(){
- const res = await fetch('./data/latest.json');
- return await res.json();
+{
+  "timestamp": "2026-04-08T20:00:00+00:00",
+  "nav_date": "2026-04-08",
+  "nav": 55.36,
+  "max52": 55.48,
+  "drop_pct": -0.00219,
+  "drop_percent_display": -0.22,
+  "scenario": "Escenario 3",
+  "signal": "DEFENSIVO",
+  "vix": 19.49,
+  "phase": "Fase 0 · Normal",
+  "entry_label": "Sin entrada",
+  "next_trigger": "-5%",
+  "score": -2,
+  "score_text": "Defensivo",
+  "cape": 39.14,
+  "cape_date": "2026-04-08",
+  "pmi": 50.3,
+  "pmi_date": "2026-04-01",
+  "lei": {
+    "value": 97.5,
+    "date": "2026-04-01",
+    "value_3m_ago": 98.2,
+    "trend_3m": -0.7
+  },
+  "macro_signal": "CAPE alto · PMI OK · LEI negativo · VIX normal",
+  "score_components": {
+    "cape": -1,
+    "pmi": 0,
+    "lei": -1,
+    "vix": 0
+  },
+  "allocations": {
+    "rv": "60–62%",
+    "bonos": "12–15%",
+    "liquidez": "15–18%",
+    "oro": "3–5%"
+  }
 }
-
-function pct(x){return (x*100).toFixed(1)+'%';}
-
-function getLevel(drop){
- if(drop<=-0.30)return -0.30;
- if(drop<=-0.25)return -0.25;
- if(drop<=-0.20)return -0.20;
- if(drop<=-0.15)return -0.15;
- if(drop<=-0.10)return -0.10;
- return null;
-}
-
-async function runRotation(){
- const data = await loadData();
-
- const dws = Number(document.getElementById('rotationDwsInput').value||0);
- const dnca = Number(document.getElementById('rotationDncaInput').value||0);
- const minCash = Number(document.getElementById('rotationMinCashInput')?.value||0);
-
- const level = getLevel(data.drop_pct);
-
- if(!level){
-  document.getElementById('rotationOutput').innerHTML='Sin trigger';
-  return;
- }
-
- const usable = Math.max(0,(dws+dnca)-minCash);
- const rotate = usable*0.3;
-
- document.getElementById('rotationOutput').innerHTML =
-  `Tramo: ${pct(level)}<br>Capital usable: €${usable.toFixed(0)}<br>A rotar: €${rotate.toFixed(0)}`;
-}
-
-loadData().then(d=>{
- document.getElementById('scenario').innerText=d.scenario;
- document.getElementById('signal').innerText=d.signal;
-});
