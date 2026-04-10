@@ -1,27 +1,75 @@
 {
+  "timestamp": "2026-04-08T20:00:00+00:00",
+  "nav_date": "2026-04-08",
+  "nav": 55.36,
+  "max52": 55.48,
+  "drop_pct": -0.00219,
+  "drop_percent_display": -0.22,
   "scenario": "Escenario 3",
   "signal": "DEFENSIVO",
-
-  "cape": 39,
+  "vix": 19.49,
+  "phase": "Fase 0 · Normal",
+  "entry_label": "Sin entrada",
+  "next_trigger": "-5%",
+  "score": -2,
+  "score_text": "Defensivo",
+  "cape": 39.14,
+  "cape_date": "2026-04-08",
   "pmi": 50.3,
-  "lei": -0.5,
-  "vix": 18,
-
-  "drop_pct": -0.05,
-
-  "weights": {
-    "rv": 0.62,
-    "cash": 0.15
+  "pmi_date": "2026-04-01",
+  "lei": {
+    "value": 97.5,
+    "date": "2026-04-01",
+    "value_3m_ago": 98.2,
+    "trend_3m": -0.7
   },
-
+  "macro_signal": "CAPE alto · PMI OK · LEI negativo · VIX normal",
+  "score_components": {
+    "cape": -1,
+    "pmi": 0,
+    "lei": -1,
+    "vix": 0
+  },
+  "allocations": {
+    "rv": "60–62%",
+    "bonos": "12–15%",
+    "liquidez": "15–18%",
+    "oro": "3–5%"
+  },
+  "sources": {
+    "cape": "Manual · Multpl",
+    "pmi": "Manual · TradingEconomics",
+    "lei": "Manual · TradingEconomics"
+  },
   "system_limits": {
-    "rv_max": 0.70,
-    "cash_min": 0.10
+    "rv_max": 0.7,
+    "cash_min": 0.1,
+    "cash_max": 0.25,
+    "gold_max": 0.07,
+    "emerging_max": 0.08,
+    "concentrated_max": 0.12
   },
-
+  "allocation_ranges": {
+    "rv_target": 0.61,
+    "cash_target": 0.16,
+    "gold_target": 0.04,
+    "emerging_target": 0.065,
+    "kopernik_target": 0.065,
+    "dnca_target": 0.15,
+    "jupiter_target": 0.08
+  },
+  "rotation_state": {
+    "executed_levels": [],
+    "last_execution_date": null,
+    "last_execution_amount": 0,
+    "last_execution_nav": null,
+    "last_execution_vix": null
+  },
   "data_freshness": {
-    "cape_days": 5,
+    "cape_days": 0,
     "pmi_days": 7,
-    "lei_days": 10
+    "lei_days": 7,
+    "nav_days": 0,
+    "vix_days": 0
   }
 }
