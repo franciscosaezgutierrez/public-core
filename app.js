@@ -1,769 +1,451 @@
-function euro(value) {
-  if (value === null || value === undefined || value === "" || isNaN(Number(value))) {
-    return "—";
-  }
-
-  return new Intl.NumberFormat("es-ES", {
-    style: "currency",
-    currency: "EUR"
-  }).format(Number(value));
-}
-
-function num(value, digits = 2) {
-  if (value === null || value === undefined || value === "" || isNaN(Number(value))) {
-    return "—";
-  }
-
-  return new Intl.NumberFormat("es-ES", {
-    minimumFractionDigits: digits,
-    maximumFractionDigits: digits
-  }).format(Number(value));
-}
-
-function pctFromDecimal(value) {
-  if (value === null || value === undefined || value === "" || isNaN(Number(value))) {
-    return "—";
-  }
-
-  return new Intl.NumberFormat("es-ES", {
-    style: "percent",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(Number(value));
-}
-
-function formatDate(dateStr) {
-  if (!dateStr) return "—";
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return "—";
-  return d.toLocaleDateString("es-ES");
-}
-
-function formatDateTime(dateStr) {
-  if (!dateStr) return "—";
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return "—";
-  return d.toLocaleString("es-ES");
-}
-
-function parseCsv(text) {
-  if (!text || !text.trim()) return [];
-
-  const lines = text.trim().split(/\r?\n/);
-  if (lines.length < 2) return [];
-
-  const headers = lines[0].split(",");
-
-  return lines.slice(1).map(line => {
-    const cols = line.split(",");
-    const row = {};
-    headers.forEach((h, i) => {
-      row[h] = cols[i];
-    });
-    return row;
-  });
-}
-
-function setText(id, value) {
-  const el = document.getElementById(id);
-  if (el) {
-    el.textContent = value ?? "—";
-  }
-}
-
-function signalClass(signal) {
-  if (signal === "COMPRAR FUERTE") return "signal-comprar-fuerte";
-  if (signal === "COMPRAR") return "signal-comprar";
-  if (signal === "VIGILAR VIX") return "signal-vigilar";
-  if (signal === "PREPARAR LIQUIDEZ") return "signal-preparar";
-  if (signal === "DEFENSIVO") return "signal-esperar";
-  return "signal-esperar";
-}
-
-function buildLevelLine(length, value) {
-  return Array.from({ length }, () => value);
-}
-
-function pctTextToDecimal(text) {
-  if (!text || typeof text !== "string") return null;
-
-  const match = text.match(/(\d+(?:[.,]\d+)?)\s*%/);
-  if (!match) return null;
-
-  const numberText = match[1].replace(",", ".");
-  const value = Number(numberText);
-  if (isNaN(value)) return null;
-
-  return value / 100;
-}
-
-function normalizeScenarioValue(value) {
-  if (value === "1" || value === "2" || value === "3" || value === "defensivo" || value === "auto") {
-    return value;
-  }
-  return "auto";
-}
-
-function buildNewMoneyPlan(latest, scenarioOverride = "auto") {
-  const selectedScenario = normalizeScenarioValue(scenarioOverride);
-  const phase = (latest.phase || "").toLowerCase();
-  const entryLabel = latest.entry_label || "Sin trigger";
-  const dropPct = Number(latest.drop_pct);
-  const vix = Number(latest.vix);
-  const realScenario = String(latest.scenario || "");
-  const effectiveScenario = selectedScenario === "auto" ? realScenario : selectedScenario;
-
-  if (
-    selectedScenario === "auto" &&
-    phase.includes("entradas") &&
-    !isNaN(dropPct) &&
-    !isNaN(vix) &&
-    dropPct <= -0.10 &&
-    vix > 20
-  ) {
-    let investNow = "25% del dinero nuevo";
-    let reserve = "75% para siguientes tramos";
-    let note = `Trigger activo: ${entryLabel}. Ejecutar solo un tramo.`;
-
-    if (dropPct <= -0.15 && dropPct > -0.20) {
-      investNow = "35% del dinero nuevo";
-      reserve = "65% para siguientes tramos";
-    } else if (dropPct <= -0.20 && dropPct > -0.25) {
-      investNow = "50% del dinero nuevo";
-      reserve = "50% para siguientes tramos";
-    } else if (dropPct <= -0.25 && dropPct > -0.30) {
-      investNow = "60% del dinero nuevo";
-      reserve = "40% para siguientes tramos";
-    } else if (dropPct <= -0.30) {
-      investNow = "75% del dinero nuevo";
-      reserve = "25% de colchón final";
-    }
-
-    return {
-      mode: "TRAMO ACTIVO",
-      scenarioAppliedText: `${realScenario} · Automático`,
-      investNow,
-      reserve,
-      destination: "Vanguard + Robeco BP + Kopernik + Emergentes",
-      reserveDestination: "DWS Euro Ultra Short",
-      note,
-      investNowPct: pctTextToDecimal(investNow) ?? 0,
-      reservePct: pctTextToDecimal(reserve) ?? 1,
-
-      investVanguardPct: 0.50,
-      investRobecoBpPct: 0.20,
-      investKopernikPct: 0.15,
-      investEmergingPct: 0.15,
-      investDncaPct: 0.00,
-
-      reserveDncaPct: 0.00,
-      reserveDwsPct: 1.00
-    };
-  }
-
-  if (String(effectiveScenario).includes("1")) {
-    return {
-      mode: selectedScenario === "auto" ? "MERCADO BARATO" : "SIMULACIÓN",
-      scenarioAppliedText: selectedScenario === "auto" ? "Escenario 1 · Automático" : "Escenario 1 · Manual",
-      investNow: "90% del dinero nuevo",
-      reserve: "10% en liquidez",
-      destination: "Vanguard + Robeco BP + Kopernik + Emergentes",
-      reserveDestination: "DWS Euro Ultra Short",
-      note: "Mercado favorable. Se permite ampliar satélites.",
-      investNowPct: 0.90,
-      reservePct: 0.10,
-
-      investVanguardPct: 0.50,
-      investRobecoBpPct: 0.20,
-      investKopernikPct: 0.15,
-      investEmergingPct: 0.15,
-      investDncaPct: 0.00,
-
-      reserveDncaPct: 0.00,
-      reserveDwsPct: 1.00
-    };
-  }
-
-  if (String(effectiveScenario).includes("2")) {
-    return {
-      mode: selectedScenario === "auto" ? "MERCADO NEUTRAL" : "SIMULACIÓN",
-      scenarioAppliedText: selectedScenario === "auto" ? "Escenario 2 · Automático" : "Escenario 2 · Manual",
-      investNow: "70% del dinero nuevo",
-      reserve: "30% en liquidez",
-      destination: "Vanguard + Robeco BP + algo de Kopernik/Emergentes",
-      reserveDestination: "DWS Euro Ultra Short",
-      note: "Neutral. Satélites reducidos.",
-      investNowPct: 0.70,
-      reservePct: 0.30,
-
-      investVanguardPct: 0.55,
-      investRobecoBpPct: 0.25,
-      investKopernikPct: 0.10,
-      investEmergingPct: 0.10,
-      investDncaPct: 0.00,
-
-      reserveDncaPct: 0.00,
-      reserveDwsPct: 1.00
-    };
-  }
-
-  if (String(effectiveScenario).includes("3")) {
-    return {
-      mode: selectedScenario === "auto" ? "MERCADO CARO" : "SIMULACIÓN",
-      scenarioAppliedText: selectedScenario === "auto" ? "Escenario 3 · Automático" : "Escenario 3 · Manual",
-      investNow: "50% del dinero nuevo",
-      reserve: "50% en liquidez",
-      destination: "Vanguard + Robeco BP",
-      reserveDestination: "DWS Euro Ultra Short",
-      note: "Mercado caro. No usar dinero nuevo en Kopernik ni Emergentes. DNCA solo por rebalanceo.",
-      investNowPct: 0.50,
-      reservePct: 0.50,
-
-      investVanguardPct: 0.70,
-      investRobecoBpPct: 0.30,
-      investKopernikPct: 0.00,
-      investEmergingPct: 0.00,
-      investDncaPct: 0.00,
-
-      reserveDncaPct: 0.00,
-      reserveDwsPct: 1.00
-    };
-  }
-
-  return {
-    mode: selectedScenario === "auto" ? "MODO DEFENSIVO" : "SIMULACIÓN",
-    scenarioAppliedText: selectedScenario === "auto" ? "Defensivo · Automático" : "Defensivo · Manual",
-    investNow: "0% o mínimo táctico",
-    reserve: "100% conservador",
-    destination: "Sin riesgo adicional",
-    reserveDestination: "DNCA + DWS Euro Ultra Short",
-    note: "Modo defensivo. Sin satélites de riesgo.",
-    investNowPct: 0.00,
-    reservePct: 1.00,
-
-    investVanguardPct: 0.00,
-    investRobecoBpPct: 0.00,
-    investKopernikPct: 0.00,
-    investEmergingPct: 0.00,
-    investDncaPct: 0.00,
-
-    reserveDncaPct: 0.30,
-    reserveDwsPct: 0.70
-  };
-}
-
-function calculateNewMoneyBreakdown(amount, plan) {
-  const total = Number(amount);
-
-  if (isNaN(total) || total < 0) {
-    return null;
-  }
-
-  const investNowAmount = total * plan.investNowPct;
-  const reserveAmount = total * plan.reservePct;
-
-  const vanguardAmount = investNowAmount * (plan.investVanguardPct || 0);
-  const robecoBpAmount = investNowAmount * (plan.investRobecoBpPct || 0);
-  const kopernikAmount = investNowAmount * (plan.investKopernikPct || 0);
-  const emergingAmount = investNowAmount * (plan.investEmergingPct || 0);
-  const dncaAmount =
-    (investNowAmount * (plan.investDncaPct || 0)) +
-    (reserveAmount * (plan.reserveDncaPct || 0));
-  const dwsAmount = reserveAmount * (plan.reserveDwsPct || 0);
-
-  return {
-    total,
-    investNowAmount,
-    reserveAmount,
-    vanguardAmount,
-    robecoBpAmount,
-    kopernikAmount,
-    emergingAmount,
-    dncaAmount,
-    dwsAmount
-  };
-}
-
-function renderSimulator(plan) {
-  const input = document.getElementById("newMoneyAmountInput");
-  if (!input) return;
-
-  const amount = Number(input.value);
-  const breakdown = calculateNewMoneyBreakdown(amount, plan);
-
-  if (!breakdown) {
-    setText("simInvestNowAmount", "—");
-    setText("simReserveAmount", "—");
-    setText("simVanguardAmount", "—");
-    setText("simRobecoAmount", "—");
-    setText("simKopernikAmount", "—");
-    setText("simEmergingAmount", "—");
-    setText("simDncaAmount", "—");
-    setText("simDwsAmount", "—");
-    return;
-  }
-
-  setText("simInvestNowAmount", euro(breakdown.investNowAmount));
-  setText("simReserveAmount", euro(breakdown.reserveAmount));
-  setText("simVanguardAmount", euro(breakdown.vanguardAmount));
-  setText("simRobecoAmount", euro(breakdown.robecoBpAmount));
-  setText("simKopernikAmount", euro(breakdown.kopernikAmount));
-  setText("simEmergingAmount", euro(breakdown.emergingAmount));
-  setText("simDncaAmount", euro(breakdown.dncaAmount));
-  setText("simDwsAmount", euro(breakdown.dwsAmount));
-}
-
-function renderNewMoneySection(plan) {
-  setText("newMoneyPill", plan.mode);
-  setText("newMoneyScenarioApplied", plan.scenarioAppliedText);
-  setText("newMoneyInvestNow", plan.investNow);
-  setText("newMoneyReserve", plan.reserve);
-  setText("newMoneyDestination", plan.destination);
-  setText("newMoneyReserveDestination", plan.reserveDestination);
-  setText("newMoneyNote", plan.note);
-  renderSimulator(plan);
-}
-
-function setupScenarioSelector(latest) {
-  const selector = document.getElementById("scenarioSelector");
-  if (!selector) return;
-
-  const updatePlan = () => {
-    const plan = buildNewMoneyPlan(latest, selector.value);
-    renderNewMoneySection(plan);
-  };
-
-  selector.addEventListener("change", updatePlan);
-  updatePlan();
-}
-
-function setupSimulator(latest) {
-  const input = document.getElementById("newMoneyAmountInput");
-  const button = document.getElementById("newMoneyCalcButton");
-  const selector = document.getElementById("scenarioSelector");
-
-  if (!input || !button || !selector) return;
-
-  const update = () => {
-    const plan = buildNewMoneyPlan(latest, selector.value);
-    renderSimulator(plan);
-  };
-
-  button.addEventListener("click", update);
-  input.addEventListener("input", update);
-}
-
-function normalizeDrawdownValue(value, fallbackDropPct) {
-  if (value === "auto") {
-    return Number(fallbackDropPct);
-  }
-
-  const parsed = Number(value);
-  if (isNaN(parsed)) {
-    return Number(fallbackDropPct);
-  }
-
-  return parsed;
-}
-
-function resolveVixConfirmation(selectionValue, latestVix) {
-  if (selectionValue === "yes") return true;
-  if (selectionValue === "no") return false;
-  return Number(latestVix) > 20;
-}
-
-function getRotationPlanByDrawdown(drawdown, vixConfirmed) {
-  if (!vixConfirmed) {
-    return {
-      enabled: false,
-      label: "Sin activación",
-      rotatePct: 0,
-      vanguardPct: 0,
-      robecoBpPct: 0,
-      kopernikPct: 0,
-      emergingPct: 0,
-      note: "Sin validación VIX. No ejecutar rotación."
-    };
-  }
-
-  if (drawdown <= -0.30) {
-    return {
-      enabled: true,
-      label: "Entrada máxima",
-      rotatePct: 0.15,
-      vanguardPct: 0.40,
-      robecoBpPct: 0.20,
-      kopernikPct: 0.20,
-      emergingPct: 0.20,
-      note: "Último tramo. Mayor peso en satélites."
-    };
-  }
-
-  if (drawdown <= -0.25) {
-    return {
-      enabled: true,
-      label: "Entrada muy fuerte",
-      rotatePct: 0.25,
-      vanguardPct: 0.45,
-      robecoBpPct: 0.20,
-      kopernikPct: 0.20,
-      emergingPct: 0.15,
-      note: "Tramo agresivo. Se abre más peso en Kopernik."
-    };
-  }
-
-  if (drawdown <= -0.20) {
-    return {
-      enabled: true,
-      label: "Entrada fuerte",
-      rotatePct: 0.30,
-      vanguardPct: 0.50,
-      robecoBpPct: 0.20,
-      kopernikPct: 0.15,
-      emergingPct: 0.15,
-      note: "Tramo principal. Ampliar core y satélites."
-    };
-  }
-
-  if (drawdown <= -0.15) {
-    return {
-      enabled: true,
-      label: "Segunda entrada",
-      rotatePct: 0.20,
-      vanguardPct: 0.60,
-      robecoBpPct: 0.25,
-      kopernikPct: 0.05,
-      emergingPct: 0.10,
-      note: "Entrada intermedia. Vanguard sigue siendo prioritario."
-    };
-  }
-
-  if (drawdown <= -0.10) {
-    return {
-      enabled: true,
-      label: "Entrada inicial",
-      rotatePct: 0.10,
-      vanguardPct: 0.70,
-      robecoBpPct: 0.30,
-      kopernikPct: 0.00,
-      emergingPct: 0.00,
-      note: "Primer tramo. Sin satélites todavía."
-    };
-  }
-
-  return {
-    enabled: false,
-    label: "Sin trigger",
-    rotatePct: 0,
-    vanguardPct: 0,
-    robecoBpPct: 0,
-    kopernikPct: 0,
-    emergingPct: 0,
-    note: "No hay caída suficiente para activar rotación."
-  };
-}
-
-function calculateRotationBreakdown(dwsAmount, dncaAmount, drawdown, vixConfirmed) {
-  const dws = Number(dwsAmount);
-  const dnca = Number(dncaAmount);
-  const totalAvailable = (isNaN(dws) ? 0 : dws) + (isNaN(dnca) ? 0 : dnca);
-
-  if (isNaN(dws) || isNaN(dnca) || dws < 0 || dnca < 0) {
-    return null;
-  }
-
-  const plan = getRotationPlanByDrawdown(drawdown, vixConfirmed);
-  const amountToRotate = totalAvailable * plan.rotatePct;
-
-  const fromDws = Math.min(dws, amountToRotate);
-  const fromDnca = Math.max(0, amountToRotate - fromDws);
-
-  const toVanguard = amountToRotate * plan.vanguardPct;
-  const toRobeco = amountToRotate * plan.robecoBpPct;
-  const toKopernik = amountToRotate * plan.kopernikPct;
-  const toEmerging = amountToRotate * plan.emergingPct;
-
-  return {
-    enabled: plan.enabled,
-    label: plan.label,
-    rotatePct: plan.rotatePct,
-    totalAvailable,
-    amountToRotate,
-    fromDws,
-    fromDnca,
-    toVanguard,
-    toRobeco,
-    toKopernik,
-    toEmerging,
-    note: plan.note,
-    vixConfirmed
-  };
-}
-
-function renderRotationSummary(latest) {
-  const dropPct = Number(latest.drop_pct);
-  const vix = Number(latest.vix);
-  const plan = getRotationPlanByDrawdown(dropPct, vix > 20);
-
-  setText("rotationCurrentDrawdown", pctFromDecimal(dropPct));
-  setText("rotationTriggerText", plan.label);
-  setText("rotationCurrentVix", num(vix, 2));
-  setText("rotationVixValidation", vix > 20 ? "Sí" : "No");
-  setText("rotationActionText", plan.enabled ? `Activable · ${plan.label}` : plan.note);
-
-  const pillEl = document.getElementById("rotationPill");
-  if (pillEl) {
-    pillEl.textContent = plan.enabled ? plan.label : "Sin trigger";
-  }
-}
-
-function renderRotationCalculator(latest) {
-  const dwsInput = document.getElementById("rotationDwsInput");
-  const dncaInput = document.getElementById("rotationDncaInput");
-  const drawdownSelector = document.getElementById("rotationDrawdownSelector");
-  const vixSelector = document.getElementById("rotationVixSelector");
-
-  if (!dwsInput || !dncaInput || !drawdownSelector || !vixSelector) return;
-
-  const drawdown = normalizeDrawdownValue(drawdownSelector.value, latest.drop_pct);
-  const vixConfirmed = resolveVixConfirmation(vixSelector.value, latest.vix);
-  const result = calculateRotationBreakdown(dwsInput.value, dncaInput.value, drawdown, vixConfirmed);
-
-  const totalAvailableDisplay = (Number(dwsInput.value) || 0) + (Number(dncaInput.value) || 0);
-  setText("rotationCapitalAvailable", euro(totalAvailableDisplay));
-
-  if (!result) {
-    setText("rotationTotalAvailableAmount", "—");
-    setText("rotationRotatePctText", "—");
-    setText("rotationAmountToRotate", "—");
-    setText("rotationFromDws", "—");
-    setText("rotationFromDnca", "—");
-    setText("rotationToVanguard", "—");
-    setText("rotationToRobeco", "—");
-    setText("rotationToKopernik", "—");
-    setText("rotationToEmerging", "—");
-    setText("rotationNote", "Introduzca importes válidos.");
-    return;
-  }
-
-  setText("rotationTotalAvailableAmount", euro(result.totalAvailable));
-  setText("rotationRotatePctText", pctFromDecimal(result.rotatePct));
-  setText("rotationAmountToRotate", euro(result.amountToRotate));
-  setText("rotationFromDws", euro(result.fromDws));
-  setText("rotationFromDnca", euro(result.fromDnca));
-  setText("rotationToVanguard", euro(result.toVanguard));
-  setText("rotationToRobeco", euro(result.toRobeco));
-  setText("rotationToKopernik", euro(result.toKopernik));
-  setText("rotationToEmerging", euro(result.toEmerging));
-  setText("rotationNote", result.note);
-}
-
-function setupRotationSimulator(latest) {
-  const dwsInput = document.getElementById("rotationDwsInput");
-  const dncaInput = document.getElementById("rotationDncaInput");
-  const drawdownSelector = document.getElementById("rotationDrawdownSelector");
-  const vixSelector = document.getElementById("rotationVixSelector");
-  const button = document.getElementById("rotationCalcButton");
-
-  if (!dwsInput || !dncaInput || !drawdownSelector || !vixSelector || !button) return;
-
-  const update = () => renderRotationCalculator(latest);
-
-  dwsInput.addEventListener("input", update);
-  dncaInput.addEventListener("input", update);
-  drawdownSelector.addEventListener("change", update);
-  vixSelector.addEventListener("change", update);
-  button.addEventListener("click", update);
-
-  renderRotationSummary(latest);
-  renderRotationCalculator(latest);
-}
-
-async function fetchJson(url) {
-  const response = await fetch(url, { cache: "no-store" });
-  if (!response.ok) {
-    throw new Error(`Error cargando ${url}: ${response.status}`);
-  }
-  return response.json();
-}
-
-async function fetchText(url) {
-  const response = await fetch(url, { cache: "no-store" });
-  if (!response.ok) {
-    throw new Error(`Error cargando ${url}: ${response.status}`);
-  }
-  return response.text();
-}
-
-async function loadDashboard() {
-  const latest = await fetchJson("./data/latest.json");
-  const historyText = await fetchText("./data/nav_history.csv");
-  const history = parseCsv(historyText);
-
-  setText("navValue", euro(latest.nav));
-  setText("navDate", formatDate(latest.nav_date || latest.timestamp));
-  setText("maxValue", euro(latest.max52));
-  setText("dropValue", pctFromDecimal(latest.drop_pct));
-  setText("vixValue", num(latest.vix, 2));
-
-  setText("capeValue", num(latest.cape, 2));
-  setText("pmiValue", num(latest.pmi, 2));
-  setText("leiValue", num(latest.lei?.value, 4));
-
-  const leiTrend = latest.lei?.trend_3m;
-  if (leiTrend === null || leiTrend === undefined || isNaN(Number(leiTrend))) {
-    setText("leiTrendText", "Sin tendencia");
-  } else {
-    const sign = Number(leiTrend) > 0 ? "+" : "";
-    setText("leiTrendText", `3M: ${sign}${num(leiTrend, 4)}`);
-  }
-
-  setText("scoreValue", latest.score ?? "—");
-  setText("scoreText", latest.score_text ?? "—");
-
-  setText("scenarioValue", latest.scenario ?? "—");
-  setText("phaseValue", latest.phase ?? "—");
-  setText("entryValue", latest.entry_label ?? "—");
-  setText("macroSignalValue", latest.macro_signal ?? "—");
-
-  setText("scenarioText", latest.scenario ?? "—");
-  setText("scenarioPill", latest.scenario ?? "—");
-  setText("actionValue", latest.signal ?? "—");
-  setText("nextTrigger", latest.next_trigger ?? "—");
-  setText("updatedText", formatDateTime(latest.timestamp));
-
-  setText("allocRv", latest.allocations?.rv ?? "—");
-  setText("allocBonds", latest.allocations?.bonos ?? "—");
-  setText("allocCash", latest.allocations?.liquidez ?? "—");
-  setText("allocGold", latest.allocations?.oro ?? "—");
-
-  setText("capeSource", latest.sources?.cape || "—");
-  setText("pmiSource", latest.sources?.pmi || "—");
-  setText("leiSource", latest.sources?.lei || "—");
-
-  setupScenarioSelector(latest);
-  setupSimulator(latest);
-  setupRotationSimulator(latest);
-
-  const signalBadge = document.getElementById("signalBadge");
-  if (signalBadge) {
-    signalBadge.textContent = latest.signal ?? "—";
-    signalBadge.className = signalClass(latest.signal ?? "");
-  }
-
-  const chartEl = document.getElementById("navChart");
-  if (!chartEl || !history.length) return;
-
-  const labels = history.map(r => formatDate(r.timestamp));
-  const navValues = history.map(r => Number(r.nav));
-  const maxValues = history.map(r => Number(r.max52));
-
-  const referenceMax = Number(latest.max52);
-  const level10 = buildLevelLine(labels.length, referenceMax * 0.90);
-  const level15 = buildLevelLine(labels.length, referenceMax * 0.85);
-  const level20 = buildLevelLine(labels.length, referenceMax * 0.80);
-  const level25 = buildLevelLine(labels.length, referenceMax * 0.75);
-  const level30 = buildLevelLine(labels.length, referenceMax * 0.70);
-
-  new Chart(chartEl, {
-    type: "line",
-    data: {
-      labels,
-      datasets: [
-        {
-          label: "NAV",
-          data: navValues,
-          borderWidth: 2.5,
-          tension: 0.25
-        },
-        {
-          label: "Máx. 52 semanas",
-          data: maxValues,
-          borderDash: [6, 6],
-          borderWidth: 1.5,
-          tension: 0
-        },
-        {
-          label: "Nivel -10%",
-          data: level10,
-          borderDash: [4, 4],
-          borderWidth: 1,
-          tension: 0
-        },
-        {
-          label: "Nivel -15%",
-          data: level15,
-          borderDash: [4, 4],
-          borderWidth: 1,
-          tension: 0
-        },
-        {
-          label: "Nivel -20%",
-          data: level20,
-          borderDash: [4, 4],
-          borderWidth: 1,
-          tension: 0
-        },
-        {
-          label: "Nivel -25%",
-          data: level25,
-          borderDash: [4, 4],
-          borderWidth: 1,
-          tension: 0
-        },
-        {
-          label: "Nivel -30%",
-          data: level30,
-          borderDash: [4, 4],
-          borderWidth: 1,
-          tension: 0
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      interaction: {
-        mode: "index",
-        intersect: false
-      },
-      plugins: {
-        legend: {
-          labels: {
-            color: "#dce6f8"
-          }
-        }
-      },
-      scales: {
-        x: {
-          ticks: {
-            color: "#8ea3c7"
-          },
-          grid: {
-            color: "rgba(255,255,255,0.06)"
-          }
-        },
-        y: {
-          ticks: {
-            color: "#8ea3c7"
-          },
-          grid: {
-            color: "rgba(255,255,255,0.06)"
-          }
-        }
-      }
-    }
-  });
-}
-
-loadDashboard().catch(err => {
-  const badge = document.getElementById("signalBadge");
-  if (badge) {
-    badge.textContent = "Error";
-    badge.className = "signal-esperar";
-  }
-
-  const scenarioText = document.getElementById("scenarioText");
-  if (scenarioText) {
-    scenarioText.textContent = err.message;
-  }
-});
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Rotación Cartera</title>
+  <link rel="stylesheet" href="style.css?v=20260410-2" />
+</head>
+<body>
+  <div class="container">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">SISTEMA DE ROTACIÓN DE CARTERA</p>
+        <h1>Dashboard Operativo</h1>
+        <p class="sub">
+          Precio + volatilidad + macro manual. Señal mecánica basada en NAV, drawdown, VIX y datos macro cargados manualmente.
+        </p>
+      </div>
+
+      <div class="status-card">
+        <span class="label">SEÑAL ACTUAL</span>
+        <strong id="signalBadge">Cargando...</strong>
+        <span id="scenarioText">—</span>
+      </div>
+    </header>
+
+    <section class="grid top-grid">
+      <article class="card kpi">
+        <span class="label">NAV ACTUAL</span>
+        <strong id="navValue">—</strong>
+        <small>Fecha NAV: <span id="navDate">—</span></small>
+        <small>
+          <a href="https://es.finance.yahoo.com/quote/0P00000RQC.F/" target="_blank" rel="noopener noreferrer">Fuente</a>
+        </small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">MÁXIMO 52 SEMANAS</span>
+        <strong id="maxValue">—</strong>
+        <small>Rolling 52 semanas</small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">DRAWDOWN</span>
+        <strong id="dropValue">—</strong>
+        <small>Desde máximo 52 semanas</small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">VIX</span>
+        <strong id="vixValue">—</strong>
+        <small>Automático desde Yahoo</small>
+        <small>
+          <a href="https://es.finance.yahoo.com/quote/%5EVIX/" target="_blank" rel="noopener noreferrer">Fuente</a>
+        </small>
+      </article>
+    </section>
+
+    <section class="grid top-grid">
+      <article class="card kpi">
+        <span class="label">CAPE</span>
+        <strong id="capeValue">—</strong>
+        <small>Shiller PE / PE10</small>
+        <small id="capeSource">—</small>
+        <small>
+          <a href="https://www.multpl.com/shiller-pe" target="_blank" rel="noopener noreferrer">Fuente</a>
+        </small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">PMI</span>
+        <strong id="pmiValue">—</strong>
+        <small>Indicador macro</small>
+        <small id="pmiSource">—</small>
+        <small>
+          <a href="https://tradingeconomics.com/country-list/composite-pmi" target="_blank" rel="noopener noreferrer">Fuente</a>
+        </small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">LEI</span>
+        <strong id="leiValue">—</strong>
+        <small id="leiTrendText">—</small>
+        <small id="leiSource">—</small>
+        <small>
+          <a href="https://tradingeconomics.com/united-states/leading-economic-index" target="_blank" rel="noopener noreferrer">Fuente</a>
+        </small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">SCORE</span>
+        <strong id="scoreValue">—</strong>
+        <small id="scoreText">—</small>
+      </article>
+    </section>
+
+    <section class="grid top-grid">
+      <article class="card kpi">
+        <span class="label">ESCENARIO</span>
+        <strong id="scenarioValue">—</strong>
+        <small>Macro + precio</small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">FASE OPERATIVA</span>
+        <strong id="phaseValue">—</strong>
+        <small>Normal / preparación / entradas</small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">ENTRADA ACTUAL</span>
+        <strong id="entryValue">—</strong>
+        <small>Tramo operativo</small>
+      </article>
+
+      <article class="card kpi">
+        <span class="label">MACRO SIGNAL</span>
+        <strong id="macroSignalValue">—</strong>
+        <small>Lectura rápida</small>
+      </article>
+    </section>
+
+    <section class="grid mid-grid">
+      <article class="card">
+        <div class="card-head">
+          <h2>Estado operativo</h2>
+          <span class="pill" id="scenarioPill">—</span>
+        </div>
+
+        <div class="state-list">
+          <div>
+            <span>Acción</span>
+            <strong id="actionValue">—</strong>
+          </div>
+          <div>
+            <span>Siguiente trigger</span>
+            <strong id="nextTrigger">—</strong>
+          </div>
+          <div>
+            <span>Actualización</span>
+            <strong id="updatedText">—</strong>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h2>Asignación objetivo</h2>
+        </div>
+
+        <div class="state-list">
+          <div>
+            <span>Renta variable</span>
+            <strong id="allocRv">—</strong>
+          </div>
+          <div>
+            <span>Bonos</span>
+            <strong id="allocBonds">—</strong>
+          </div>
+          <div>
+            <span>Liquidez</span>
+            <strong id="allocCash">—</strong>
+          </div>
+          <div>
+            <span>Oro</span>
+            <strong id="allocGold">—</strong>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="card chart-card">
+      <div class="card-head">
+        <h2>Histórico NAV</h2>
+        <small>Con niveles operativos</small>
+      </div>
+      <canvas id="navChart" height="110"></canvas>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Dinero nuevo</h2>
+        <span class="pill" id="newMoneyPill">—</span>
+      </div>
+
+      <div class="simulator-grid scenario-grid">
+        <div class="sim-field">
+          <label for="scenarioSelector">Escenario para dinero nuevo</label>
+          <select id="scenarioSelector">
+            <option value="auto">Automático (según sistema)</option>
+            <option value="1">Escenario 1 · Mercado barato</option>
+            <option value="2">Escenario 2 · Mercado neutral</option>
+            <option value="3">Escenario 3 · Mercado caro</option>
+            <option value="defensivo">Modo defensivo</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="state-list">
+        <div>
+          <span>Escenario aplicado</span>
+          <strong id="newMoneyScenarioApplied">—</strong>
+        </div>
+        <div>
+          <span>Invertir ahora</span>
+          <strong id="newMoneyInvestNow">—</strong>
+        </div>
+        <div>
+          <span>Reservar</span>
+          <strong id="newMoneyReserve">—</strong>
+        </div>
+        <div>
+          <span>Destino inversión</span>
+          <strong id="newMoneyDestination">—</strong>
+        </div>
+        <div>
+          <span>Destino reserva</span>
+          <strong id="newMoneyReserveDestination">—</strong>
+        </div>
+        <div>
+          <span>Nota operativa</span>
+          <strong id="newMoneyNote">—</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Simulador dinero nuevo</h2>
+        <span class="pill">Euros</span>
+      </div>
+
+      <div class="simulator-grid">
+        <div class="sim-field">
+          <label for="newMoneyAmountInput">Importe a aportar</label>
+          <input
+            id="newMoneyAmountInput"
+            type="number"
+            min="0"
+            step="1"
+            placeholder="Ej. 600"
+            inputmode="decimal"
+          />
+        </div>
+
+        <div class="sim-field sim-button-wrap">
+          <button id="newMoneyCalcButton" type="button">Calcular</button>
+        </div>
+      </div>
+
+      <div class="state-list">
+        <div>
+          <span>Invertir ahora</span>
+          <strong id="simInvestNowAmount">—</strong>
+        </div>
+        <div>
+          <span>Reservar</span>
+          <strong id="simReserveAmount">—</strong>
+        </div>
+        <div>
+          <span>Vanguard Global Stock Index</span>
+          <strong id="simVanguardAmount">—</strong>
+        </div>
+        <div>
+          <span>Robeco BP Global Premium</span>
+          <strong id="simRobecoAmount">—</strong>
+        </div>
+        <div>
+          <span>Jupiter Global Equity Absolute Return</span>
+          <strong id="simJupiterAmount">—</strong>
+        </div>
+        <div>
+          <span>Heptagon Kopernik</span>
+          <strong id="simKopernikAmount">—</strong>
+        </div>
+        <div>
+          <span>Robeco QI Emerging Conservative</span>
+          <strong id="simEmergingAmount">—</strong>
+        </div>
+        <div>
+          <span>DNCA Alpha Bonds</span>
+          <strong id="simDncaAmount">—</strong>
+        </div>
+        <div>
+          <span>DWS Euro Ultra Short</span>
+          <strong id="simDwsAmount">—</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Rotación por caída</h2>
+        <span class="pill" id="rotationPill">—</span>
+      </div>
+
+      <div class="state-list">
+        <div>
+          <span>Drawdown actual</span>
+          <strong id="rotationCurrentDrawdown">—</strong>
+        </div>
+        <div>
+          <span>Trigger actual</span>
+          <strong id="rotationTriggerText">—</strong>
+        </div>
+        <div>
+          <span>VIX</span>
+          <strong id="rotationCurrentVix">—</strong>
+        </div>
+        <div>
+          <span>Validación VIX</span>
+          <strong id="rotationVixValidation">—</strong>
+        </div>
+        <div>
+          <span>Capital disponible estimado</span>
+          <strong id="rotationCapitalAvailable">—</strong>
+        </div>
+        <div>
+          <span>Acción sugerida</span>
+          <strong id="rotationActionText">—</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Simulador rotación por caída</h2>
+        <span class="pill">Tramos</span>
+      </div>
+
+      <div class="simulator-grid simulator-grid-3">
+        <div class="sim-field">
+          <label for="rotationDwsInput">Liquidez disponible en DWS</label>
+          <input
+            id="rotationDwsInput"
+            type="number"
+            min="0"
+            step="1"
+            placeholder="Ej. 3000"
+            inputmode="decimal"
+          />
+        </div>
+
+        <div class="sim-field">
+          <label for="rotationDncaInput">DNCA utilizable</label>
+          <input
+            id="rotationDncaInput"
+            type="number"
+            min="0"
+            step="1"
+            placeholder="Ej. 2000"
+            inputmode="decimal"
+          />
+        </div>
+
+        <div class="sim-field">
+          <label for="rotationDrawdownSelector">Nivel de caída</label>
+          <select id="rotationDrawdownSelector">
+            <option value="auto">Automático (según sistema)</option>
+            <option value="-0.10">-10% · Entrada inicial</option>
+            <option value="-0.15">-15% · Segunda entrada</option>
+            <option value="-0.20">-20% · Entrada fuerte</option>
+            <option value="-0.25">-25% · Entrada muy fuerte</option>
+            <option value="-0.30">-30% · Entrada máxima</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="simulator-grid simulator-grid-3">
+        <div class="sim-field">
+          <label for="rotationVixSelector">Confirmación VIX</label>
+          <select id="rotationVixSelector">
+            <option value="auto">Automático (VIX actual)</option>
+            <option value="yes">Sí, validado</option>
+            <option value="no">No, sin validar</option>
+          </select>
+        </div>
+
+        <div class="sim-field sim-button-wrap">
+          <button id="rotationCalcButton" type="button">Calcular rotación</button>
+        </div>
+      </div>
+
+      <div class="state-list">
+        <div>
+          <span>Capital disponible total</span>
+          <strong id="rotationTotalAvailableAmount">—</strong>
+        </div>
+        <div>
+          <span>% a rotar</span>
+          <strong id="rotationRotatePctText">—</strong>
+        </div>
+        <div>
+          <span>Importe a rotar</span>
+          <strong id="rotationAmountToRotate">—</strong>
+        </div>
+        <div>
+          <span>Origen desde DWS</span>
+          <strong id="rotationFromDws">—</strong>
+        </div>
+        <div>
+          <span>Origen desde DNCA</span>
+          <strong id="rotationFromDnca">—</strong>
+        </div>
+        <div>
+          <span>Vanguard Global Stock Index</span>
+          <strong id="rotationToVanguard">—</strong>
+        </div>
+        <div>
+          <span>Robeco BP Global Premium</span>
+          <strong id="rotationToRobeco">—</strong>
+        </div>
+        <div>
+          <span>Jupiter Global Equity Absolute Return</span>
+          <strong id="rotationToJupiter">—</strong>
+        </div>
+        <div>
+          <span>Heptagon Kopernik</span>
+          <strong id="rotationToKopernik">—</strong>
+        </div>
+        <div>
+          <span>Robeco QI Emerging Conservative</span>
+          <strong id="rotationToEmerging">—</strong>
+        </div>
+        <div>
+          <span>Nota rotación</span>
+          <strong id="rotationNote">—</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Niveles de entrada</h2>
+      </div>
+
+      <div class="levels">
+        <div class="level"><span>Preparación</span><strong>-5%</strong></div>
+        <div class="level"><span>Entrada inicial</span><strong>-10%</strong></div>
+        <div class="level"><span>Segunda entrada</span><strong>-15%</strong></div>
+        <div class="level"><span>Entrada fuerte</span><strong>-20%</strong></div>
+        <div class="level"><span>Muy fuerte</span><strong>-25%</strong></div>
+        <div class="level"><span>Máxima</span><strong>-30%</strong></div>
+      </div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="app.js?v=20260410-2"></script>
+</body>
+</html>
