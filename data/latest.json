@@ -2,12 +2,12 @@
   "timestamp": "2026-04-08T20:00:00+00:00",
   "nav_date": "2026-04-08",
   "nav": 55.3586,
-  "max52": 55.36,
-  "drop_pct": -2.5e-05,
-  "drop_percent_display": -0.0,
+  "max52": 55.3586,
+  "drop_pct": 0.0,
+  "drop_percent_display": 0.0,
   "scenario": "Escenario 3",
   "signal": "DEFENSIVO",
-  "vix": 19.21,
+  "vix": 19.9,
   "vix_date": "2026-04-10",
   "phase": "Fase 0 · Normal",
   "entry_label": "Sin entrada",
@@ -92,6 +92,28 @@
       "jupiter": 0.4
     }
   },
+  "cash_policy": {
+    "high_cape_target": "15–20%",
+    "medium_cape_target": "12–15%",
+    "low_cape_target": "10–12%"
+  },
+  "operational_mapping": {
+    "liquidity_assets": [
+      "DWS Euro Ultra Short",
+      "Groupama Trésorerie"
+    ],
+    "rv_assets": [
+      "Vanguard Global Stock",
+      "Robeco BP Global Premium",
+      "Heptagon Kopernik",
+      "Robeco Emerging",
+      "Plan Pensiones CaixaBank"
+    ],
+    "non_operational_assets": [
+      "Plan Pensiones CaixaBank"
+    ],
+    "gold_asset": "Invesco Physical Gold"
+  },
   "rebalance_rules": {
     "deviation_tolerance_pp": 4,
     "review_monthly": true,
@@ -128,47 +150,6 @@
     "No usar Jupiter como liquidez estructural",
     "No mezclar dinero nuevo y rotación"
   ],
-  "data_freshness": {
-    "cape_days": 0,
-    "pmi_days": 7,
-    "lei_days": 7,
-    "nav_days": 0,
-    "vix_days": 0
-  },
-  "rotation_state": {
-    "executed_levels": [],
-    "last_execution_date": null,
-    "last_execution_amount": 0
-  },
-  "sources": {
-    "cape": "Manual · Multpl",
-    "pmi": "Manual · Composite PMI",
-    "lei": "Manual · Leading Index"
-  },
-  "cash_policy": {
-    "high_cape_target": "15–20%",
-    "medium_cape_target": "12–15%",
-    "low_cape_target": "10–12%"
-  },
-  "operational_mapping": {
-    "liquidity_assets": [
-      "DWS Euro Ultra Short",
-      "Groupama Trésorerie"
-    ],
-    "rv_assets": [
-      "Vanguard Global Stock",
-      "Robeco BP Global Premium",
-      "Heptagon Kopernik",
-      "Robeco Emerging",
-      "Plan Pensiones CaixaBank"
-    ],
-    "non_operational_assets": [
-      "Plan Pensiones CaixaBank"
-    ],
-    "gold_asset": "Invesco Physical Gold"
-  },
-  "real_cash_pct": 0.16,
-  "target_cash_pct_upper": 0.2,
   "operational_checklist": [
     "¿Drawdown ≥ -10%?",
     "¿VIX > 20?",
@@ -179,11 +160,28 @@
     "active": true,
     "rule": "No actuar si drawdown < -10% y VIX < 20"
   },
+  "data_freshness": {
+    "cape_days": 0,
+    "pmi_days": 7,
+    "lei_days": 7,
+    "nav_days": 0,
+    "vix_days": 0
+  },
   "decision_status": {
     "blocked": true,
     "reasons": [
       "PMI > 1 día",
       "LEI > 1 día"
     ]
+  },
+  "rotation_state": {
+    "executed_levels": [],
+    "last_execution_date": null,
+    "last_execution_amount": 0
+  },
+  "sources": {
+    "cape": "Manual · Multpl",
+    "pmi": "Manual · Composite PMI",
+    "lei": "Manual · Leading Index"
   }
 }
