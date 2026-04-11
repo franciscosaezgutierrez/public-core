@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-04-08T20:00:00+00:00",
-  "nav_date": "2026-04-08",
-  "nav": 55.3586,
-  "max52": 55.3586,
+  "timestamp": "2026-04-09T20:00:00+00:00",
+  "nav_date": "2026-04-09",
+  "nav": 55.5655,
+  "max52": 55.5655,
   "drop_pct": 0.0,
   "drop_percent_display": 0.0,
   "scenario": "Escenario 3",
@@ -138,7 +138,7 @@
     "market_plus_20_from_low_required": true,
     "market_plus_20_from_low": false,
     "market_low_reference": 55.3586,
-    "market_rebound_from_low": 0.0,
+    "market_rebound_from_low": 0.003737,
     "action": "Aumentar liquidez 5–10% y reducir RV progresivamente",
     "active_now": false
   },
@@ -161,16 +161,19 @@
     "rule": "No actuar si drawdown < -10% y VIX < 20"
   },
   "data_freshness": {
-    "cape_days": 0,
-    "pmi_days": 7,
-    "lei_days": 7,
+    "cape_days": 1,
+    "pmi_days": 8,
+    "lei_days": 8,
     "nav_days": 0,
     "vix_days": 0
   },
   "decision_status": {
     "blocked": false,
     "reasons": [],
-    "warnings": []
+    "warnings": [
+      "PMI > 7 días",
+      "LEI > 7 días"
+    ]
   },
   "rotation_state": {
     "executed_levels": [],
