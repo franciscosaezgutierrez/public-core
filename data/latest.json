@@ -7,8 +7,8 @@
   "drop_percent_display": 0.0,
   "scenario": "Escenario 3",
   "signal": "DEFENSIVO",
-  "vix": 19.23,
-  "vix_date": "2026-04-10",
+  "vix": 21.21,
+  "vix_date": "2026-04-13",
   "phase": "Fase 0 · Normal",
   "entry_label": "Sin entrada",
   "next_trigger": "-5%",
@@ -157,7 +157,7 @@
     "¿No es dinero nuevo?"
   ],
   "pause_mode": {
-    "active": true,
+    "active": false,
     "rule": "No actuar si drawdown < -10% y VIX < 20"
   },
   "data_freshness": {
