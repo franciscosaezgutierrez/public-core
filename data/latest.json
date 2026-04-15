@@ -1,188 +1,27 @@
 {
-  "timestamp": "2026-04-13T20:00:00+00:00",
-  "nav_date": "2026-04-13",
-  "nav": 55.8624,
-  "max52": 55.8624,
-  "drop_pct": 0.0,
-  "drop_percent_display": 0.0,
-  "scenario": "Escenario 3",
+  "timestamp": "2026-04-15T09:30:00Z",
+  "updated_at": "2026-04-15T09:30:00Z",
   "signal": "DEFENSIVO",
-  "vix": 18.06,
-  "vix_date": "2026-04-15",
+  "scenario": "🟠 Escenario 3 · Sobrevaloración",
   "phase": "Fase 0 · Normal",
-  "entry_label": "Sin entrada",
+  "nav": 55.3586,
+  "max52": 55.5196,
+  "drop_pct": -0.29,
+  "drop_percent_display": -0.29,
+  "vix": 19.23,
   "next_trigger": "-5%",
-  "score": -2,
-  "score_text": "Defensivo",
-  "cape": 39.14,
-  "cape_date": "2026-04-08",
-  "pmi": 50.3,
-  "pmi_date": "2026-04-01",
-  "lei": {
-    "value": 97.5,
-    "date": "2026-04-01",
-    "value_3m_ago": 98.2,
-    "trend_3m": -0.7
-  },
   "macro_signal": "CAPE alto · PMI OK · LEI negativo · VIX normal",
-  "score_components": {
-    "cape": -1,
-    "pmi": 0,
-    "lei": -1,
-    "vix": 0
-  },
-  "allocations": {
-    "rv": "60–62%",
-    "bonos": "12–15%",
-    "liquidez": "15–18%",
-    "oro": "3–5%"
-  },
-  "system_limits": {
-    "rv_max": 0.7,
-    "cash_min": 0.1,
-    "cash_max": 0.25,
-    "gold_max": 0.07,
-    "bond_max_s3": 0.15,
-    "emerging_max": 0.08,
-    "concentrated_asset_max": 0.12
-  },
-  "composition_target": {
-    "vanguard_global_stock": 0.29,
-    "robeco_bp_global_premium": 0.16,
-    "heptagon_kopernik": 0.065,
-    "robeco_qi_emerging_conservative": 0.065,
-    "plan_pensiones_caixabank": 0.025,
-    "dnca_alpha_bonds": 0.15,
-    "jupiter_global_equity_absolute_return": 0.08,
-    "dws_euro_ultra_short": 0.16,
-    "invesco_physical_gold": 0.04
-  },
-  "composition_validation": {
-    "valid": true,
-    "issues": []
-  },
-  "priority_of_purchase": [
-    "Fondo indexado global (core)",
-    "Fondo calidad (active global)",
-    "Emergentes / small caps"
-  ],
-  "new_money_rules": {
-    "caro": {
-      "invest": 0.5,
-      "reserve": 0.5,
-      "destination": "Core + calidad",
-      "reserve_destination": "Liquidez"
-    },
-    "neutral": {
-      "invest": 0.7,
-      "reserve": 0.3,
-      "destination": "Core + calidad",
-      "reserve_destination": "Liquidez"
-    },
-    "barato": {
-      "invest": 0.9,
-      "reserve": 0.1,
-      "destination": "Core + calidad",
-      "reserve_destination": "Liquidez"
-    },
-    "defensive_use": {
-      "enabled_if_cash_above_target": true,
-      "requires_no_rv_increase": true,
-      "dnca": 0.6,
-      "jupiter": 0.4
-    }
-  },
-  "cash_policy": {
-    "high_cape_target": "15–20%",
-    "medium_cape_target": "12–15%",
-    "low_cape_target": "10–12%"
-  },
-  "operational_mapping": {
-    "liquidity_assets": [
-      "DWS Euro Ultra Short",
-      "Groupama Trésorerie"
-    ],
-    "rv_assets": [
-      "Vanguard Global Stock",
-      "Robeco BP Global Premium",
-      "Heptagon Kopernik",
-      "Robeco Emerging",
-      "Plan Pensiones CaixaBank"
-    ],
-    "non_operational_assets": [
-      "Plan Pensiones CaixaBank"
-    ],
-    "gold_asset": "Invesco Physical Gold"
-  },
-  "rebalance_rules": {
-    "deviation_tolerance_pp": 4,
-    "review_monthly": true,
-    "review_structural_quarterly": true,
-    "tolerances": {
-      "core": 5,
-      "quality": 4,
-      "dnca": 3,
-      "jupiter": 2,
-      "gold": 1
-    }
-  },
-  "flash_crash_rules": {
-    "activation": "-4% diario o -7% en 3 sesiones",
-    "buy_same_day": false,
-    "wait_hours": 48,
-    "follow_up": "Entrada progresiva"
-  },
-  "risk_reduction_rules": {
-    "trigger_cape_gt": 42,
-    "trigger_vix_lt": 15,
-    "market_plus_20_from_low_required": true,
-    "market_plus_20_from_low": false,
-    "market_low_reference": 55.3586,
-    "market_rebound_from_low": 0.009101,
-    "action": "Aumentar liquidez 5–10% y reducir RV progresivamente",
-    "active_now": false
-  },
-  "hard_rules": [
-    "No comprar sin trigger",
-    "No vender en caídas",
-    "No usar oro para financiar compras",
-    "No comprar DNCA ni Jupiter en caídas",
-    "No usar Jupiter como liquidez estructural",
-    "No mezclar dinero nuevo y rotación"
-  ],
-  "operational_checklist": [
-    "¿Drawdown ≥ -10%?",
-    "¿VIX > 20?",
-    "¿Liquidez suficiente?",
-    "¿No es dinero nuevo?"
-  ],
   "pause_mode": {
     "active": true,
-    "rule": "No actuar si drawdown < -10% y VIX < 20"
-  },
-  "data_freshness": {
-    "cape_days": 5,
-    "pmi_days": 12,
-    "lei_days": 12,
-    "nav_days": 0,
-    "vix_days": 0
+    "reason": "Drawdown insuficiente y VIX por debajo de validación"
   },
   "decision_status": {
     "blocked": false,
     "reasons": [],
-    "warnings": [
-      "PMI > 7 días",
-      "LEI > 7 días"
-    ]
+    "warnings": []
   },
-  "rotation_state": {
-    "executed_levels": [],
-    "last_execution_date": null,
-    "last_execution_amount": 0
-  },
-  "sources": {
-    "cape": "Manual · Multpl",
-    "pmi": "Manual · Composite PMI",
-    "lei": "Manual · Leading Index"
+  "data_freshness": "Datos frescos",
+  "new_money_rules_legacy": {
+    "note": "La decisión final de dinero nuevo se toma con valoración compuesta en el dashboard"
   }
 }
