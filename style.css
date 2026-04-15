@@ -67,7 +67,8 @@ body {
 
 .metric .label,
 .kv span,
-.sim-row label {
+.sim-row label,
+.compact-label {
   color: var(--muted);
   font-size: 13px;
 }
@@ -77,6 +78,14 @@ body {
   font-weight: 700;
   margin-top: 4px;
   color: var(--text);
+}
+
+.subvalue {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+  font-weight: normal;
 }
 
 h1 {
@@ -98,6 +107,10 @@ h2 {
   gap: 16px;
   padding: 8px 0;
   border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.compact-kv {
+  padding: 6px 0;
 }
 
 .kv strong {
@@ -136,15 +149,73 @@ select:focus {
 }
 
 .kv a,
-.metric a {
+.metric a,
+.mini-title a {
   font-size: 11px;
   color: var(--accent-2);
   text-decoration: none;
 }
 
 .kv a:hover,
-.metric a:hover {
+.metric a:hover,
+.mini-title a:hover {
   text-decoration: underline;
+}
+
+.compact-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.compact-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.compact-value {
+  text-align: right;
+  color: var(--text);
+}
+
+.macro-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.mini-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.mini-title {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.mini-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.mini-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.mini-date {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 6px;
 }
 
 @media (max-width: 640px) {
