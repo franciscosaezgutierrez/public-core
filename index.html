@@ -12,6 +12,7 @@
       <div class="eyebrow">Sistema de Rotación de Cartera</div>
       <h1 id="signal-current">Cargando…</h1>
       <p id="signal-summary" class="muted"></p>
+
       <div class="hero-grid">
         <div class="metric">
           <div class="label">Drawdown</div>
@@ -54,8 +55,9 @@
       <article class="card">
         <h2>Dinero nuevo</h2>
         <div class="kv"><span>Regla</span><strong id="new-money-rule">—</strong></div>
-        <div class="kv"><span>Destino</span><strong>Core + Calidad</strong></div>
-        <div class="kv"><span>Reserva</span><strong>Liquidez</strong></div>
+        <div class="kv"><span>Destino</span><strong id="new-money-destination">Core + Calidad</strong></div>
+        <div class="kv"><span>Reserva</span><strong id="new-money-reserve-destination">Liquidez</strong></div>
+        <div class="kv"><span>Nota</span><strong id="new-money-note">—</strong></div>
       </article>
 
       <article class="card">
@@ -64,6 +66,39 @@
         <div class="kv"><span>Decisión bloqueada</span><strong id="blocked-value">—</strong></div>
         <div class="kv"><span>Warnings</span><strong id="warnings-value">—</strong></div>
         <div class="kv"><span>Actualizado</span><strong id="updated-at-value">—</strong></div>
+      </article>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <h2>Simulador · Dinero nuevo</h2>
+
+        <div class="sim-row">
+          <label for="new-money-input">Importe (€)</label>
+          <input id="new-money-input" type="number" min="0" step="50" value="600" />
+        </div>
+
+        <div class="kv"><span>Invertir ahora</span><strong id="sim-new-invest-now">—</strong></div>
+        <div class="kv"><span>Reservar</span><strong id="sim-new-reserve">—</strong></div>
+        <div class="kv"><span>Core</span><strong id="sim-new-core">—</strong></div>
+        <div class="kv"><span>Calidad</span><strong id="sim-new-quality">—</strong></div>
+        <div class="kv"><span>Destino reserva</span><strong id="sim-new-reserve-destination">Liquidez</strong></div>
+      </article>
+
+      <article class="card">
+        <h2>Simulador · Rotación</h2>
+
+        <div class="sim-row">
+          <label for="rotation-input">Capital a rotar (€)</label>
+          <input id="rotation-input" type="number" min="0" step="100" value="1000" />
+        </div>
+
+        <div class="kv"><span>Estado</span><strong id="rotation-state">—</strong></div>
+        <div class="kv"><span>Acción</span><strong id="rotation-action">—</strong></div>
+        <div class="kv"><span>Core</span><strong id="sim-rot-core">—</strong></div>
+        <div class="kv"><span>Calidad</span><strong id="sim-rot-quality">—</strong></div>
+        <div class="kv"><span>Emergentes</span><strong id="sim-rot-emerging">—</strong></div>
+        <div class="kv"><span>Fuente</span><strong id="rotation-source">Liquidez → DNCA → Jupiter</strong></div>
       </article>
     </section>
   </main>

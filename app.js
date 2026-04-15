@@ -6,7 +6,7 @@ async function loadManualMacro() {
 
 function computeValuation(cape, per) {
   const capeState = cape > 35 ? "CARO" : cape < 28 ? "BARATO" : "NEUTRO";
-  const perState  = per  > 18 ? "CARO" : per  < 15 ? "BARATO" : "NORMAL";
+  const perState = per > 18 ? "CARO" : per < 15 ? "BARATO" : "NORMAL";
 
   let composite = "NEUTRO";
   if (capeState === "CARO" && perState === "CARO") composite = "MUY_CARO";
@@ -30,19 +30,108 @@ function getDrawdownLabel(dd) {
   return "TRIGGER";
 }
 
-function getNewMoneyRule(state) {
+function getNewMoneyRuleData(state) {
   switch (state) {
-    case "MUY_CARO": return "50% invertir / 50% reservar";
-    case "CARO_MODERADO": return "60% invertir / 40% reservar";
-    case "NEUTRO": return "70% / 30%";
-    case "BARATO": return "90% / 10%";
-    default: return "50% / 50%";
+    case "MUY_CARO":
+      return {
+        rule: "50% invertir / 50% reservar",
+        investPct: 0.50,
+        reservePct: 0.50,
+        note: "Mercado muy caro. Máxima prudencia."
+      };
+    case "CARO_MODERADO":
+      return {
+        rule: "60% invertir / 40% reservar",
+        investPct: 0.60,
+        reservePct: 0.40,
+        note: "Mercado caro, pero no extremo globalmente."
+      };
+    case "NEUTRO":
+      return {
+        rule: "70% / 30%",
+        investPct: 0.70,
+        reservePct: 0.30,
+        note: "Valoración razonable."
+      };
+    case "BARATO":
+      return {
+        rule: "90% / 10%",
+        investPct: 0.90,
+        reservePct: 0.10,
+        note: "Valoración favorable."
+      };
+    default:
+      return {
+        rule: "50% / 50%",
+        investPct: 0.50,
+        reservePct: 0.50,
+        note: "Sin clasificación. Se aplica prudencia."
+      };
   }
 }
 
 function formatDate(value) {
-  if (!value) return "—";
-  return value;
+  return value || "—";
+}
+
+function formatEuro(value) {
+  return `${Number(value).toFixed(2).replace(".", ",")} €`;
+}
+
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+
+function renderNewMoneySimulator(ruleData) {
+  const input = document.getElementById("new-money-input");
+  const amount = Number(input?.value || 0);
+
+  const investNow = amount * ruleData.investPct;
+  const reserve = amount * ruleData.reservePct;
+
+  const core = investNow * 0.70;
+  const quality = investNow * 0.30;
+
+  setText("sim-new-invest-now", formatEuro(investNow));
+  setText("sim-new-reserve", formatEuro(reserve));
+  setText("sim-new-core", formatEuro(core));
+  setText("sim-new-quality", formatEuro(quality));
+  setText("sim-new-reserve-destination", "Liquidez");
+}
+
+function renderRotationSimulator(auto) {
+  const input = document.getElementById("rotation-input");
+  const amount = Number(input?.value || 0);
+  const dd = Number(auto.drop_percent_display);
+  const vix = Number(auto.vix);
+
+  let state = "Sin señal";
+  let action = "No actuar";
+
+  if (dd <= -10 && vix > 20) {
+    state = "Trigger activo";
+    action = "Comprar";
+  } else if (dd <= -5) {
+    state = "Pre-trigger";
+    action = "Preparar liquidez";
+  }
+
+  let core = 0;
+  let quality = 0;
+  let emerging = 0;
+
+  if (action === "Comprar") {
+    core = amount * 0.50;
+    quality = amount * 0.30;
+    emerging = amount * 0.20;
+  }
+
+  setText("rotation-state", state);
+  setText("rotation-action", action);
+  setText("sim-rot-core", formatEuro(core));
+  setText("sim-rot-quality", formatEuro(quality));
+  setText("sim-rot-emerging", formatEuro(emerging));
 }
 
 async function loadDashboard() {
@@ -66,74 +155,57 @@ async function loadDashboard() {
     action = "PREPARAR LIQUIDEZ";
   }
 
-  document.getElementById("signal-current").textContent =
-    `${auto.scenario} · ${auto.phase} · ${action}`;
+  const newMoneyRule = getNewMoneyRuleData(valuation.composite_state);
 
-  document.getElementById("signal-summary").textContent =
-    auto.macro_signal || "—";
+  setText("signal-current", `${auto.scenario} · ${auto.phase} · ${action}`);
+  setText("signal-summary", auto.macro_signal || "—");
 
-  document.getElementById("drawdown-value").textContent =
-    `${dd}% (${getDrawdownLabel(dd)})`;
+  setText("drawdown-value", `${dd}% (${getDrawdownLabel(dd)})`);
+  setText("vix-value", `${auto.vix}`);
+  setText("next-trigger-value", auto.next_trigger || "—");
+  setText("freshness-value", auto.data_freshness || "—");
 
-  document.getElementById("vix-value").textContent =
-    `${auto.vix}`;
+  setText("scenario-value", auto.scenario || "—");
+  setText("phase-value", auto.phase || "—");
+  setText("pause-value", auto.pause_mode?.active ? "Sí" : "No");
+  setText("pause-reason-value", auto.pause_mode?.reason || "—");
+  setText("macro-signal-value", auto.macro_signal || "—");
 
-  document.getElementById("next-trigger-value").textContent =
-    auto.next_trigger || "—";
+  setText("valuation-cape", `${valuation.cape_sp500} (${valuation.cape_state})`);
+  setText("valuation-per", `${valuation.per_global} (${valuation.per_state})`);
+  setText("valuation-state", valuation.composite_state);
+  setText("valuation-source", "Vanguard (manual)");
+  setText("valuation-date", formatDate(manual.per_global_date));
 
-  document.getElementById("freshness-value").textContent =
-    auto.data_freshness || "—";
+  setText("new-money-rule", newMoneyRule.rule);
+  setText("new-money-destination", "Core + Calidad");
+  setText("new-money-reserve-destination", "Liquidez");
+  setText("new-money-note", newMoneyRule.note);
 
-  document.getElementById("scenario-value").textContent =
-    auto.scenario || "—";
-
-  document.getElementById("phase-value").textContent =
-    auto.phase || "—";
-
-  document.getElementById("pause-value").textContent =
-    auto.pause_mode?.active ? "Sí" : "No";
-
-  document.getElementById("pause-reason-value").textContent =
-    auto.pause_mode?.reason || "—";
-
-  document.getElementById("macro-signal-value").textContent =
-    auto.macro_signal || "—";
-
-  document.getElementById("valuation-cape").textContent =
-    `${valuation.cape_sp500} (${valuation.cape_state})`;
-
-  document.getElementById("valuation-per").textContent =
-    `${valuation.per_global} (${valuation.per_state})`;
-
-  document.getElementById("valuation-state").textContent =
-    valuation.composite_state;
-
-  document.getElementById("valuation-source").textContent =
-    "Vanguard (manual)";
-
-  document.getElementById("valuation-date").textContent =
-    formatDate(manual.per_global_date);
-
-  document.getElementById("new-money-rule").textContent =
-    getNewMoneyRule(valuation.composite_state);
-
-  document.getElementById("action-value").textContent =
-    action;
-
-  document.getElementById("blocked-value").textContent =
-    auto.decision_status?.blocked ? "Sí" : "No";
-
-  document.getElementById("warnings-value").textContent =
+  setText("action-value", action);
+  setText("blocked-value", auto.decision_status?.blocked ? "Sí" : "No");
+  setText(
+    "warnings-value",
     (auto.decision_status?.warnings || []).length
       ? auto.decision_status.warnings.join(" · ")
-      : "Sin warnings";
+      : "Sin warnings"
+  );
+  setText("updated-at-value", auto.updated_at || auto.timestamp || "—");
 
-  document.getElementById("updated-at-value").textContent =
-    auto.updated_at || auto.timestamp || "—";
+  renderNewMoneySimulator(newMoneyRule);
+  renderRotationSimulator(auto);
+
+  document.getElementById("new-money-input")?.addEventListener("input", () => {
+    renderNewMoneySimulator(newMoneyRule);
+  });
+
+  document.getElementById("rotation-input")?.addEventListener("input", () => {
+    renderRotationSimulator(auto);
+  });
 }
 
 loadDashboard().catch(err => {
   console.error(err);
-  document.getElementById("signal-current").textContent = "Error cargando dashboard";
-  document.getElementById("signal-summary").textContent = err.message;
+  setText("signal-current", "Error cargando dashboard");
+  setText("signal-summary", err.message);
 });
