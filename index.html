@@ -18,7 +18,7 @@
           <div class="label">
             NAV
             <span class="source-inline">
-              <a href="https://es.finance.yahoo.com/quote/0P00000RQC.F/" target="_blank">fuente</a>
+              <a href="https://es.finance.yahoo.com/quote/0P00000RQC.F/" target="_blank" rel="noopener noreferrer">fuente</a>
             </span>
           </div>
           <div class="value" id="nav-value">—</div>
@@ -28,7 +28,7 @@
           <div class="label">
             Máx 52 semanas
             <span class="source-inline">
-              <a href="https://es.finance.yahoo.com/quote/0P00000RQC.F/" target="_blank">fuente</a>
+              <a href="https://es.finance.yahoo.com/quote/0P00000RQC.F/" target="_blank" rel="noopener noreferrer">fuente</a>
             </span>
           </div>
           <div class="value" id="max52-value">—</div>
@@ -36,14 +36,17 @@
 
         <div class="metric">
           <div class="label">Drawdown</div>
-          <div class="value" id="drawdown-value">—</div>
+          <div class="value">
+            <span id="drawdown-value">—</span>
+            <span id="drawdown-label" class="subvalue">—</span>
+          </div>
         </div>
 
         <div class="metric">
           <div class="label">
             VIX
             <span class="source-inline">
-              <a href="https://finance.yahoo.com/quote/%5EVIX/" target="_blank">fuente</a>
+              <a href="https://finance.yahoo.com/quote/%5EVIX/" target="_blank" rel="noopener noreferrer">fuente</a>
             </span>
           </div>
           <div class="value" id="vix-value">—</div>
@@ -83,7 +86,7 @@
         <div class="kv"><span>Acción</span><strong id="action-value">—</strong></div>
         <div class="kv"><span>Pausa</span><strong id="pause-value">—</strong></div>
         <div class="kv"><span>Motivo pausa</span><strong id="pause-reason-value">—</strong></div>
-        <div class="kv"><span>Decisión bloqueada</span><strong id="blocked-value">—</strong></div>
+        <div class="kv"><span>Bloqueada</span><strong id="blocked-value">—</strong></div>
         <div class="kv"><span>Warnings</span><strong id="warnings-value">—</strong></div>
         <div class="kv"><span>Actualizado</span><strong id="updated-at-value">—</strong></div>
       </article>
@@ -91,39 +94,43 @@
       <article class="card">
         <h2>Macro</h2>
 
-        <div class="kv"><span>Resumen</span><strong id="macro-signal-value">—</strong></div>
-
-        <div class="kv">
-          <span>
-            CAPE
-            <a href="https://www.multpl.com/shiller-pe" target="_blank">fuente</a>
-          </span>
-          <strong id="cape-value">—</strong>
+        <div class="compact-block">
+          <div class="compact-row">
+            <span class="compact-label">Resumen</span>
+            <span class="compact-value" id="macro-signal-value">—</span>
+          </div>
         </div>
 
-        <div class="kv"><span>Fecha CAPE</span><strong id="cape-date-value">—</strong></div>
+        <div class="macro-grid">
+          <div class="mini-card">
+            <div class="mini-title">
+              CAPE
+              <a href="https://www.multpl.com/shiller-pe" target="_blank" rel="noopener noreferrer">fuente</a>
+            </div>
+            <div class="mini-value" id="cape-value">—</div>
+            <div class="mini-date" id="cape-date-value">—</div>
+          </div>
 
-        <div class="kv">
-          <span>
-            PMI
-            <a href="https://tradingeconomics.com/country-list/composite-pmi" target="_blank">fuente</a>
-          </span>
-          <strong id="pmi-value">—</strong>
+          <div class="mini-card">
+            <div class="mini-title">
+              PMI
+              <a href="https://tradingeconomics.com/country-list/composite-pmi" target="_blank" rel="noopener noreferrer">fuente</a>
+            </div>
+            <div class="mini-value" id="pmi-value">—</div>
+            <div class="mini-date" id="pmi-date-value">—</div>
+          </div>
+
+          <div class="mini-card">
+            <div class="mini-title">
+              LEI
+              <a href="https://tradingeconomics.com/united-states/leading-economic-index" target="_blank" rel="noopener noreferrer">fuente</a>
+            </div>
+            <div class="mini-value" id="lei-value">—</div>
+            <div class="mini-sub" id="lei-3m-ago-value">—</div>
+            <div class="mini-sub" id="lei-trend-value">—</div>
+            <div class="mini-date" id="lei-date-value">—</div>
+          </div>
         </div>
-
-        <div class="kv"><span>Fecha PMI</span><strong id="pmi-date-value">—</strong></div>
-
-        <div class="kv">
-          <span>
-            LEI
-            <a href="https://tradingeconomics.com/united-states/leading-economic-index" target="_blank">fuente</a>
-          </span>
-          <strong id="lei-value">—</strong>
-        </div>
-
-        <div class="kv"><span>LEI hace 3m</span><strong id="lei-3m-ago-value">—</strong></div>
-        <div class="kv"><span>Tendencia LEI 3m</span><strong id="lei-trend-value">—</strong></div>
-        <div class="kv"><span>Fecha LEI</span><strong id="lei-date-value">—</strong></div>
       </article>
 
       <article class="card">
@@ -134,18 +141,17 @@
         <div class="kv">
           <span>
             PER Global
-            <a id="per-source-link" href="#" target="_blank">fuente</a>
+            <a id="per-source-link" href="#" target="_blank" rel="noopener noreferrer">fuente</a>
           </span>
           <strong id="valuation-per">—</strong>
         </div>
 
-        <div class="kv"><span>Estado valoración</span><strong id="valuation-state">—</strong></div>
+        <div class="kv"><span>Estado</span><strong id="valuation-state">—</strong></div>
         <div class="kv"><span>Fecha PER</span><strong id="valuation-date">—</strong></div>
       </article>
 
       <article class="card">
         <h2>Dinero nuevo</h2>
-
         <div class="kv"><span>Regla</span><strong id="new-money-rule">—</strong></div>
         <div class="kv"><span>Destino inversión</span><strong>Core + Calidad</strong></div>
         <div class="kv"><span>Destino reserva</span><strong>Liquidez</strong></div>
@@ -159,13 +165,13 @@
 
         <div class="sim-row">
           <label for="new-money-input">Importe (€)</label>
-          <input id="new-money-input" type="number" value="600" />
+          <input id="new-money-input" type="number" min="0" step="50" value="600" />
         </div>
 
-        <div class="kv"><span>Invertir ahora</span><strong id="sim-new-invest-now">—</strong></div>
-        <div class="kv"><span>Reservar</span><strong id="sim-new-reserve">—</strong></div>
-        <div class="kv"><span>Vanguard Global</span><strong id="sim-new-core">—</strong></div>
-        <div class="kv"><span>Robeco BP</span><strong id="sim-new-quality">—</strong></div>
+        <div class="kv compact-kv"><span>Invertir ahora</span><strong id="sim-new-invest-now">—</strong></div>
+        <div class="kv compact-kv"><span>Reservar</span><strong id="sim-new-reserve">—</strong></div>
+        <div class="kv compact-kv"><span>Vanguard Global</span><strong id="sim-new-core">—</strong></div>
+        <div class="kv compact-kv"><span>Robeco BP</span><strong id="sim-new-quality">—</strong></div>
       </article>
 
       <article class="card">
@@ -173,14 +179,23 @@
 
         <div class="sim-row">
           <label for="rotation-input">Capital (€)</label>
-          <input id="rotation-input" type="number" value="1000" />
+          <input id="rotation-input" type="number" min="0" step="100" value="1000" />
         </div>
 
-        <div class="kv"><span>Estado</span><strong id="rotation-state">—</strong></div>
-        <div class="kv"><span>Acción</span><strong id="rotation-action">—</strong></div>
-        <div class="kv"><span>Vanguard</span><strong id="sim-rot-core">—</strong></div>
-        <div class="kv"><span>Robeco BP</span><strong id="sim-rot-quality">—</strong></div>
-        <div class="kv"><span>Emergentes</span><strong id="sim-rot-emerging">—</strong></div>
+        <div class="compact-block">
+          <div class="compact-row">
+            <span class="compact-label">Estado</span>
+            <span class="compact-value" id="rotation-state">—</span>
+          </div>
+          <div class="compact-row">
+            <span class="compact-label">Acción</span>
+            <span class="compact-value" id="rotation-action">—</span>
+          </div>
+        </div>
+
+        <div class="kv compact-kv"><span>Vanguard</span><strong id="sim-rot-core">—</strong></div>
+        <div class="kv compact-kv"><span>Robeco BP</span><strong id="sim-rot-quality">—</strong></div>
+        <div class="kv compact-kv"><span>Emergentes</span><strong id="sim-rot-emerging">—</strong></div>
       </article>
     </section>
   </main>
