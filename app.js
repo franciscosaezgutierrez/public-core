@@ -24,10 +24,10 @@ function computeValuation(cape, per) {
 }
 
 function getDrawdownLabel(dd) {
-  if (dd > -3) return "MÁXIMOS PRÁCTICOS";
-  if (dd > -7) return "CORRECCIÓN LEVE";
-  if (dd > -10) return "PRE-TRIGGER";
-  return "TRIGGER";
+  if (dd > -3) return "máximos prácticos";
+  if (dd > -7) return "corrección leve";
+  if (dd > -10) return "pre-trigger";
+  return "trigger";
 }
 
 function formatDate(value) {
@@ -179,7 +179,6 @@ function renderNewMoneySimulator(ruleData) {
   setText("sim-new-reserve", formatEuro(reserve));
   setText("sim-new-core", formatEuro(core));
   setText("sim-new-quality", formatEuro(quality));
-  setText("sim-new-reserve-destination", "Liquidez");
 }
 
 function renderRotationSimulator(dd, vix, override) {
@@ -246,7 +245,8 @@ async function loadDashboard() {
 
     setText("nav-value", formatNumber(navValue, 2));
     setText("max52-value", formatNumber(max52Value, 2));
-    setText("drawdown-value", `${formatNumber(dd, 2)}% (${getDrawdownLabel(dd)})`);
+    setText("drawdown-value", `${formatNumber(dd, 2)}%`);
+    setText("drawdown-label", getDrawdownLabel(dd));
     setText("vix-value", formatNumber(auto.vix, 2));
     setText("next-trigger-value", auto.next_trigger || "—");
     setText("freshness-value", formatFreshness(auto.data_freshness));
@@ -272,8 +272,8 @@ async function loadDashboard() {
     setText("pmi-value", formatNumber(manual.pmi, 2));
     setText("pmi-date-value", formatDate(manual.pmi_date));
     setText("lei-value", formatNumber(manual.lei_value, 2));
-    setText("lei-3m-ago-value", formatNumber(manual.lei_value_3m_ago, 2));
-    setText("lei-trend-value", formatNumber(manual.lei_trend_3m, 2));
+    setText("lei-3m-ago-value", `3m: ${formatNumber(manual.lei_value_3m_ago, 2)}`);
+    setText("lei-trend-value", `tendencia: ${formatNumber(manual.lei_trend_3m, 2)}`);
     setText("lei-date-value", formatDate(manual.lei_date));
 
     setText("valuation-cape", `${formatNumber(valuation.cape_sp500, 2)} (${valuation.cape_state})`);
@@ -283,8 +283,6 @@ async function loadDashboard() {
     setHref("per-source-link", manual.per_global_source);
 
     setText("new-money-rule", newMoneyRule.rule);
-    setText("new-money-destination", "Core + Calidad");
-    setText("new-money-reserve-destination", "Liquidez");
     setText("new-money-note", newMoneyRule.note);
 
     renderNewMoneySimulator(newMoneyRule);
