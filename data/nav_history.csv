@@ -1,6 +1,1 @@
 timestamp,nav,max52,drop_pct,scenario,signal,vix,phase,cape,pmi,lei,score
-2026-04-08 20:00:00+00:00,55.3586,55.3586,0.0,Escenario 3,DEFENSIVO,19.23,Fase 0 · Normal,39.14,50.3,97.5,-2.0
-2026-04-09 20:00:00+00:00,55.5655,55.5655,0.0,Escenario 3,DEFENSIVO,21.21,Fase 0 · Normal,39.14,50.3,97.5,-2.0
-2026-04-10 20:00:00+00:00,55.4061,55.5655,-0.002869,Escenario 3,DEFENSIVO,18.36,Fase 0 · Normal,39.14,50.3,97.5,-2.0
-2026-04-13 20:00:00+00:00,55.8624,55.8624,0.0,Escenario 3,DEFENSIVO,18.38,Fase 0 · Normal,39.14,50.3,97.5,-2.0
-2026-04-15 09:30:00+00:00,55.3586,55.8624,-0.009019,🟠 Escenario 3 · Sobrevaloración,NO HACER NADA,19.23,Fase 0 · Normal,39.14,50.3,97.5,-2.0
