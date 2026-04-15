@@ -1,63 +1,56 @@
-# Sistema de Rotación de Cartera v2.3
+# Sistema de Rotación de Cartera
 
 Dashboard estático para GitHub Pages basado en reglas mecánicas de asignación, dinero nuevo y rotación por caída.
 
-## Qué cambia en la v2.3
-
-- Alineación explícita con el documento maestro `INV-Rotacion.md`.
-- Motor de escenario estructural consolidado en `nav_check.py`.
-- Valoración compuesta integrada: **CAPE + PER global**.
-- Regla de dinero nuevo alineada al estado de valoración, no solo al CAPE.
-- Motor de rotación por tramos con buckets definidos y estado persistente.
-- Fase operativa separada de escenario estructural.
-- Payload `latest.json` ampliado para que el front no rehaga lógica crítica.
-- Fallback operativo: si Yahoo falla, reutiliza el último dato válido para no romper el dashboard.
-- Versión de proyecto incluida en `latest.json`.
-
 ## Qué muestra
-
-- NAV actual, máximo 52 semanas y drawdown.
-- VIX y macro manual: CAPE, PMI, LEI, PER global.
-- Escenario estructural, fase operativa y señal actual.
-- Asignación objetivo por escenario.
-- Dinero nuevo basado en valoración compuesta.
-- Rotación por caída por tramos.
-- Validación del sistema y bloqueo de decisiones.
-- Frescura de los datos.
-- Estado de buckets ejecutados.
+- NAV actual, máximo 52 semanas y drawdown
+- VIX y macro manual: CAPE, PMI, LEI
+- Escenario, fase operativa y señal actual
+- Asignación objetivo
+- Simulador de dinero nuevo basado en CAPE
+- Rotación por caída por tramos
+- Validación del sistema y bloqueo de decisiones
+- Explicación del escenario
+- Frescura de los datos
+- Estado de tramos ejecutados
 
 ## Archivos principales
-
-- `index.html`: dashboard.
-- `app.js`: render del front basado en `latest.json`.
-- `style.css`: estilos.
-- `data/latest.json`: snapshot actual del sistema.
-- `data/nav_history.csv`: histórico NAV / máximos.
-- `data/manual_macro.json`: apoyo para macro manual.
-- `nav_check.py`: actualización de datos y motor de reglas.
-- `nav_check_v22_backup.py`: copia de seguridad de la versión previa.
-
-## Reglas operativas ya integradas
-
-- Separación de capas: estructural / táctica / flujos.
-- Escenarios 1–4.
-- Dinero nuevo según estado de valoración.
-- Rotación por drawdown con validación por VIX.
-- Prioridad de compra: core → calidad → emergentes.
-- Fuente de rotación: liquidez → DNCA → Jupiter.
-- Modo pausa.
-- Reducción de riesgo.
-- Tolerancias de rebalanceo expuestas en el payload.
-- Reglas críticas y checklist operativo expuestos en el payload.
+- `index.html`: dashboard
+- `app.js`: lógica del front
+- `style.css`: estilos
+- `data/latest.json`: snapshot actual del sistema
+- `data/nav_history.csv`: histórico NAV / máximos
+- `data/manual_macro.json`: apoyo para macro manual
+- `nav_check.py`: actualización de datos
 
 ## Publicación
-
 1. Subir el contenido al repositorio.
 2. Activar GitHub Pages desde la rama principal.
 3. El dashboard leerá `data/latest.json` y `data/nav_history.csv`.
 
-## Notas
+## Notas de funcionamiento
+- La web no calcula CAPE, PMI ni LEI: los lee desde `data/latest.json`.
+- El dinero nuevo se decide por CAPE, no por escenario.
+- La rotación por caída usa solo capital existente.
+- La secuencia de fuente para rotación es liquidez → DNCA → Jupiter.
+- Si falta VIX o hay datos con antigüedad superior a 1 día, el sistema bloquea decisiones.
+- Si faltan campos opcionales de mejora, el dashboard sigue cargando y muestra `—` solo en esos bloques.
 
-- CAPE, PMI, LEI y PER global siguen siendo inputs manuales.
-- El front ya no debe reinterpretar reglas críticas que ya estén resueltas en `latest.json`.
-- Si falla la descarga de Yahoo, el script reutiliza el último dato disponible.
+## Estado de alineación con el documento maestro
+- Composición base del escenario 3 implementada.
+- Escenarios macro implementados.
+- Rotación por drawdown implementada con prioridad core → calidad → emergentes.
+- Dinero nuevo basado estrictamente en CAPE.
+- Uso defensivo implementado: 60% DNCA / 40% Jupiter.
+- Jupiter incorporado como tercera fuente de rotación.
+- Bloqueo automático por datos > 1 día y por ausencia de VIX.
+- Reducción de riesgo completa con condición de mercado +20% desde mínimo.
+- Tolerancias de rebalanceo por bloque expuestas en el payload.
+- Workflow documentado sin rutas erróneas.
+
+
+## v2.4.1 integrada
+- Añadidos `config.py` y `engine.py`.
+- `nav_check.py` ahora es el motor principal alineado con el MD cerrado.
+- `app.js` mantiene compatibilidad con el dashboard existente y prioriza la lógica calculada en `data/latest.json`.
+- No usar `main.py`: en este proyecto el ejecutor sigue siendo `nav_check.py`.
