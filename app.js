@@ -6,7 +6,7 @@ async function loadManualMacro() {
 
 async function loadNavHistory() {
   const res = await fetch("./data/nav_history.csv", { cache: "no-store" });
-  if (!res.ok) throw new Error("Error cargando nav_history.csv");
+  if (!res.ok) return null;
   return await res.text();
 }
 
@@ -14,29 +14,31 @@ function parseCsv(text) {
   if (!text || !text.trim()) return [];
   const lines = text.trim().split(/\r?\n/);
   if (lines.length < 2) return [];
-  const headers = lines[0].split(",");
+  const headers = lines[0].split(",").map(h => h.trim());
+
   return lines.slice(1).map(line => {
     const cols = line.split(",");
     const row = {};
     headers.forEach((h, i) => {
-      row[h.trim()] = (cols[i] || "").trim();
+      row[h] = (cols[i] || "").trim();
     });
     return row;
   });
 }
 
-function getLastNavRow(rows) {
-  if (!rows.length) return null;
-  return rows[rows.length - 1];
+function getLastValidNavRow(rows) {
+  const valid = rows.filter(r => !Number.isNaN(Number(r.nav)));
+  if (!valid.length) return null;
+  return valid[valid.length - 1];
 }
 
 function computeMax52FromHistory(rows) {
-  const last52 = rows.slice(-365);
-  const values = last52
+  const valid = rows
     .map(r => Number(r.nav))
     .filter(v => !Number.isNaN(v));
-  if (!values.length) return null;
-  return Math.max(...values);
+
+  if (!valid.length) return null;
+  return Math.max(...valid);
 }
 
 function computeValuation(cape, per) {
@@ -63,6 +65,29 @@ function getDrawdownLabel(dd) {
   if (dd > -7) return "CORRECCIÓN LEVE";
   if (dd > -10) return "PRE-TRIGGER";
   return "TRIGGER";
+}
+
+function formatDate(value) {
+  return value || "—";
+}
+
+function formatNumber(value, decimals = 2) {
+  if (value === null || value === undefined || Number.isNaN(Number(value))) return "—";
+  return Number(value).toFixed(decimals).replace(".", ",");
+}
+
+function formatEuro(value) {
+  return `${formatNumber(value, 2)} €`;
+}
+
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+
+function setHref(id, href) {
+  const el = document.getElementById(id);
+  if (el && href) el.href = href;
 }
 
 function getNewMoneyRuleData(state) {
@@ -105,31 +130,77 @@ function getNewMoneyRuleData(state) {
   }
 }
 
-function formatDate(value) {
-  return value || "—";
-}
+function getScenarioData(auto, valuation, override) {
+  if (override === "SC1") {
+    return {
+      scenario: "🟢 Escenario 1 · Expansión",
+      phase: "Manual",
+      pauseActive: false,
+      pauseReason: "Override manual",
+      action: "RIESGO ALTO",
+      newMoneyState: "BARATO"
+    };
+  }
 
-function formatEuro(value) {
-  return `${Number(value).toFixed(2).replace(".", ",")} €`;
-}
+  if (override === "SC2") {
+    return {
+      scenario: "🟡 Escenario 2 · Desaceleración",
+      phase: "Manual",
+      pauseActive: false,
+      pauseReason: "Override manual",
+      action: "EQUILIBRIO",
+      newMoneyState: "NEUTRO"
+    };
+  }
 
-function formatNumber(value, decimals = 2) {
-  if (value === null || value === undefined || Number.isNaN(Number(value))) return "—";
-  return Number(value).toFixed(decimals).replace(".", ",");
-}
+  if (override === "SC3") {
+    return {
+      scenario: "🟠 Escenario 3 · Sobrevaloración",
+      phase: "Manual",
+      pauseActive: true,
+      pauseReason: "Override manual",
+      action: "NO HACER NADA",
+      newMoneyState: valuation.composite_state
+    };
+  }
 
-function setText(id, value) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = value;
+  if (override === "SC4") {
+    return {
+      scenario: "🔴 Escenario 4 · Corrección",
+      phase: "Manual",
+      pauseActive: false,
+      pauseReason: "Override manual",
+      action: "ACTIVAR ROTACIÓN",
+      newMoneyState: valuation.composite_state
+    };
+  }
+
+  let action = "NO HACER NADA";
+  const dd = Number(auto.drop_percent_display);
+  const vix = Number(auto.vix);
+
+  if (auto.pause_mode?.active) {
+    action = "NO HACER NADA";
+  } else if (dd <= -10 && vix > 20) {
+    action = "ACTIVAR ROTACIÓN";
+  } else if (dd <= -5) {
+    action = "PREPARAR LIQUIDEZ";
+  }
+
+  return {
+    scenario: auto.scenario || "—",
+    phase: auto.phase || "—",
+    pauseActive: !!auto.pause_mode?.active,
+    pauseReason: auto.pause_mode?.reason || "—",
+    action,
+    newMoneyState: valuation.composite_state
+  };
 }
 
 function renderNewMoneySimulator(ruleData) {
-  const input = document.getElementById("new-money-input");
-  const amount = Number(input?.value || 0);
-
+  const amount = Number(document.getElementById("new-money-input")?.value || 0);
   const investNow = amount * ruleData.investPct;
   const reserve = amount * ruleData.reservePct;
-
   const core = investNow * 0.70;
   const quality = investNow * 0.30;
 
@@ -140,16 +211,16 @@ function renderNewMoneySimulator(ruleData) {
   setText("sim-new-reserve-destination", "Liquidez");
 }
 
-function renderRotationSimulator(auto) {
-  const input = document.getElementById("rotation-input");
-  const amount = Number(input?.value || 0);
-  const dd = Number(auto.drop_percent_display);
-  const vix = Number(auto.vix);
+function renderRotationSimulator(dd, vix, override) {
+  const amount = Number(document.getElementById("rotation-input")?.value || 0);
 
   let state = "Sin señal";
   let action = "No actuar";
 
-  if (dd <= -10 && vix > 20) {
+  if (override === "SC4") {
+    state = "Trigger activo (manual)";
+    action = "Comprar";
+  } else if (dd <= -10 && vix > 20) {
     state = "Trigger activo";
     action = "Comprar";
   } else if (dd <= -5) {
@@ -184,75 +255,80 @@ async function loadDashboard() {
     loadNavHistory()
   ]);
 
-  const navRows = parseCsv(navHistoryText);
-  const lastNavRow = getLastNavRow(navRows);
-  const navFromHistory = lastNavRow ? Number(lastNavRow.nav) : null;
-  const max52FromHistory = computeMax52FromHistory(navRows);
-
-  const navValue = navFromHistory ?? Number(auto.nav);
-  const max52Value = max52FromHistory ?? Number(auto.max52);
+  const navRows = parseCsv(navHistoryText || "");
+  const lastNavRow = getLastValidNavRow(navRows);
+  const navValue = lastNavRow ? Number(lastNavRow.nav) : Number(auto.nav);
+  const max52Value = computeMax52FromHistory(navRows) ?? Number(auto.max52);
   const dd = max52Value ? ((navValue / max52Value) - 1) * 100 : Number(auto.drop_percent_display);
 
-  const valuation = computeValuation(manual.cape, manual.per_global);
+  const valuation = computeValuation(Number(manual.cape), Number(manual.per_global));
 
-  let action = "NO HACER NADA";
-  if (auto.pause_mode?.active) {
-    action = "NO HACER NADA";
-  } else if (dd <= -10 && Number(auto.vix) > 20) {
-    action = "ACTIVAR ROTACIÓN";
-  } else if (dd <= -5) {
-    action = "PREPARAR LIQUIDEZ";
+  function renderAll() {
+    const override = document.getElementById("scenario-select")?.value || "AUTO";
+    const scenarioData = getScenarioData(
+      { ...auto, drop_percent_display: dd },
+      valuation,
+      override
+    );
+
+    const newMoneyRule = getNewMoneyRuleData(scenarioData.newMoneyState);
+
+    setText("signal-current", `${scenarioData.scenario} · ${scenarioData.phase} · ${scenarioData.action}`);
+    setText("signal-summary", auto.macro_signal || "—");
+
+    setText("nav-value", formatNumber(navValue, 2));
+    setText("max52-value", formatNumber(max52Value, 2));
+    setText("drawdown-value", `${formatNumber(dd, 2)}% (${getDrawdownLabel(dd)})`);
+    setText("vix-value", formatNumber(auto.vix, 2));
+    setText("next-trigger-value", auto.next_trigger || "—");
+    setText("freshness-value", auto.data_freshness || "—");
+
+    setText("scenario-value", auto.scenario || "—");
+    setText("scenario-override-status", override === "AUTO" ? "Desactivado" : override);
+    setText("phase-value", scenarioData.phase);
+    setText("action-value", scenarioData.action);
+    setText("pause-value", scenarioData.pauseActive ? "Sí" : "No");
+    setText("pause-reason-value", scenarioData.pauseReason);
+    setText("blocked-value", auto.decision_status?.blocked ? "Sí" : "No");
+    setText(
+      "warnings-value",
+      (auto.decision_status?.warnings || []).length
+        ? auto.decision_status.warnings.join(" · ")
+        : "Sin warnings"
+    );
+    setText("updated-at-value", auto.updated_at || auto.timestamp || "—");
+
+    setText("macro-signal-value", auto.macro_signal || "—");
+    setText("cape-value", formatNumber(manual.cape, 2));
+    setText("cape-date-value", formatDate(manual.cape_date));
+    setText("pmi-value", formatNumber(manual.pmi, 2));
+    setText("pmi-date-value", formatDate(manual.pmi_date));
+    setText("lei-value", formatNumber(manual.lei_value, 2));
+    setText("lei-3m-ago-value", formatNumber(manual.lei_value_3m_ago, 2));
+    setText("lei-trend-value", formatNumber(manual.lei_trend_3m, 2));
+    setText("lei-date-value", formatDate(manual.lei_date));
+
+    setText("valuation-cape", `${formatNumber(valuation.cape_sp500, 2)} (${valuation.cape_state})`);
+    setText("valuation-per", `${formatNumber(valuation.per_global, 2)} (${valuation.per_state})`);
+    setText("valuation-state", valuation.composite_state);
+    setText("valuation-source", "Vanguard (manual)");
+    setText("valuation-date", formatDate(manual.per_global_date));
+    setHref("per-source-link", manual.per_global_source);
+
+    setText("new-money-rule", newMoneyRule.rule);
+    setText("new-money-destination", "Core + Calidad");
+    setText("new-money-reserve-destination", "Liquidez");
+    setText("new-money-note", newMoneyRule.note);
+
+    renderNewMoneySimulator(newMoneyRule);
+    renderRotationSimulator(dd, Number(auto.vix), override);
   }
 
-  const newMoneyRule = getNewMoneyRuleData(valuation.composite_state);
+  renderAll();
 
-  setText("signal-current", `${auto.scenario} · ${auto.phase} · ${action}`);
-  setText("signal-summary", auto.macro_signal || "—");
-
-  setText("nav-value", formatNumber(navValue, 4));
-  setText("max52-value", formatNumber(max52Value, 4));
-  setText("drawdown-value", `${formatNumber(dd, 2)}% (${getDrawdownLabel(dd)})`);
-  setText("vix-value", formatNumber(auto.vix, 2));
-  setText("next-trigger-value", auto.next_trigger || "—");
-  setText("freshness-value", auto.data_freshness || "—");
-
-  setText("scenario-value", auto.scenario || "—");
-  setText("phase-value", auto.phase || "—");
-  setText("pause-value", auto.pause_mode?.active ? "Sí" : "No");
-  setText("pause-reason-value", auto.pause_mode?.reason || "—");
-  setText("macro-signal-value", auto.macro_signal || "—");
-
-  setText("valuation-cape", `${formatNumber(valuation.cape_sp500, 2)} (${valuation.cape_state})`);
-  setText("valuation-per", `${formatNumber(valuation.per_global, 2)} (${valuation.per_state})`);
-  setText("valuation-state", valuation.composite_state);
-  setText("valuation-source", "Vanguard (manual)");
-  setText("valuation-date", formatDate(manual.per_global_date));
-
-  setText("new-money-rule", newMoneyRule.rule);
-  setText("new-money-destination", "Core + Calidad");
-  setText("new-money-reserve-destination", "Liquidez");
-  setText("new-money-note", newMoneyRule.note);
-
-  setText("action-value", action);
-  setText("blocked-value", auto.decision_status?.blocked ? "Sí" : "No");
-  setText(
-    "warnings-value",
-    (auto.decision_status?.warnings || []).length
-      ? auto.decision_status.warnings.join(" · ")
-      : "Sin warnings"
-  );
-  setText("updated-at-value", auto.updated_at || auto.timestamp || "—");
-
-  renderNewMoneySimulator(newMoneyRule);
-  renderRotationSimulator({ ...auto, drop_percent_display: dd });
-
-  document.getElementById("new-money-input")?.addEventListener("input", () => {
-    renderNewMoneySimulator(newMoneyRule);
-  });
-
-  document.getElementById("rotation-input")?.addEventListener("input", () => {
-    renderRotationSimulator({ ...auto, drop_percent_display: dd });
-  });
+  document.getElementById("new-money-input")?.addEventListener("input", renderAll);
+  document.getElementById("rotation-input")?.addEventListener("input", renderAll);
+  document.getElementById("scenario-select")?.addEventListener("change", renderAll);
 }
 
 loadDashboard().catch(err => {
