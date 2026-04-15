@@ -6,5 +6,8 @@
   "lei_value": 97.5,
   "lei_date": "2026-04-01",
   "lei_value_3m_ago": 98.2,
-  "lei_trend_3m": -0.7
+  "lei_trend_3m": -0.7,
+  "per_global": 17.0,
+  "per_global_date": "2026-04-15",
+  "per_global_source": "https://www.es.vanguard/profesionales/producto/fondo/renta-variable/9837/global-stock-index-fund-eur-acc"
 }
