@@ -9,7 +9,7 @@
   "scenario_code": "SC3_SOBREVALORACION",
   "scenario": "🟠 Escenario 3 · Sobrevaloración",
   "signal": "NO HACER NADA",
-  "vix": 17.57,
+  "vix": 17.51,
   "vix_date": "2026-04-15",
   "phase": "Fase 0 · Normal",
   "entry_label": "Sin entrada",
@@ -20,7 +20,7 @@
   "cape_date": "2026-04-08",
   "pmi": 50.3,
   "pmi_date": "2026-04-01",
-  "per_global": 17.0,
+  "per_global": 24.5,
   "per_global_date": "2026-04-15",
   "lei": {
     "value": 97.5,
@@ -37,10 +37,10 @@
   },
   "valuation": {
     "cape_sp500": 39.14,
-    "per_global": 17.0,
+    "per_global": 24.5,
     "cape_state": "CARO",
-    "per_state": "NORMAL",
-    "composite_state": "CARO_MODERADO"
+    "per_state": "CARO",
+    "composite_state": "MUY_CARO"
   },
   "allocations": {
     "rv": "60–62%",
@@ -94,7 +94,7 @@
     "note": "Sobrevaloración: parte de la inversión nueva puede ir a defensivos."
   },
   "new_money_rules": {
-    "state": "CARO_MODERADO",
+    "state": "MUY_CARO",
     "scenario_based": true,
     "invest_pct": 0.6,
     "reserve_pct": 0.4,
@@ -179,8 +179,8 @@
     "trigger_vix_lt": 15,
     "market_plus_20_from_low_required": true,
     "market_plus_20_from_low": false,
-    "market_low_reference": 55.3586,
-    "market_rebound_from_low": 0.009101,
+    "market_low_reference": null,
+    "market_rebound_from_low": null,
     "action": "Aumentar liquidez 5–10% y reducir RV progresivamente",
     "active_now": false
   },
