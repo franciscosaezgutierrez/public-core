@@ -1,10 +1,22 @@
 * { box-sizing: border-box; }
 
+:root {
+  --bg: #0b1220;
+  --panel: #121a2b;
+  --panel-2: #182338;
+  --border: #25324a;
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --accent: #60a5fa;
+  --accent-2: #38bdf8;
+  --shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
+}
+
 body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
-  background: #f6f7f9;
-  color: #1f2937;
+  background: var(--bg);
+  color: var(--text);
 }
 
 .container {
@@ -14,11 +26,11 @@ body {
 }
 
 .card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+  border: 1px solid var(--border);
   border-radius: 14px;
   padding: 18px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  box-shadow: var(--shadow);
 }
 
 .hero {
@@ -27,14 +39,14 @@ body {
 
 .eyebrow {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--muted);
   text-transform: uppercase;
   letter-spacing: .08em;
   margin-bottom: 6px;
 }
 
 .muted {
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .hero-grid,
@@ -56,7 +68,7 @@ body {
 .metric .label,
 .kv span,
 .sim-row label {
-  color: #6b7280;
+  color: var(--muted);
   font-size: 13px;
 }
 
@@ -64,17 +76,20 @@ body {
   font-size: 24px;
   font-weight: 700;
   margin-top: 4px;
+  color: var(--text);
 }
 
 h1 {
   margin: 0 0 8px;
   font-size: 28px;
   line-height: 1.2;
+  color: var(--text);
 }
 
 h2 {
   margin-top: 0;
   font-size: 18px;
+  color: var(--text);
 }
 
 .kv {
@@ -82,11 +97,12 @@ h2 {
   justify-content: space-between;
   gap: 16px;
   padding: 8px 0;
-  border-bottom: 1px solid #f0f2f5;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
 }
 
 .kv strong {
   text-align: right;
+  color: var(--text);
 }
 
 .sim-row {
@@ -99,15 +115,22 @@ h2 {
 input[type="number"],
 select {
   padding: 10px 12px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border);
   border-radius: 10px;
   font-size: 14px;
-  background: #fff;
+  background: #0f172a;
+  color: var(--text);
+}
+
+input[type="number"]:focus,
+select:focus {
+  outline: 1px solid var(--accent);
+  border-color: var(--accent);
 }
 
 .source-inline {
   font-size: 11px;
-  color: #6b7280;
+  color: var(--muted);
   font-weight: normal;
   margin-left: 4px;
 }
@@ -115,7 +138,7 @@ select {
 .kv a,
 .metric a {
   font-size: 11px;
-  color: #6b7280;
+  color: var(--accent-2);
   text-decoration: none;
 }
 
