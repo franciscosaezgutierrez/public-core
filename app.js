@@ -78,6 +78,10 @@ function formatEuro(value) {
   return `${Number(value).toFixed(2).replace(".", ",")} €`;
 }
 
+function formatNumber(value, decimals = 2) {
+  return Number(value).toFixed(decimals).replace(".", ",");
+}
+
 function setText(id, value) {
   const el = document.getElementById(id);
   if (el) el.textContent = value;
@@ -160,8 +164,10 @@ async function loadDashboard() {
   setText("signal-current", `${auto.scenario} · ${auto.phase} · ${action}`);
   setText("signal-summary", auto.macro_signal || "—");
 
-  setText("drawdown-value", `${dd}% (${getDrawdownLabel(dd)})`);
-  setText("vix-value", `${auto.vix}`);
+  setText("nav-value", formatNumber(auto.nav, 4));
+  setText("max52-value", formatNumber(auto.max52, 4));
+  setText("drawdown-value", `${formatNumber(dd, 2)}% (${getDrawdownLabel(dd)})`);
+  setText("vix-value", formatNumber(auto.vix, 2));
   setText("next-trigger-value", auto.next_trigger || "—");
   setText("freshness-value", auto.data_freshness || "—");
 
@@ -171,8 +177,8 @@ async function loadDashboard() {
   setText("pause-reason-value", auto.pause_mode?.reason || "—");
   setText("macro-signal-value", auto.macro_signal || "—");
 
-  setText("valuation-cape", `${valuation.cape_sp500} (${valuation.cape_state})`);
-  setText("valuation-per", `${valuation.per_global} (${valuation.per_state})`);
+  setText("valuation-cape", `${formatNumber(valuation.cape_sp500, 2)} (${valuation.cape_state})`);
+  setText("valuation-per", `${formatNumber(valuation.per_global, 2)} (${valuation.per_state})`);
   setText("valuation-state", valuation.composite_state);
   setText("valuation-source", "Vanguard (manual)");
   setText("valuation-date", formatDate(manual.per_global_date));
