@@ -3,29 +3,42 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard · Sistema de Rotación</title>
+  <title>Dashboard Operativo · Sistema de Rotación</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <main class="container">
     <section class="hero card">
-      <div class="eyebrow">Sistema de Rotación de Cartera</div>
+      <div class="eyebrow">Dashboard Operativo</div>
       <h1 id="signal-current">Cargando…</h1>
-      <p id="signal-summary" class="muted"></p>
+      <p id="signal-summary" class="muted">Cargando estado del sistema…</p>
 
       <div class="hero-grid">
+        <div class="metric">
+          <div class="label">NAV</div>
+          <div class="value" id="nav-value">—</div>
+        </div>
+
+        <div class="metric">
+          <div class="label">Máx 52 semanas</div>
+          <div class="value" id="max52-value">—</div>
+        </div>
+
         <div class="metric">
           <div class="label">Drawdown</div>
           <div class="value" id="drawdown-value">—</div>
         </div>
+
         <div class="metric">
           <div class="label">VIX</div>
           <div class="value" id="vix-value">—</div>
         </div>
+
         <div class="metric">
           <div class="label">Siguiente trigger</div>
           <div class="value" id="next-trigger-value">—</div>
         </div>
+
         <div class="metric">
           <div class="label">Datos</div>
           <div class="value" id="freshness-value">—</div>
@@ -35,19 +48,23 @@
 
     <section class="grid">
       <article class="card">
-        <h2>Mercado</h2>
+        <h2>Estado operativo</h2>
         <div class="kv"><span>Escenario</span><strong id="scenario-value">—</strong></div>
         <div class="kv"><span>Fase</span><strong id="phase-value">—</strong></div>
+        <div class="kv"><span>Acción</span><strong id="action-value">—</strong></div>
         <div class="kv"><span>Pausa</span><strong id="pause-value">—</strong></div>
-        <div class="kv"><span>Motivo</span><strong id="pause-reason-value">—</strong></div>
-        <div class="kv"><span>Resumen macro</span><strong id="macro-signal-value">—</strong></div>
+        <div class="kv"><span>Motivo pausa</span><strong id="pause-reason-value">—</strong></div>
+        <div class="kv"><span>Decisión bloqueada</span><strong id="blocked-value">—</strong></div>
+        <div class="kv"><span>Warnings</span><strong id="warnings-value">—</strong></div>
+        <div class="kv"><span>Actualizado</span><strong id="updated-at-value">—</strong></div>
       </article>
 
       <article class="card">
-        <h2>Valoración</h2>
+        <h2>Macro</h2>
+        <div class="kv"><span>Resumen</span><strong id="macro-signal-value">—</strong></div>
         <div class="kv"><span>CAPE</span><strong id="valuation-cape">—</strong></div>
         <div class="kv"><span>PER Global</span><strong id="valuation-per">—</strong></div>
-        <div class="kv"><span>Estado</span><strong id="valuation-state">—</strong></div>
+        <div class="kv"><span>Estado valoración</span><strong id="valuation-state">—</strong></div>
         <div class="kv"><span>Fuente PER</span><strong id="valuation-source">—</strong></div>
         <div class="kv"><span>Fecha PER</span><strong id="valuation-date">—</strong></div>
       </article>
@@ -55,23 +72,25 @@
       <article class="card">
         <h2>Dinero nuevo</h2>
         <div class="kv"><span>Regla</span><strong id="new-money-rule">—</strong></div>
-        <div class="kv"><span>Destino</span><strong id="new-money-destination">Core + Calidad</strong></div>
-        <div class="kv"><span>Reserva</span><strong id="new-money-reserve-destination">Liquidez</strong></div>
+        <div class="kv"><span>Destino inversión</span><strong id="new-money-destination">Core + Calidad</strong></div>
+        <div class="kv"><span>Destino reserva</span><strong id="new-money-reserve-destination">Liquidez</strong></div>
         <div class="kv"><span>Nota</span><strong id="new-money-note">—</strong></div>
       </article>
 
       <article class="card">
-        <h2>Estado operativo</h2>
-        <div class="kv"><span>Acción</span><strong id="action-value">—</strong></div>
-        <div class="kv"><span>Decisión bloqueada</span><strong id="blocked-value">—</strong></div>
-        <div class="kv"><span>Warnings</span><strong id="warnings-value">—</strong></div>
-        <div class="kv"><span>Actualizado</span><strong id="updated-at-value">—</strong></div>
+        <h2>Fuentes</h2>
+        <div class="kv"><span>NAV</span><strong>Yahoo Finance</strong></div>
+        <div class="kv"><span>VIX</span><strong>Yahoo Finance</strong></div>
+        <div class="kv"><span>CAPE</span><strong>multpl.com</strong></div>
+        <div class="kv"><span>PMI</span><strong>TradingEconomics</strong></div>
+        <div class="kv"><span>LEI</span><strong>TradingEconomics</strong></div>
+        <div class="kv"><span>PER Global</span><strong>Vanguard (manual)</strong></div>
       </article>
     </section>
 
     <section class="grid">
       <article class="card">
-        <h2>Simulador · Dinero nuevo</h2>
+        <h2>Simulador dinero nuevo</h2>
 
         <div class="sim-row">
           <label for="new-money-input">Importe (€)</label>
@@ -86,7 +105,7 @@
       </article>
 
       <article class="card">
-        <h2>Simulador · Rotación</h2>
+        <h2>Simulador rotación por caída</h2>
 
         <div class="sim-row">
           <label for="rotation-input">Capital a rotar (€)</label>
