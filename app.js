@@ -4,6 +4,41 @@ async function loadManualMacro() {
   return await res.json();
 }
 
+async function loadNavHistory() {
+  const res = await fetch("./data/nav_history.csv", { cache: "no-store" });
+  if (!res.ok) throw new Error("Error cargando nav_history.csv");
+  return await res.text();
+}
+
+function parseCsv(text) {
+  if (!text || !text.trim()) return [];
+  const lines = text.trim().split(/\r?\n/);
+  if (lines.length < 2) return [];
+  const headers = lines[0].split(",");
+  return lines.slice(1).map(line => {
+    const cols = line.split(",");
+    const row = {};
+    headers.forEach((h, i) => {
+      row[h.trim()] = (cols[i] || "").trim();
+    });
+    return row;
+  });
+}
+
+function getLastNavRow(rows) {
+  if (!rows.length) return null;
+  return rows[rows.length - 1];
+}
+
+function computeMax52FromHistory(rows) {
+  const last52 = rows.slice(-365);
+  const values = last52
+    .map(r => Number(r.nav))
+    .filter(v => !Number.isNaN(v));
+  if (!values.length) return null;
+  return Math.max(...values);
+}
+
 function computeValuation(cape, per) {
   const capeState = cape > 35 ? "CARO" : cape < 28 ? "BARATO" : "NEUTRO";
   const perState = per > 18 ? "CARO" : per < 15 ? "BARATO" : "NORMAL";
@@ -79,6 +114,7 @@ function formatEuro(value) {
 }
 
 function formatNumber(value, decimals = 2) {
+  if (value === null || value === undefined || Number.isNaN(Number(value))) return "—";
   return Number(value).toFixed(decimals).replace(".", ",");
 }
 
@@ -139,16 +175,25 @@ function renderRotationSimulator(auto) {
 }
 
 async function loadDashboard() {
-  const [auto, manual] = await Promise.all([
+  const [auto, manual, navHistoryText] = await Promise.all([
     fetch("./data/latest.json", { cache: "no-store" }).then(r => {
       if (!r.ok) throw new Error("Error cargando latest.json");
       return r.json();
     }),
-    loadManualMacro()
+    loadManualMacro(),
+    loadNavHistory()
   ]);
 
+  const navRows = parseCsv(navHistoryText);
+  const lastNavRow = getLastNavRow(navRows);
+  const navFromHistory = lastNavRow ? Number(lastNavRow.nav) : null;
+  const max52FromHistory = computeMax52FromHistory(navRows);
+
+  const navValue = navFromHistory ?? Number(auto.nav);
+  const max52Value = max52FromHistory ?? Number(auto.max52);
+  const dd = max52Value ? ((navValue / max52Value) - 1) * 100 : Number(auto.drop_percent_display);
+
   const valuation = computeValuation(manual.cape, manual.per_global);
-  const dd = Number(auto.drop_percent_display);
 
   let action = "NO HACER NADA";
   if (auto.pause_mode?.active) {
@@ -164,8 +209,8 @@ async function loadDashboard() {
   setText("signal-current", `${auto.scenario} · ${auto.phase} · ${action}`);
   setText("signal-summary", auto.macro_signal || "—");
 
-  setText("nav-value", formatNumber(auto.nav, 4));
-  setText("max52-value", formatNumber(auto.max52, 4));
+  setText("nav-value", formatNumber(navValue, 4));
+  setText("max52-value", formatNumber(max52Value, 4));
   setText("drawdown-value", `${formatNumber(dd, 2)}% (${getDrawdownLabel(dd)})`);
   setText("vix-value", formatNumber(auto.vix, 2));
   setText("next-trigger-value", auto.next_trigger || "—");
@@ -199,14 +244,14 @@ async function loadDashboard() {
   setText("updated-at-value", auto.updated_at || auto.timestamp || "—");
 
   renderNewMoneySimulator(newMoneyRule);
-  renderRotationSimulator(auto);
+  renderRotationSimulator({ ...auto, drop_percent_display: dd });
 
   document.getElementById("new-money-input")?.addEventListener("input", () => {
     renderNewMoneySimulator(newMoneyRule);
   });
 
   document.getElementById("rotation-input")?.addEventListener("input", () => {
-    renderRotationSimulator(auto);
+    renderRotationSimulator({ ...auto, drop_percent_display: dd });
   });
 }
 
