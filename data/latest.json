@@ -1,15 +1,15 @@
 {
-  "timestamp": "2026-04-13T20:00:00+00:00",
-  "updated_at": "2026-04-13T20:00:00+00:00",
-  "nav_date": "2026-04-13",
-  "nav": 55.8624,
+  "timestamp": "2026-04-15T09:30:00+00:00",
+  "updated_at": "2026-04-15T09:30:00+00:00",
+  "nav_date": "2026-04-15",
+  "nav": 55.3586,
   "max52": 55.8624,
-  "drop_pct": 0.0,
-  "drop_percent_display": 0.0,
+  "drop_pct": -0.009019,
+  "drop_percent_display": -0.9,
   "scenario_code": "SC3_SOBREVALORACION",
   "scenario": "🟠 Escenario 3 · Sobrevaloración",
   "signal": "NO HACER NADA",
-  "vix": 17.51,
+  "vix": 19.23,
   "vix_date": "2026-04-15",
   "phase": "Fase 0 · Normal",
   "entry_label": "Sin entrada",
@@ -20,7 +20,7 @@
   "cape_date": "2026-04-08",
   "pmi": 50.3,
   "pmi_date": "2026-04-01",
-  "per_global": 24.5,
+  "per_global": 17.0,
   "per_global_date": "2026-04-15",
   "lei": {
     "value": 97.5,
@@ -37,10 +37,10 @@
   },
   "valuation": {
     "cape_sp500": 39.14,
-    "per_global": 24.5,
+    "per_global": 17.0,
     "cape_state": "CARO",
-    "per_state": "CARO",
-    "composite_state": "MUY_CARO"
+    "per_state": "NORMAL",
+    "composite_state": "CARO_MODERADO"
   },
   "allocations": {
     "rv": "60–62%",
@@ -94,7 +94,7 @@
     "note": "Sobrevaloración: parte de la inversión nueva puede ir a defensivos."
   },
   "new_money_rules": {
-    "state": "MUY_CARO",
+    "state": "CARO_MODERADO",
     "scenario_based": true,
     "invest_pct": 0.6,
     "reserve_pct": 0.4,
@@ -179,8 +179,8 @@
     "trigger_vix_lt": 15,
     "market_plus_20_from_low_required": true,
     "market_plus_20_from_low": false,
-    "market_low_reference": null,
-    "market_rebound_from_low": null,
+    "market_low_reference": 55.3586,
+    "market_rebound_from_low": 0.0,
     "action": "Aumentar liquidez 5–10% y reducir RV progresivamente",
     "active_now": false
   },
@@ -205,18 +205,19 @@
     "rule": "No actuar si drawdown < -10% y VIX < 20"
   },
   "data_freshness": {
-    "cape_days": 5,
-    "pmi_days": 12,
-    "lei_days": 12,
+    "cape_days": 7,
+    "pmi_days": 14,
+    "lei_days": 14,
     "per_global_days": 0,
     "nav_days": 0,
     "vix_days": 0,
-    "status": "Datos frescos"
+    "status": "Fallback sobre último latest.json"
   },
   "decision_status": {
     "blocked": false,
     "reasons": [],
     "warnings": [
+      "Sin VIX en tiempo real",
       "PMI > 7 días",
       "LEI > 7 días"
     ]
