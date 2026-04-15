@@ -15,12 +15,22 @@
 
       <div class="hero-grid">
         <div class="metric">
-          <div class="label">NAV</div>
+          <div class="label">
+            NAV
+            <span class="source-inline">
+              <a href="./data/nav_history.csv" target="_blank" rel="noopener noreferrer">fuente</a>
+            </span>
+          </div>
           <div class="value" id="nav-value">—</div>
         </div>
 
         <div class="metric">
-          <div class="label">Máx 52 semanas</div>
+          <div class="label">
+            Máx 52 semanas
+            <span class="source-inline">
+              <a href="./data/nav_history.csv" target="_blank" rel="noopener noreferrer">fuente</a>
+            </span>
+          </div>
           <div class="value" id="max52-value">—</div>
         </div>
 
@@ -30,7 +40,12 @@
         </div>
 
         <div class="metric">
-          <div class="label">VIX</div>
+          <div class="label">
+            VIX
+            <span class="source-inline">
+              <a href="https://finance.yahoo.com/quote/%5EVIX/" target="_blank" rel="noopener noreferrer">fuente</a>
+            </span>
+          </div>
           <div class="value" id="vix-value">—</div>
         </div>
 
@@ -51,6 +66,7 @@
         <h2>Estado operativo</h2>
         <div class="kv"><span>Escenario real</span><strong id="scenario-value">—</strong></div>
         <div class="kv"><span>Escenario manual</span><strong id="scenario-override-status">Desactivado</strong></div>
+
         <div class="sim-row">
           <label for="scenario-select">Cambiar escenario manualmente</label>
           <select id="scenario-select">
@@ -61,6 +77,7 @@
             <option value="SC4">🔴 Escenario 4 · Corrección</option>
           </select>
         </div>
+
         <div class="kv"><span>Fase</span><strong id="phase-value">—</strong></div>
         <div class="kv"><span>Acción</span><strong id="action-value">—</strong></div>
         <div class="kv"><span>Pausa</span><strong id="pause-value">—</strong></div>
@@ -73,11 +90,35 @@
       <article class="card">
         <h2>Macro</h2>
         <div class="kv"><span>Resumen</span><strong id="macro-signal-value">—</strong></div>
-        <div class="kv"><span>CAPE</span><strong id="cape-value">—</strong></div>
+
+        <div class="kv">
+          <span>
+            CAPE
+            <a href="https://www.multpl.com/shiller-pe" target="_blank" rel="noopener noreferrer">fuente</a>
+          </span>
+          <strong id="cape-value">—</strong>
+        </div>
+
         <div class="kv"><span>Fecha CAPE</span><strong id="cape-date-value">—</strong></div>
-        <div class="kv"><span>PMI</span><strong id="pmi-value">—</strong></div>
+
+        <div class="kv">
+          <span>
+            PMI
+            <a href="https://tradingeconomics.com/country-list/composite-pmi" target="_blank" rel="noopener noreferrer">fuente</a>
+          </span>
+          <strong id="pmi-value">—</strong>
+        </div>
+
         <div class="kv"><span>Fecha PMI</span><strong id="pmi-date-value">—</strong></div>
-        <div class="kv"><span>LEI</span><strong id="lei-value">—</strong></div>
+
+        <div class="kv">
+          <span>
+            LEI
+            <a href="https://tradingeconomics.com/united-states/leading-economic-index" target="_blank" rel="noopener noreferrer">fuente</a>
+          </span>
+          <strong id="lei-value">—</strong>
+        </div>
+
         <div class="kv"><span>LEI hace 3m</span><strong id="lei-3m-ago-value">—</strong></div>
         <div class="kv"><span>Tendencia LEI 3m</span><strong id="lei-trend-value">—</strong></div>
         <div class="kv"><span>Fecha LEI</span><strong id="lei-date-value">—</strong></div>
@@ -86,20 +127,27 @@
       <article class="card">
         <h2>Valoración</h2>
         <div class="kv"><span>CAPE</span><strong id="valuation-cape">—</strong></div>
-        <div class="kv"><span>PER Global</span><strong id="valuation-per">—</strong></div>
+
+        <div class="kv">
+          <span>
+            PER Global
+            <a id="per-source-link" href="#" target="_blank" rel="noopener noreferrer">fuente</a>
+          </span>
+          <strong id="valuation-per">—</strong>
+        </div>
+
         <div class="kv"><span>Estado valoración</span><strong id="valuation-state">—</strong></div>
-        <div class="kv"><span>Fuente PER</span><strong id="valuation-source">—</strong></div>
         <div class="kv"><span>Fecha PER</span><strong id="valuation-date">—</strong></div>
       </article>
 
       <article class="card">
-        <h2>Fondos</h2>
+        <h2>Universo de fondos</h2>
         <div class="kv"><span>Core</span><strong>Vanguard Global Stock Index</strong></div>
         <div class="kv"><span>Calidad</span><strong>Robeco BP Global Premium</strong></div>
         <div class="kv"><span>Emergentes</span><strong>Robeco QI Emerging</strong></div>
         <div class="kv"><span>Satélite</span><strong>Heptagon Kopernik</strong></div>
         <div class="kv"><span>Bonos</span><strong>DNCA Invest Alpha Bonds</strong></div>
-        <div class="kv"><span>Retorno Absoluto</span><strong>JupiterMerian Global Equity Absolute Return</strong></div>
+        <div class="kv"><span>Retorno absoluto</span><strong>JupiterMerian Global Equity Absolute Return</strong></div>
         <div class="kv"><span>Liquidez</span><strong>DWS Euro Ultra Short + Groupama Trésorerie</strong></div>
         <div class="kv"><span>Oro</span><strong>Invesco Physical Gold</strong></div>
       </article>
@@ -110,34 +158,6 @@
         <div class="kv"><span>Destino inversión</span><strong id="new-money-destination">Core + Calidad</strong></div>
         <div class="kv"><span>Destino reserva</span><strong id="new-money-reserve-destination">Liquidez</strong></div>
         <div class="kv"><span>Nota</span><strong id="new-money-note">—</strong></div>
-      </article>
-
-      <article class="card">
-        <h2>Fuentes</h2>
-        <div class="kv">
-          <span>NAV</span>
-          <strong><a href="./data/nav_history.csv" target="_blank" rel="noopener noreferrer">nav_history.csv</a></strong>
-        </div>
-        <div class="kv">
-          <span>VIX</span>
-          <strong><a href="https://finance.yahoo.com/quote/%5EVIX/" target="_blank" rel="noopener noreferrer">Yahoo Finance</a></strong>
-        </div>
-        <div class="kv">
-          <span>CAPE</span>
-          <strong><a href="https://www.multpl.com/shiller-pe" target="_blank" rel="noopener noreferrer">multpl.com</a></strong>
-        </div>
-        <div class="kv">
-          <span>PMI</span>
-          <strong><a href="https://tradingeconomics.com/country-list/composite-pmi" target="_blank" rel="noopener noreferrer">TradingEconomics</a></strong>
-        </div>
-        <div class="kv">
-          <span>LEI</span>
-          <strong><a href="https://tradingeconomics.com/united-states/leading-economic-index" target="_blank" rel="noopener noreferrer">TradingEconomics</a></strong>
-        </div>
-        <div class="kv">
-          <span>PER Global</span>
-          <strong><a id="per-source-link" href="#" target="_blank" rel="noopener noreferrer">Vanguard (manual)</a></strong>
-        </div>
       </article>
     </section>
 
