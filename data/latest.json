@@ -1,15 +1,15 @@
 {
-  "timestamp": "2026-04-15T09:30:00+00:00",
-  "updated_at": "2026-04-15T09:30:00+00:00",
-  "nav_date": "2026-04-15",
-  "nav": 55.3586,
+  "timestamp": "2026-04-13T20:00:00+00:00",
+  "updated_at": "2026-04-13T20:00:00+00:00",
+  "nav_date": "2026-04-13",
+  "nav": 55.8624,
   "max52": 55.8624,
-  "drop_pct": -0.009019,
-  "drop_percent_display": -0.9,
+  "drop_pct": 0.0,
+  "drop_percent_display": 0.0,
   "scenario_code": "SC3_SOBREVALORACION",
   "scenario": "🟠 Escenario 3 · Sobrevaloración",
   "signal": "NO HACER NADA",
-  "vix": 19.23,
+  "vix": 17.45,
   "vix_date": "2026-04-15",
   "phase": "Fase 0 · Normal",
   "entry_label": "Sin entrada",
@@ -179,8 +179,8 @@
     "trigger_vix_lt": 15,
     "market_plus_20_from_low_required": true,
     "market_plus_20_from_low": false,
-    "market_low_reference": 55.3586,
-    "market_rebound_from_low": 0.0,
+    "market_low_reference": null,
+    "market_rebound_from_low": null,
     "action": "Aumentar liquidez 5–10% y reducir RV progresivamente",
     "active_now": false
   },
@@ -205,19 +205,18 @@
     "rule": "No actuar si drawdown < -10% y VIX < 20"
   },
   "data_freshness": {
-    "cape_days": 7,
-    "pmi_days": 14,
-    "lei_days": 14,
+    "cape_days": 5,
+    "pmi_days": 12,
+    "lei_days": 12,
     "per_global_days": 0,
     "nav_days": 0,
     "vix_days": 0,
-    "status": "Fallback sobre último latest.json"
+    "status": "Datos frescos"
   },
   "decision_status": {
     "blocked": false,
     "reasons": [],
     "warnings": [
-      "Sin VIX en tiempo real",
       "PMI > 7 días",
       "LEI > 7 días"
     ]
