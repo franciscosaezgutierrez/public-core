@@ -80,6 +80,13 @@ function formatEuro(value) {
   return `${formatNumber(value, 2)} €`;
 }
 
+function formatFreshness(value) {
+  if (!value) return "—";
+  if (typeof value === "string") return value;
+  if (typeof value === "object") return value.status || value.label || "—";
+  return String(value);
+}
+
 function setText(id, value) {
   const el = document.getElementById(id);
   if (el) el.textContent = value;
@@ -175,10 +182,10 @@ function getScenarioData(auto, valuation, override) {
     };
   }
 
-  let action = "NO HACER NADA";
   const dd = Number(auto.drop_percent_display);
   const vix = Number(auto.vix);
 
+  let action = "NO HACER NADA";
   if (auto.pause_mode?.active) {
     action = "NO HACER NADA";
   } else if (dd <= -10 && vix > 20) {
@@ -199,6 +206,7 @@ function getScenarioData(auto, valuation, override) {
 
 function renderNewMoneySimulator(ruleData) {
   const amount = Number(document.getElementById("new-money-input")?.value || 0);
+
   const investNow = amount * ruleData.investPct;
   const reserve = amount * ruleData.reservePct;
   const core = investNow * 0.70;
@@ -281,7 +289,7 @@ async function loadDashboard() {
     setText("drawdown-value", `${formatNumber(dd, 2)}% (${getDrawdownLabel(dd)})`);
     setText("vix-value", formatNumber(auto.vix, 2));
     setText("next-trigger-value", auto.next_trigger || "—");
-    setText("freshness-value", auto.data_freshness || "—");
+    setText("freshness-value", formatFreshness(auto.data_freshness));
 
     setText("scenario-value", auto.scenario || "—");
     setText("scenario-override-status", override === "AUTO" ? "Desactivado" : override);
@@ -311,7 +319,6 @@ async function loadDashboard() {
     setText("valuation-cape", `${formatNumber(valuation.cape_sp500, 2)} (${valuation.cape_state})`);
     setText("valuation-per", `${formatNumber(valuation.per_global, 2)} (${valuation.per_state})`);
     setText("valuation-state", valuation.composite_state);
-    setText("valuation-source", "Vanguard (manual)");
     setText("valuation-date", formatDate(manual.per_global_date));
     setHref("per-source-link", manual.per_global_source);
 
