@@ -18,7 +18,7 @@
           <div class="label">
             NAV
             <span class="source-inline">
-              <a href="https://finance.yahoo.com/" target="_blank" rel="noopener noreferrer">fuente</a>
+              <a href="https://es.finance.yahoo.com/quote/0P00000RQC.F/" target="_blank">fuente</a>
             </span>
           </div>
           <div class="value" id="nav-value">—</div>
@@ -28,7 +28,7 @@
           <div class="label">
             Máx 52 semanas
             <span class="source-inline">
-              <a href="https://finance.yahoo.com/" target="_blank" rel="noopener noreferrer">fuente</a>
+              <a href="https://es.finance.yahoo.com/quote/0P00000RQC.F/" target="_blank">fuente</a>
             </span>
           </div>
           <div class="value" id="max52-value">—</div>
@@ -43,7 +43,7 @@
           <div class="label">
             VIX
             <span class="source-inline">
-              <a href="https://finance.yahoo.com/quote/%5EVIX/" target="_blank" rel="noopener noreferrer">fuente</a>
+              <a href="https://finance.yahoo.com/quote/%5EVIX/" target="_blank">fuente</a>
             </span>
           </div>
           <div class="value" id="vix-value">—</div>
@@ -64,6 +64,7 @@
     <section class="grid">
       <article class="card">
         <h2>Estado operativo</h2>
+
         <div class="kv"><span>Escenario real</span><strong id="scenario-value">—</strong></div>
         <div class="kv"><span>Escenario manual</span><strong id="scenario-override-status">Desactivado</strong></div>
 
@@ -71,10 +72,10 @@
           <label for="scenario-select">Cambiar escenario manualmente</label>
           <select id="scenario-select">
             <option value="AUTO">AUTO</option>
-            <option value="SC1">🟢 Escenario 1 · Expansión</option>
-            <option value="SC2">🟡 Escenario 2 · Desaceleración</option>
-            <option value="SC3">🟠 Escenario 3 · Sobrevaloración</option>
-            <option value="SC4">🔴 Escenario 4 · Corrección</option>
+            <option value="SC1">🟢 Escenario 1</option>
+            <option value="SC2">🟡 Escenario 2</option>
+            <option value="SC3">🟠 Escenario 3</option>
+            <option value="SC4">🔴 Escenario 4</option>
           </select>
         </div>
 
@@ -89,12 +90,13 @@
 
       <article class="card">
         <h2>Macro</h2>
+
         <div class="kv"><span>Resumen</span><strong id="macro-signal-value">—</strong></div>
 
         <div class="kv">
           <span>
             CAPE
-            <a href="https://www.multpl.com/shiller-pe" target="_blank" rel="noopener noreferrer">fuente</a>
+            <a href="https://www.multpl.com/shiller-pe" target="_blank">fuente</a>
           </span>
           <strong id="cape-value">—</strong>
         </div>
@@ -104,7 +106,7 @@
         <div class="kv">
           <span>
             PMI
-            <a href="https://tradingeconomics.com/country-list/composite-pmi" target="_blank" rel="noopener noreferrer">fuente</a>
+            <a href="https://tradingeconomics.com/country-list/composite-pmi" target="_blank">fuente</a>
           </span>
           <strong id="pmi-value">—</strong>
         </div>
@@ -114,7 +116,7 @@
         <div class="kv">
           <span>
             LEI
-            <a href="https://tradingeconomics.com/united-states/leading-economic-index" target="_blank" rel="noopener noreferrer">fuente</a>
+            <a href="https://tradingeconomics.com/united-states/leading-economic-index" target="_blank">fuente</a>
           </span>
           <strong id="lei-value">—</strong>
         </div>
@@ -126,12 +128,13 @@
 
       <article class="card">
         <h2>Valoración</h2>
+
         <div class="kv"><span>CAPE</span><strong id="valuation-cape">—</strong></div>
 
         <div class="kv">
           <span>
             PER Global
-            <a id="per-source-link" href="#" target="_blank" rel="noopener noreferrer">fuente</a>
+            <a id="per-source-link" href="#" target="_blank">fuente</a>
           </span>
           <strong id="valuation-per">—</strong>
         </div>
@@ -142,9 +145,10 @@
 
       <article class="card">
         <h2>Dinero nuevo</h2>
+
         <div class="kv"><span>Regla</span><strong id="new-money-rule">—</strong></div>
-        <div class="kv"><span>Destino inversión</span><strong id="new-money-destination">Core + Calidad</strong></div>
-        <div class="kv"><span>Destino reserva</span><strong id="new-money-reserve-destination">Liquidez</strong></div>
+        <div class="kv"><span>Destino inversión</span><strong>Core + Calidad</strong></div>
+        <div class="kv"><span>Destino reserva</span><strong>Liquidez</strong></div>
         <div class="kv"><span>Nota</span><strong id="new-money-note">—</strong></div>
       </article>
     </section>
@@ -155,30 +159,28 @@
 
         <div class="sim-row">
           <label for="new-money-input">Importe (€)</label>
-          <input id="new-money-input" type="number" min="0" step="50" value="600" />
+          <input id="new-money-input" type="number" value="600" />
         </div>
 
         <div class="kv"><span>Invertir ahora</span><strong id="sim-new-invest-now">—</strong></div>
         <div class="kv"><span>Reservar</span><strong id="sim-new-reserve">—</strong></div>
         <div class="kv"><span>Vanguard Global</span><strong id="sim-new-core">—</strong></div>
         <div class="kv"><span>Robeco BP</span><strong id="sim-new-quality">—</strong></div>
-        <div class="kv"><span>Destino reserva</span><strong id="sim-new-reserve-destination">Liquidez</strong></div>
       </article>
 
       <article class="card">
-        <h2>Simulador rotación por caída</h2>
+        <h2>Simulador rotación</h2>
 
         <div class="sim-row">
-          <label for="rotation-input">Capital a rotar (€)</label>
-          <input id="rotation-input" type="number" min="0" step="100" value="1000" />
+          <label for="rotation-input">Capital (€)</label>
+          <input id="rotation-input" type="number" value="1000" />
         </div>
 
         <div class="kv"><span>Estado</span><strong id="rotation-state">—</strong></div>
         <div class="kv"><span>Acción</span><strong id="rotation-action">—</strong></div>
-        <div class="kv"><span>Vanguard Global</span><strong id="sim-rot-core">—</strong></div>
+        <div class="kv"><span>Vanguard</span><strong id="sim-rot-core">—</strong></div>
         <div class="kv"><span>Robeco BP</span><strong id="sim-rot-quality">—</strong></div>
-        <div class="kv"><span>Robeco Emerging</span><strong id="sim-rot-emerging">—</strong></div>
-        <div class="kv"><span>Fuente</span><strong id="rotation-source">Liquidez → DNCA → Jupiter</strong></div>
+        <div class="kv"><span>Emergentes</span><strong id="sim-rot-emerging">—</strong></div>
       </article>
     </section>
   </main>
