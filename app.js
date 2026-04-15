@@ -4,43 +4,6 @@ async function loadManualMacro() {
   return await res.json();
 }
 
-async function loadNavHistory() {
-  const res = await fetch("./data/nav_history.csv", { cache: "no-store" });
-  if (!res.ok) return null;
-  return await res.text();
-}
-
-function parseCsv(text) {
-  if (!text || !text.trim()) return [];
-  const lines = text.trim().split(/\r?\n/);
-  if (lines.length < 2) return [];
-  const headers = lines[0].split(",").map(h => h.trim());
-
-  return lines.slice(1).map(line => {
-    const cols = line.split(",");
-    const row = {};
-    headers.forEach((h, i) => {
-      row[h] = (cols[i] || "").trim();
-    });
-    return row;
-  });
-}
-
-function getLastValidNavRow(rows) {
-  const valid = rows.filter(r => !Number.isNaN(Number(r.nav)));
-  if (!valid.length) return null;
-  return valid[valid.length - 1];
-}
-
-function computeMax52FromHistory(rows) {
-  const valid = rows
-    .map(r => Number(r.nav))
-    .filter(v => !Number.isNaN(v));
-
-  if (!valid.length) return null;
-  return Math.max(...valid);
-}
-
 function computeValuation(cape, per) {
   const capeState = cape > 35 ? "CARO" : cape < 28 ? "BARATO" : "NEUTRO";
   const perState = per > 18 ? "CARO" : per < 15 ? "BARATO" : "NORMAL";
@@ -254,20 +217,17 @@ function renderRotationSimulator(dd, vix, override) {
 }
 
 async function loadDashboard() {
-  const [auto, manual, navHistoryText] = await Promise.all([
+  const [auto, manual] = await Promise.all([
     fetch("./data/latest.json", { cache: "no-store" }).then(r => {
       if (!r.ok) throw new Error("Error cargando latest.json");
       return r.json();
     }),
-    loadManualMacro(),
-    loadNavHistory()
+    loadManualMacro()
   ]);
 
-  const navRows = parseCsv(navHistoryText || "");
-  const lastNavRow = getLastValidNavRow(navRows);
-  const navValue = lastNavRow ? Number(lastNavRow.nav) : Number(auto.nav);
-  const max52Value = computeMax52FromHistory(navRows) ?? Number(auto.max52);
-  const dd = max52Value ? ((navValue / max52Value) - 1) * 100 : Number(auto.drop_percent_display);
+  const navValue = Number(auto.nav);
+  const max52Value = Number(auto.max52);
+  const dd = Number(auto.drop_percent_display);
 
   const valuation = computeValuation(Number(manual.cape), Number(manual.per_global));
 
