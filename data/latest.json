@@ -14,7 +14,7 @@
   "scenario_override_active": false,
   "scenario_mode": "automatic",
   "signal": "NO HACER NADA",
-  "vix": 18.04,
+  "vix": 18.05,
   "previous_vix_close": 18.17,
   "vix_date": "2026-04-16",
   "phase": "Fase 0 · Normal",
@@ -26,7 +26,7 @@
   "cape_date": "2026-04-08",
   "pmi": 50.3,
   "pmi_date": "2026-04-01",
-  "per_global": 40.5,
+  "per_global": 24.5,
   "per_global_date": "2026-04-15",
   "lei": {
     "value": 97.5,
@@ -43,7 +43,7 @@
   },
   "valuation": {
     "cape_sp500": 39.14,
-    "per_global": 40.5,
+    "per_global": 24.5,
     "cape_state": "CARO",
     "per_state": "CARO",
     "composite_state": "MUY_CARO"
@@ -194,7 +194,7 @@
     "active": false,
     "reason": "Sin flash crash",
     "nav_change_1d": 0.0048565751704470195,
-    "vix_jump": -0.13000007629394617,
+    "vix_jump": -0.1200000762939446,
     "wait_hours": 48,
     "entry_mode": "progresiva",
     "blocking_window_active": false,
