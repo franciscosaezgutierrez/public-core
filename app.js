@@ -269,25 +269,74 @@ function deriveScenarioPayload(data, scenarioCode) {
   };
 }
 
+const MIN_PURCHASE_EUR = 100;
+
+function applyMinimumPurchaseRule(totalAmount, distribution) {
+  const dist = distribution || {};
+  const entries = Object.entries(dist).map(([asset, weight]) => ({
+    asset,
+    weight: Number(weight || 0),
+    raw_amount: totalAmount * Number(weight || 0),
+  }));
+
+  const eligible = entries.filter((item) => item.raw_amount >= MIN_PURCHASE_EUR);
+  const ineligible = entries.filter((item) => item.raw_amount < MIN_PURCHASE_EUR);
+  const redistributionPool = ineligible.reduce((sum, item) => sum + item.raw_amount, 0);
+  const eligibleRawTotal = eligible.reduce((sum, item) => sum + item.raw_amount, 0);
+  const result = {};
+
+  entries.forEach((item) => {
+    const allowed = item.raw_amount >= MIN_PURCHASE_EUR;
+    const redistributed = allowed && eligibleRawTotal > 0
+      ? redistributionPool * (item.raw_amount / eligibleRawTotal)
+      : 0;
+    const executable = allowed ? item.raw_amount + redistributed : 0;
+    const blocked = allowed ? 0 : item.raw_amount;
+
+    result[item.asset] = {
+      raw_amount: item.raw_amount,
+      redistributed_amount: redistributed,
+      executable_amount: executable,
+      blocked_amount: blocked,
+      allowed,
+    };
+  });
+
+  const executableTotal = Object.values(result).reduce((sum, item) => sum + Number(item.executable_amount || 0), 0);
+  const blockedTotal = eligible.length > 0 ? 0 : redistributionPool;
+
+  return {
+    by_asset: result,
+    executable_total: executableTotal,
+    blocked_total: blockedTotal,
+    redistributed_total: eligible.length > 0 ? redistributionPool : 0,
+  };
+}
+
 function renderNewMoneySimulator(rule) {
   const amount = Number(document.getElementById('new-money-input')?.value || 0);
-  const investNow = amount * Number(rule?.invest_pct || 0);
-  const reserve = amount * Number(rule?.reserve_pct || 0);
+  const reserveBase = amount * Number(rule?.reserve_pct || 0);
   const rvTotal = amount * Number(rule?.rv_pct || 0);
   const defensiveTotal = amount * Number(rule?.defensive_pct || 0);
   const rvDist = rule?.rv_distribution || {};
   const defDist = rule?.defensive_distribution || {};
+  const rvPlan = applyMinimumPurchaseRule(rvTotal, rvDist);
+  const defPlan = applyMinimumPurchaseRule(defensiveTotal, defDist);
+  const blockedTotal = rvPlan.blocked_total + defPlan.blocked_total;
+  const executableInvestNow = rvPlan.executable_total + defPlan.executable_total;
+  const reserveFinal = reserveBase + blockedTotal;
 
-  setText('sim-new-invest-now', formatEuro(investNow));
-  setText('sim-new-reserve', formatEuro(reserve));
-  setText('sim-new-rv-total', formatEuro(rvTotal));
-  setText('sim-new-defensive-total', formatEuro(defensiveTotal));
-  setText('sim-new-core', formatEuro(rvTotal * Number(rvDist.core || 0)));
-  setText('sim-new-quality', formatEuro(rvTotal * Number(rvDist.quality || 0)));
-  setText('sim-new-emerging', formatEuro(rvTotal * Number(rvDist.emerging || 0)));
-  setText('sim-new-kopernik', formatEuro(rvTotal * Number(rvDist.kopernik || 0)));
-  setText('sim-new-dnca', formatEuro(defensiveTotal * Number(defDist.dnca || 0)));
-  setText('sim-new-jupiter', formatEuro(defensiveTotal * Number(defDist.jupiter || 0)));
+  setText('sim-new-invest-now', formatEuro(executableInvestNow));
+  setText('sim-new-reserve', formatEuro(reserveFinal));
+  setText('sim-new-rv-total', formatEuro(rvPlan.executable_total));
+  setText('sim-new-defensive-total', formatEuro(defPlan.executable_total));
+  setText('sim-new-core', formatEuro(rvPlan.by_asset.core?.executable_amount || 0));
+  setText('sim-new-quality', formatEuro(rvPlan.by_asset.quality?.executable_amount || 0));
+  setText('sim-new-emerging', formatEuro(rvPlan.by_asset.emerging?.executable_amount || 0));
+  setText('sim-new-kopernik', formatEuro(rvPlan.by_asset.kopernik?.executable_amount || 0));
+  setText('sim-new-dnca', formatEuro(defPlan.by_asset.dnca?.executable_amount || 0));
+  setText('sim-new-jupiter', formatEuro(defPlan.by_asset.jupiter?.executable_amount || 0));
+  setText('sim-new-blocked', formatEuro(blockedTotal));
 }
 
 function renderRotationSimulator(rotationPlan, pauseMode) {
@@ -300,10 +349,12 @@ function renderRotationSimulator(rotationPlan, pauseMode) {
   setText('rotation-matrix', objectPercentList(matrix));
 
   const buy = active && matrix ? matrix : {};
-  setText('sim-rot-core', formatEuro(amount * Number(buy.core || 0)));
-  setText('sim-rot-quality', formatEuro(amount * Number(buy.quality || 0)));
-  setText('sim-rot-emerging', formatEuro(amount * Number(buy.emerging || 0)));
-  setText('sim-rot-kopernik', formatEuro(amount * Number(buy.kopernik || 0)));
+  const rotationPlanMin = applyMinimumPurchaseRule(amount, buy);
+  setText('sim-rot-core', formatEuro(rotationPlanMin.by_asset.core?.executable_amount || 0));
+  setText('sim-rot-quality', formatEuro(rotationPlanMin.by_asset.quality?.executable_amount || 0));
+  setText('sim-rot-emerging', formatEuro(rotationPlanMin.by_asset.emerging?.executable_amount || 0));
+  setText('sim-rot-kopernik', formatEuro(rotationPlanMin.by_asset.kopernik?.executable_amount || 0));
+  setText('sim-rot-blocked', formatEuro(rotationPlanMin.blocked_total));
 }
 
 function renderList(id, arr) {
