@@ -18,7 +18,6 @@ from config import (
 from engine import (
     apply_flash_crash_window,
     build_current_weights_from_payload,
-    classify_scenario,
     compute_asset_permissions,
     compute_score,
     compute_valuation,
@@ -35,6 +34,7 @@ from engine import (
     get_rotation_plan,
     get_scenario_label,
     get_valuation_adjustment,
+    resolve_scenario,
     score_label,
 )
 
@@ -97,7 +97,7 @@ def load_manual_macro():
     keys = [
         "cape", "cape_date", "pmi", "pmi_date", "lei_value", "lei_date",
         "lei_value_3m_ago", "lei_trend_3m", "per_global", "per_global_date",
-        "per_global_source", "current_weights",
+        "per_global_source", "current_weights", "scenario_override_enabled", "scenario_override_code",
     ]
     out = {}
     for k in keys:
@@ -284,7 +284,10 @@ def main():
 
     valuation = compute_valuation(cape, per_global)
     valuation_adjustment = get_valuation_adjustment(valuation)
-    scenario_code = classify_scenario(cape, pmi, lei_trend_3m, drop_pct, vix)
+    scenario_info = resolve_scenario(cape, pmi, lei_trend_3m, drop_pct, vix, manual_macro=macro)
+    scenario_code = scenario_info["scenario_code"]
+    scenario_source = scenario_info["scenario_source"]
+    scenario_override_active = scenario_info["scenario_override_active"]
     scenario_label = get_scenario_label(scenario_code)
     phase = get_phase(scenario_code, drop_pct)
     pause_mode = get_pause_mode(drop_pct, vix)
@@ -335,6 +338,9 @@ def main():
         "drop_percent_display": round(drop_pct * 100, 2),
         "scenario_code": scenario_code,
         "scenario": scenario_label,
+        "scenario_source": scenario_source,
+        "scenario_override_active": scenario_override_active,
+        "scenario_mode": "manual" if scenario_override_active else "automatic",
         "signal": action,
         "vix": round(vix, 2) if vix is not None else None,
         "previous_vix_close": round(prev_vix_close, 2) if prev_vix_close is not None else None,

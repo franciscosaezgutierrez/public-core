@@ -158,8 +158,9 @@ async function loadDashboard() {
   setText('next-trigger-value', data.next_trigger || '—');
   setText('freshness-value', formatFreshness(data.data_freshness));
 
-  setText('scenario-value', data.scenario || '—');
-  setText('scenario-code-value', data.scenario_code || '—');
+  const scenarioModeLabel = data.scenario_override_active ? 'Manual' : 'Automático';
+  setText('scenario-value', `${data.scenario || '—'} (${scenarioModeLabel})`);
+  setText('scenario-code-value', `${data.scenario_code || '—'} · ${data.scenario_source || '—'}`);
   setText('phase-value', data.phase || '—');
   setText('action-value', data.signal || '—');
   setText('pause-value', pauseMode.active ? 'Sí' : 'No');

@@ -46,6 +46,26 @@ def classify_scenario(cape, pmi, lei_trend_3m, drawdown, vix):
     return "SC3_SOBREVALORACION"
 
 
+def resolve_scenario(cape, pmi, lei_trend_3m, drawdown, vix, manual_macro=None):
+    manual_macro = manual_macro or {}
+    override_enabled = bool(manual_macro.get("scenario_override_enabled"))
+    override_code = manual_macro.get("scenario_override_code")
+    valid_codes = set(SCENARIO_LABELS.keys())
+
+    if override_enabled and override_code in valid_codes:
+        return {
+            "scenario_code": override_code,
+            "scenario_source": "manual_override",
+            "scenario_override_active": True,
+        }
+
+    return {
+        "scenario_code": classify_scenario(cape, pmi, lei_trend_3m, drawdown, vix),
+        "scenario_source": "automatic",
+        "scenario_override_active": False,
+    }
+
+
 def get_phase(scenario, drawdown):
     if scenario == "SC4_CORRECCION":
         return "Fase 2 · Entradas"

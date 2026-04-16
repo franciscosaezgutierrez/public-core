@@ -20,7 +20,7 @@ Dashboard estático para GitHub Pages basado en reglas mecánicas de asignación
 - `style.css`: estilos
 - `data/latest.json`: snapshot actual del sistema
 - `data/nav_history.csv`: histórico NAV / máximos
-- `data/manual_macro.json`: apoyo para macro manual
+- `data/manual_macro.json`: apoyo para macro manual y override opcional de escenario
 - `nav_check.py`: actualización de datos
 
 ## Publicación
@@ -63,3 +63,22 @@ Dashboard estático para GitHub Pages basado en reglas mecánicas de asignación
 - Bloqueo estricto del sistema sin NAV o sin VIX.
 - Detección de flash crash con ventana de espera de 48 horas.
 - Payload ampliado con pesos actuales, objetivos, desviaciones y motivos de bloqueo por activo.
+
+
+## Override manual de escenario
+En `data/manual_macro.json` puedes forzar el escenario sin tocar la lógica restante del sistema.
+
+Campos:
+- `scenario_override_enabled`: `true` o `false`
+- `scenario_override_code`: uno de `SC1_EXPANSION`, `SC2_DESACELERACION`, `SC3_SOBREVALORACION`, `SC4_CORRECCION`
+
+Ejemplo:
+```json
+{
+  "scenario_override_enabled": true,
+  "scenario_override_code": "SC4_CORRECCION"
+}
+```
+
+Si el override está desactivado, el sistema sigue calculando el escenario automáticamente.
+La interfaz muestra si el escenario activo es `Manual` o `Automático`.
