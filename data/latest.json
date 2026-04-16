@@ -3,17 +3,17 @@
   "updated_at": "2026-04-14T20:00:00+00:00",
   "nav_date": "2026-04-14",
   "nav": 56.1337,
-  "previous_nav_close": null,
-  "nav_change_1d": null,
+  "previous_nav_close": 55.8624,
+  "nav_change_1d": 0.004857,
   "max52": 56.1337,
   "drop_pct": 0.0,
   "drop_percent_display": 0.0,
   "scenario_code": "SC3_SOBREVALORACION",
   "scenario": "🟠 Escenario 3 · Sobrevaloración",
-  "signal": "SISTEMA BLOQUEADO",
+  "signal": "NO HACER NADA",
   "vix": 18.17,
-  "previous_vix_close": null,
-  "vix_date": "2026-04-14",
+  "previous_vix_close": 18.36,
+  "vix_date": "2026-04-15",
   "phase": "Fase 0 · Normal",
   "entry_label": "Sin entrada",
   "next_trigger": "-5%",
@@ -190,8 +190,8 @@
   "flash_crash": {
     "active": false,
     "reason": "Sin flash crash",
-    "nav_change_1d": null,
-    "vix_jump": null,
+    "nav_change_1d": 0.0048565751704470195,
+    "vix_jump": -0.1900006103515608,
     "wait_hours": 48,
     "entry_mode": "progresiva",
     "blocking_window_active": false,
@@ -339,14 +339,11 @@
     "per_global_days": 0,
     "nav_days": 0,
     "vix_days": 0,
-    "status": "Fallback sobre último latest.json"
+    "status": "Datos frescos"
   },
   "decision_status": {
-    "blocked": true,
-    "reasons": [
-      "Sin NAV",
-      "Sin VIX"
-    ],
+    "blocked": false,
+    "reasons": [],
     "warnings": [
       "PMI > 7 días",
       "LEI > 7 días"
