@@ -410,10 +410,16 @@ function renderDashboard(data) {
   renderNewMoneySimulator(newMoneyRule);
   renderRotationSimulator(rotationPlan, pauseMode);
 
-  document.getElementById('new-money-input')?.addEventListener('input', () => renderNewMoneySimulator(newMoneyRule), { once: true });
-  document.getElementById('rotation-input')?.addEventListener('input', () => renderRotationSimulator(rotationPlan, pauseMode), { once: true });
-  document.getElementById('new-money-input')?.oninput = () => renderNewMoneySimulator(newMoneyRule);
-  document.getElementById('rotation-input')?.oninput = () => renderRotationSimulator(rotationPlan, pauseMode);
+  const newMoneyInput = document.getElementById('new-money-input');
+  const rotationInput = document.getElementById('rotation-input');
+
+  if (newMoneyInput) {
+    newMoneyInput.oninput = () => renderNewMoneySimulator(newMoneyRule);
+  }
+
+  if (rotationInput) {
+    rotationInput.oninput = () => renderRotationSimulator(rotationPlan, pauseMode);
+  }
 }
 
 async function loadDashboard() {
