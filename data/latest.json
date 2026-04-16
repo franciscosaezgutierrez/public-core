@@ -14,7 +14,7 @@
   "scenario_override_active": false,
   "scenario_mode": "automatic",
   "signal": "NO HACER NADA",
-  "vix": 18.12,
+  "vix": 18.11,
   "previous_vix_close": 18.17,
   "vix_date": "2026-04-16",
   "phase": "Fase 0 · Normal",
@@ -22,15 +22,15 @@
   "next_trigger": "-5%",
   "score": -2,
   "score_text": "Defensivo",
-  "cape": 39.14,
-  "cape_date": "2026-04-08",
+  "cape": 40.57,
+  "cape_date": "2026-04-16",
   "pmi": 50.3,
-  "pmi_date": "2026-04-01",
+  "pmi_date": "2026-04-16",
   "per_global": 24.5,
   "per_global_date": "2026-04-15",
   "lei": {
     "value": 97.5,
-    "date": "2026-04-01",
+    "date": "2026-04-16",
     "value_3m_ago": 98.2,
     "trend_3m": -0.7
   },
@@ -42,7 +42,7 @@
     "vix": 0
   },
   "valuation": {
-    "cape_sp500": 39.14,
+    "cape_sp500": 40.57,
     "per_global": 24.5,
     "cape_state": "CARO",
     "per_state": "CARO",
@@ -194,7 +194,7 @@
     "active": false,
     "reason": "Sin flash crash",
     "nav_change_1d": 0.0048565751704470195,
-    "vix_jump": -0.05000007629394432,
+    "vix_jump": -0.06000007629394588,
     "wait_hours": 48,
     "entry_mode": "progresiva",
     "blocking_window_active": false,
@@ -336,9 +336,9 @@
     "rule": "No actuar si drawdown < -10% y VIX < 20"
   },
   "data_freshness": {
-    "cape_days": 6,
-    "pmi_days": 13,
-    "lei_days": 13,
+    "cape_days": 0,
+    "pmi_days": 0,
+    "lei_days": 0,
     "per_global_days": 0,
     "nav_days": 0,
     "vix_days": 0,
@@ -347,10 +347,7 @@
   "decision_status": {
     "blocked": false,
     "reasons": [],
-    "warnings": [
-      "PMI > 7 días",
-      "LEI > 7 días"
-    ]
+    "warnings": []
   },
   "rotation_state": {
     "executed_levels": [],
