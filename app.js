@@ -373,10 +373,10 @@ function renderDashboard(data) {
   const operMap = data.operational_mapping || {};
 
   setText('signal-current', `${data.scenario || '—'} · ${data.phase || '—'} · ${data.signal || '—'}`);
-  setText('signal-summary', data.macro_signal || '—');
+  setText('signal-summary', `Actualizado ${data.updated_at || data.timestamp || '—'} · Datos ${formatFreshness(data.data_freshness)}`);
 
-  setText('nav-value', formatNumber(data.nav, 4));
-  setText('max52-value', formatNumber(data.max52, 4));
+  setText('nav-value', formatNumber(data.nav, 2));
+  setText('max52-value', formatNumber(data.max52, 2));
   setText('drawdown-value', formatPercentNumber(data.drop_percent_display, 1));
   setText('drawdown-label', drawdownLabel(data.drop_percent_display));
   setText('vix-value', formatNumber(data.vix, 2));
@@ -426,12 +426,12 @@ function renderDashboard(data) {
   renderList('allowed-assets', data.allowed_assets);
   renderList('blocked-assets', data.blocked_assets);
   renderList('checklist-value', data.operational_checklist);
-  setText('cash-policy-value', data.cash_policy ? `${data.cash_policy.high_cape_target} / ${data.cash_policy.medium_cape_target} / ${data.cash_policy.low_cape_target}` : '—');
+  setText('cash-policy-value', data.cash_policy ? `CAPE alto ${data.cash_policy.high_cape_target} · medio ${data.cash_policy.medium_cape_target} · bajo ${data.cash_policy.low_cape_target}` : '—');
 
   setText('capital-layers-value', `Estructural: ${layers.structural || '—'} · Táctica: ${layers.tactical || '—'} · Flujos: ${layers.flows || '—'}`);
   setText('capital-do-not-mix-value', layers.do_not_mix ? 'Sí' : 'No');
-  setText('operable-universe-value', operMap.operable_universe ? Object.entries(operMap.operable_universe).map(([k, v]) => `${mapName(k)} = ${v}`).join(' · ') : '—');
-  renderList('non-operable-assets-value', operMap.non_operable_assets);
+  renderList('liquidity-assets-value', operMap.liquidity_assets);
+  setText('liquidity-sources-value', Array.isArray(operMap.rotation_capital_sources) && operMap.rotation_capital_sources.length ? operMap.rotation_capital_sources.map(mapName).join(' · ') : '—');
 
   setText('target-composition-value', objectTargetList(compositionTarget));
   setText('purchase-priority-value', (data.priority_of_purchase || []).join(' → ') || '—');
@@ -442,8 +442,8 @@ function renderDashboard(data) {
   setText('rebalance-scope-value', rebalance.only_operable_assets ? 'Solo activos operativos' : 'Todos los activos');
 
   renderList('hard-rules-value', data.hard_rules);
-  setText('rotation-intensity-value', data.rotation_intensity ? `${data.rotation_intensity.base || '—'} · ${data.rotation_intensity.bias || '—'}${data.rotation_intensity.multiplier ? ` · x${data.rotation_intensity.multiplier}` : ''}` : '—');
-  setText('valuation-adjustment-value', data.valuation_adjustment ? `${data.valuation_adjustment.valuation_state || '—'} · ${data.valuation_adjustment.new_money_bias || '—'} / ${data.valuation_adjustment.rotation_bias || '—'}` : '—');
+  setText('rotation-intensity-value', data.rotation_intensity ? `${data.rotation_intensity.base || '—'}${data.rotation_intensity.multiplier ? ` · x${data.rotation_intensity.multiplier}` : ''}` : '—');
+  setText('valuation-adjustment-value', data.valuation_adjustment ? `${data.valuation_adjustment.valuation_state || '—'} · sesgo ${data.valuation_adjustment.rotation_bias || '—'}` : '—');
   setText('flash-crash-value', data.flash_crash?.active ? (data.flash_crash?.blocking_window_active ? 'Activo · bloqueo 48h' : 'Activo') : 'No');
   setText('flash-crash-wait-value', data.flash_crash?.wait_until || '—');
   setText('current-weights-value', formatWeightMap(data.current_weights));
