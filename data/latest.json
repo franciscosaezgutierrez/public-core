@@ -10,10 +10,13 @@
   "drop_percent_display": 0.0,
   "scenario_code": "SC3_SOBREVALORACION",
   "scenario": "🟠 Escenario 3 · Sobrevaloración",
+  "scenario_source": "automatic",
+  "scenario_override_active": false,
+  "scenario_mode": "automatic",
   "signal": "NO HACER NADA",
-  "vix": 18.17,
-  "previous_vix_close": 18.36,
-  "vix_date": "2026-04-15",
+  "vix": 18.01,
+  "previous_vix_close": 18.17,
+  "vix_date": "2026-04-16",
   "phase": "Fase 0 · Normal",
   "entry_label": "Sin entrada",
   "next_trigger": "-5%",
@@ -191,7 +194,7 @@
     "active": false,
     "reason": "Sin flash crash",
     "nav_change_1d": 0.0048565751704470195,
-    "vix_jump": -0.1900006103515608,
+    "vix_jump": -0.16000007629394375,
     "wait_hours": 48,
     "entry_mode": "progresiva",
     "blocking_window_active": false,
@@ -365,8 +368,5 @@
   "compatibility": {
     "legacy_frontend_supported": true,
     "app_should_prefer_backend_valuation": true
-  },
-  "scenario_source": "automatic",
-  "scenario_override_active": false,
-  "scenario_mode": "automatic"
+  }
 }
