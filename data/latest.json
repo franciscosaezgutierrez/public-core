@@ -365,5 +365,8 @@
   "compatibility": {
     "legacy_frontend_supported": true,
     "app_should_prefer_backend_valuation": true
-  }
+  },
+  "scenario_source": "automatic",
+  "scenario_override_active": false,
+  "scenario_mode": "automatic"
 }
