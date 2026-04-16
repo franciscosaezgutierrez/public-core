@@ -7,7 +7,7 @@ Dashboard estático para GitHub Pages basado en reglas mecánicas de asignación
 - VIX y macro manual: CAPE, PMI, LEI
 - Escenario, fase operativa y señal actual
 - Asignación objetivo
-- Simulador de dinero nuevo basado en CAPE
+- Simulador de dinero nuevo basado en escenario con ajuste por valoración
 - Rotación por caída por tramos
 - Validación del sistema y bloqueo de decisiones
 - Explicación del escenario
@@ -30,7 +30,7 @@ Dashboard estático para GitHub Pages basado en reglas mecánicas de asignación
 
 ## Notas de funcionamiento
 - La web no calcula CAPE, PMI ni LEI: los lee desde `data/latest.json`.
-- El dinero nuevo se decide por CAPE, no por escenario.
+- El dinero nuevo se decide por escenario, con ajuste por valoración (CAPE/PER).
 - La rotación por caída usa solo capital existente.
 - La secuencia de fuente para rotación es liquidez → DNCA → Jupiter.
 - Si falta VIX o hay datos con antigüedad superior a 1 día, el sistema bloquea decisiones.
@@ -40,7 +40,7 @@ Dashboard estático para GitHub Pages basado en reglas mecánicas de asignación
 - Composición base del escenario 3 implementada.
 - Escenarios macro implementados.
 - Rotación por drawdown implementada con prioridad core → calidad → emergentes.
-- Dinero nuevo basado estrictamente en CAPE.
+- Dinero nuevo basado en escenario con ajuste por valoración.
 - Uso defensivo implementado: 60% DNCA / 40% Jupiter.
 - Jupiter incorporado como tercera fuente de rotación.
 - Bloqueo automático por datos > 1 día y por ausencia de VIX.
@@ -54,3 +54,12 @@ Dashboard estático para GitHub Pages basado en reglas mecánicas de asignación
 - `nav_check.py` ahora es el motor principal alineado con el MD cerrado.
 - `app.js` mantiene compatibilidad con el dashboard existente y prioriza la lógica calculada en `data/latest.json`.
 - No usar `main.py`: en este proyecto el ejecutor sigue siendo `nav_check.py`.
+
+
+## Cambios de alineación MD
+
+- Dinero nuevo por escenario con ajuste por valoración.
+- Bloqueo dinámico de compras si el peso actual ya alcanza o supera el objetivo.
+- Bloqueo estricto del sistema sin NAV o sin VIX.
+- Detección de flash crash con ventana de espera de 48 horas.
+- Payload ampliado con pesos actuales, objetivos, desviaciones y motivos de bloqueo por activo.

@@ -28,10 +28,47 @@ OPERABLE_UNIVERSE = {
     "kopernik": "Heptagon Kopernik",
 }
 
+OPERABLE_TARGET_WEIGHTS = {
+    "core": 0.29,
+    "quality": 0.16,
+    "emerging": 0.065,
+    "kopernik": 0.065,
+}
+
+TOTAL_TARGET_WEIGHTS = {
+    "core": 0.29,
+    "quality": 0.16,
+    "emerging": 0.065,
+    "kopernik": 0.065,
+    "pensions": 0.025,
+    "dnca": 0.15,
+    "jupiter": 0.08,
+    "dws": 0.09,
+    "groupama": 0.08,
+    "gold": 0.04,
+}
+
+WEIGHT_SOURCE_KEYS = {
+    "core": "vanguard_global_stock",
+    "quality": "robeco_bp_global_premium",
+    "emerging": "robeco_qi_emerging_conservative",
+    "kopernik": "heptagon_kopernik",
+    "pensions": "plan_pensiones_caixabank",
+    "dnca": "dnca_alpha_bonds",
+    "jupiter": "jupiter_global_equity_absolute_return",
+    "dws": "dws_euro_ultra_short",
+    "groupama": "groupama_tresorerie",
+    "gold": "invesco_physical_gold",
+}
+
 NON_OPERABLE_UNIVERSE = {
     "pensions": "Plan Pensiones CaixaBank",
     "gold": "Invesco Physical Gold",
 }
+
+NON_ROTATION_ASSETS = ["gold", "pensions", "dnca", "jupiter"]
+ROTATION_CAPITAL_SOURCES = ["dws", "groupama", "dnca", "jupiter"]
+TARGET_WEIGHT_TOLERANCE_PP = 0.0
 
 DEFENSIVE_DISTRIBUTION = {
     "dnca": 0.60,
@@ -58,6 +95,26 @@ SCENARIO_ALLOCATIONS = {
     "SC3_SOBREVALORACION": {"rv": "60–62%", "bonos": "15%", "liquidez": "15–18%", "oro": "3–5%"},
     "SC4_CORRECCION": {"rv": "60–70%", "bonos": "0–10%", "liquidez": "10–25%", "oro": "4–7%"},
 }
+
+ROTATION_INTENSITY = {
+    "SC1_EXPANSION": "baja",
+    "SC2_DESACELERACION": "media",
+    "SC3_SOBREVALORACION": "progresiva",
+    "SC4_CORRECCION": "agresiva",
+}
+
+VALUATION_INTENSITY_ADJUSTMENTS = {
+    "MUY_CARO": {"new_money_bias": "prudente", "rotation_bias": "reducida", "multiplier": 0.75},
+    "CARO_MODERADO": {"new_money_bias": "moderado", "rotation_bias": "normal", "multiplier": 0.90},
+    "CARO_DUDOSO": {"new_money_bias": "normal", "rotation_bias": "normal", "multiplier": 1.00},
+    "NEUTRO": {"new_money_bias": "normal", "rotation_bias": "normal", "multiplier": 1.00},
+    "BARATO": {"new_money_bias": "ofensivo", "rotation_bias": "ampliada", "multiplier": 1.10},
+}
+
+FLASH_CRASH_WAIT_HOURS = 48
+FLASH_CRASH_ENTRY_MODE = "progresiva"
+FLASH_CRASH_THRESHOLD_1D = -0.08
+FLASH_CRASH_THRESHOLD_VIX_JUMP = 12.0
 
 NEW_MONEY_MATRIX = {
     "SC1_EXPANSION": {
@@ -118,4 +175,6 @@ HARD_RULES = [
     "No usar Jupiter como liquidez estructural",
     "No mezclar dinero nuevo y rotación",
     "El plan de pensiones no participa en decisiones operativas",
+    "Bloquear compra si el peso actual ya alcanza o supera el objetivo",
+    "Sin NAV o sin VIX no se ejecuta el sistema",
 ]

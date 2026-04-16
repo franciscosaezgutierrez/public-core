@@ -68,6 +68,22 @@ function objectTargetList(obj) {
   return Object.entries(obj).map(([k, v]) => `${k} ${percentText(v)}`).join(' · ');
 }
 
+
+function formatWeightMap(obj) {
+  if (!obj || !Object.keys(obj).length) return '—';
+  return Object.entries(obj).map(([k, v]) => `${mapName(k)} ${formatPercentNumber(Number(v) * 100, 2)}`).join(' · ');
+}
+
+function formatDeviationMap(obj) {
+  if (!obj || !Object.keys(obj).length) return '—';
+  return Object.entries(obj).map(([k, v]) => `${mapName(k)} ${v === null || v === undefined ? '—' : formatPercentNumber(Number(v) * 100, 2)}`).join(' · ');
+}
+
+function formatBlockedReasons(obj) {
+  if (!obj || !Object.keys(obj).length) return '—';
+  return Object.entries(obj).map(([k, reasons]) => `${mapName(k)}: ${(reasons || []).join(', ')}`).join(' · ');
+}
+
 function drawdownLabel(dd) {
   const n = Number(dd);
   if (Number.isNaN(n)) return '—';
@@ -198,6 +214,14 @@ async function loadDashboard() {
   setText('rebalance-scope-value', rebalance.only_operable_assets ? 'Solo activos operativos' : 'Todos los activos');
 
   renderList('hard-rules-value', data.hard_rules);
+  setText('rotation-intensity-value', data.rotation_intensity ? `${data.rotation_intensity.base || '—'} · ${data.rotation_intensity.bias || '—'}${data.rotation_intensity.multiplier ? ` · x${data.rotation_intensity.multiplier}` : ''}` : '—');
+  setText('valuation-adjustment-value', data.valuation_adjustment ? `${data.valuation_adjustment.valuation_state || '—'} · ${data.valuation_adjustment.new_money_bias || '—'} / ${data.valuation_adjustment.rotation_bias || '—'}` : '—');
+  setText('flash-crash-value', data.flash_crash?.active ? (data.flash_crash?.blocking_window_active ? 'Activo · bloqueo 48h' : 'Activo') : 'No');
+  setText('flash-crash-wait-value', data.flash_crash?.wait_until || '—');
+  setText('current-weights-value', formatWeightMap(data.current_weights));
+  setText('operable-targets-value', formatWeightMap(data.operable_target_weights));
+  setText('deviations-value', formatDeviationMap(data.deviations_pp));
+  setText('blocked-reasons-value', formatBlockedReasons(data.blocked_reasons_by_asset));
   setText('risk-reduction-value', riskReduction.action || '—');
   setText('risk-reduction-active-value', riskReduction.active_now ? 'Sí' : 'No');
 
