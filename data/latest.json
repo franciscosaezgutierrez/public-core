@@ -3,14 +3,17 @@
   "updated_at": "2026-04-14T20:00:00+00:00",
   "nav_date": "2026-04-14",
   "nav": 56.1337,
+  "previous_nav_close": null,
+  "nav_change_1d": null,
   "max52": 56.1337,
   "drop_pct": 0.0,
   "drop_percent_display": 0.0,
   "scenario_code": "SC3_SOBREVALORACION",
   "scenario": "🟠 Escenario 3 · Sobrevaloración",
-  "signal": "NO HACER NADA",
+  "signal": "SISTEMA BLOQUEADO",
   "vix": 18.17,
-  "vix_date": "2026-04-15",
+  "previous_vix_close": null,
+  "vix_date": "2026-04-14",
   "phase": "Fase 0 · Normal",
   "entry_label": "Sin entrada",
   "next_trigger": "-5%",
@@ -42,6 +45,12 @@
     "per_state": "CARO",
     "composite_state": "MUY_CARO"
   },
+  "valuation_adjustment": {
+    "valuation_state": "MUY_CARO",
+    "new_money_bias": "prudente",
+    "rotation_bias": "reducida",
+    "multiplier": 0.75
+  },
   "allocations": {
     "rv": "60–62%",
     "bonos": "15%",
@@ -69,6 +78,42 @@
     "groupama_tresorerie": 0.08,
     "invesco_physical_gold": 0.04
   },
+  "current_weights": {
+    "core": 0.29,
+    "quality": 0.16,
+    "emerging": 0.065,
+    "kopernik": 0.065,
+    "pensions": 0.025,
+    "dnca": 0.15,
+    "jupiter": 0.08,
+    "dws": 0.09,
+    "groupama": 0.08,
+    "gold": 0.04
+  },
+  "target_weights": {
+    "core": 0.29,
+    "quality": 0.16,
+    "emerging": 0.065,
+    "kopernik": 0.065,
+    "pensions": 0.025,
+    "dnca": 0.15,
+    "jupiter": 0.08,
+    "dws": 0.09,
+    "groupama": 0.08,
+    "gold": 0.04
+  },
+  "operable_target_weights": {
+    "core": 0.29,
+    "quality": 0.16,
+    "emerging": 0.065,
+    "kopernik": 0.065
+  },
+  "deviations_pp": {
+    "core": 0.0,
+    "quality": 0.0,
+    "emerging": 0.0,
+    "kopernik": 0.0
+  },
   "priority_of_purchase": [
     "Core",
     "Calidad",
@@ -91,7 +136,13 @@
       "dnca": 0.6,
       "jupiter": 0.4
     },
-    "note": "Sobrevaloración: parte de la inversión nueva puede ir a defensivos."
+    "note": "Sobrevaloración: parte de la inversión nueva puede ir a defensivos.",
+    "valuation_adjustment": {
+      "valuation_state": "MUY_CARO",
+      "new_money_bias": "prudente",
+      "rotation_bias": "reducida",
+      "multiplier": 0.75
+    }
   },
   "new_money_rules": {
     "state": "MUY_CARO",
@@ -111,11 +162,40 @@
       "dnca": 0.6,
       "jupiter": 0.4
     },
-    "note": "Sobrevaloración: parte de la inversión nueva puede ir a defensivos."
+    "note": "Sobrevaloración: parte de la inversión nueva puede ir a defensivos.",
+    "valuation_adjustment": {
+      "valuation_state": "MUY_CARO",
+      "new_money_bias": "prudente",
+      "rotation_bias": "reducida",
+      "multiplier": 0.75
+    }
   },
   "rotation_plan": {
     "active": false,
-    "matrix": null
+    "matrix": null,
+    "blocked_by_flash_crash": false,
+    "intensity": {
+      "base": "progresiva",
+      "valuation_state": "MUY_CARO",
+      "bias": "reducida",
+      "multiplier": 0.75
+    }
+  },
+  "rotation_intensity": {
+    "base": "progresiva",
+    "valuation_state": "MUY_CARO",
+    "bias": "reducida",
+    "multiplier": 0.75
+  },
+  "flash_crash": {
+    "active": false,
+    "reason": "Sin flash crash",
+    "nav_change_1d": null,
+    "vix_jump": null,
+    "wait_hours": 48,
+    "entry_mode": "progresiva",
+    "blocking_window_active": false,
+    "wait_until": null
   },
   "cash_policy": {
     "high_cape_target": "15–20%",
@@ -141,7 +221,14 @@
       "kopernik": "Heptagon Kopernik"
     },
     "non_operable_assets": [
-      "Plan Pensiones CaixaBank"
+      "Plan Pensiones CaixaBank",
+      "Invesco Physical Gold"
+    ],
+    "rotation_capital_sources": [
+      "dws",
+      "groupama",
+      "dnca",
+      "jupiter"
     ],
     "gold_asset": "Invesco Physical Gold"
   },
@@ -151,16 +238,54 @@
     "flows": "dinero nuevo",
     "do_not_mix": true
   },
-  "allowed_assets": [
+  "allowed_assets": [],
+  "blocked_assets": [
     "core",
     "quality",
     "emerging",
-    "kopernik"
-  ],
-  "blocked_assets": [
+    "kopernik",
     "gold",
-    "pensions"
+    "pensions",
+    "dnca",
+    "jupiter"
   ],
+  "allowed_assets_dynamic": [],
+  "blocked_assets_dynamic": [
+    "core",
+    "quality",
+    "emerging",
+    "kopernik",
+    "gold",
+    "pensions",
+    "dnca",
+    "jupiter"
+  ],
+  "blocked_reasons_by_asset": {
+    "core": [
+      "modo pausa activo"
+    ],
+    "quality": [
+      "modo pausa activo"
+    ],
+    "emerging": [
+      "modo pausa activo"
+    ],
+    "kopernik": [
+      "modo pausa activo"
+    ],
+    "gold": [
+      "oro no participa en rotación ni financia compras"
+    ],
+    "pensions": [
+      "plan de pensiones no participa en decisiones operativas"
+    ],
+    "dnca": [
+      "DNCA no se compra en caídas"
+    ],
+    "jupiter": [
+      "Jupiter no se compra en caídas"
+    ]
+  },
   "rebalance_rules": {
     "deviation_tolerance_pp": 4,
     "review_monthly": true,
@@ -191,12 +316,15 @@
     "No comprar DNCA ni Jupiter en caídas",
     "No usar Jupiter como liquidez estructural",
     "No mezclar dinero nuevo y rotación",
-    "El plan de pensiones no participa en decisiones operativas"
+    "El plan de pensiones no participa en decisiones operativas",
+    "Bloquear compra si el peso actual ya alcanza o supera el objetivo",
+    "Sin NAV o sin VIX no se ejecuta el sistema"
   ],
   "operational_checklist": [
     "¿Drawdown ≥ -10%?",
-    "¿VIX > 20?",
+    "¿VIX > 30?",
     "¿Liquidez suficiente?",
+    "¿Peso actual < peso objetivo?",
     "¿No es dinero nuevo?"
   ],
   "pause_mode": {
@@ -211,11 +339,14 @@
     "per_global_days": 0,
     "nav_days": 0,
     "vix_days": 0,
-    "status": "Datos frescos"
+    "status": "Fallback sobre último latest.json"
   },
   "decision_status": {
-    "blocked": false,
-    "reasons": [],
+    "blocked": true,
+    "reasons": [
+      "Sin NAV",
+      "Sin VIX"
+    ],
     "warnings": [
       "PMI > 7 días",
       "LEI > 7 días"
