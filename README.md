@@ -82,3 +82,16 @@ Ejemplo:
 
 Si el override está desactivado, el sistema sigue calculando el escenario automáticamente.
 La interfaz muestra si el escenario activo es `Manual` o `Automático`.
+
+
+## Selector de escenario en pantalla
+La interfaz incorpora un selector visible en la cabecera.
+
+Qué hace:
+- Permite cambiar el escenario desde la propia web.
+- Guarda la selección en el navegador mediante `localStorage`.
+- Recalcula en pantalla el escenario, la fase, la acción, el bloque de dinero nuevo y el simulador de rotación.
+
+Limitación importante:
+- Al ser un dashboard estático para GitHub Pages, este selector **no escribe** en `data/manual_macro.json`.
+- El cambio es persistente en ese navegador, pero solo afecta a la visualización local hasta que se vuelva a poner en automático.

@@ -1,35 +1,108 @@
+const SCREEN_SCENARIO_STORAGE_KEY = 'dashboard_screen_scenario_override';
+
+const SCENARIO_LABELS = {
+  SC1_EXPANSION: '🟢 Escenario 1 · Expansión',
+  SC2_DESACELERACION: '🟡 Escenario 2 · Desaceleración',
+  SC3_SOBREVALORACION: '🟠 Escenario 3 · Sobrevaloración',
+  SC4_CORRECCION: '🔴 Escenario 4 · Corrección'
+};
+
+const SCENARIO_PHASES = {
+  SC1_EXPANSION: 'Fase 0 · Normal',
+  SC2_DESACELERACION: 'Fase 0 · Normal',
+  SC3_SOBREVALORACION: 'Fase 0 · Normal',
+  SC4_CORRECCION: 'Fase 2 · Entradas'
+};
+
+const NEW_MONEY_MATRIX = {
+  SC1_EXPANSION: {
+    invest_pct: 0.85,
+    reserve_pct: 0.15,
+    rv_pct: 0.85,
+    defensive_pct: 0,
+    liquidity_pct: 0.15,
+    rv_distribution: { core: 0.45, quality: 0.25, emerging: 0.15, kopernik: 0.15 },
+    defensive_distribution: {},
+    note: 'Expansión: sesgo a renta variable.'
+  },
+  SC2_DESACELERACION: {
+    invest_pct: 0.70,
+    reserve_pct: 0.30,
+    rv_pct: 0.70,
+    defensive_pct: 0,
+    liquidity_pct: 0.30,
+    rv_distribution: { core: 0.50, quality: 0.30, emerging: 0.10, kopernik: 0.10 },
+    defensive_distribution: { dnca: 0.60, jupiter: 0.40 },
+    note: 'Desaceleración: más prudencia y opcional defensivo.'
+  },
+  SC3_SOBREVALORACION: {
+    invest_pct: 0.60,
+    reserve_pct: 0.40,
+    rv_pct: 0.40,
+    defensive_pct: 0.20,
+    liquidity_pct: 0.40,
+    rv_distribution: { core: 0.55, quality: 0.35, emerging: 0.07, kopernik: 0.03 },
+    defensive_distribution: { dnca: 0.60, jupiter: 0.40 },
+    note: 'Sobrevaloración: parte de la inversión nueva puede ir a defensivos.'
+  },
+  SC4_CORRECCION: {
+    invest_pct: 0.90,
+    reserve_pct: 0.10,
+    rv_pct: 0.90,
+    defensive_pct: 0,
+    liquidity_pct: 0.10,
+    rv_distribution: { core: 0.40, quality: 0.25, emerging: 0.20, kopernik: 0.15 },
+    defensive_distribution: {},
+    note: 'Corrección: uso agresivo del dinero nuevo.'
+  }
+};
+
+const ROTATION_MATRIX = {
+  SC1_EXPANSION: { core: 0.60, quality: 0.30, emerging: 0.10 },
+  SC2_DESACELERACION: { core: 0.55, quality: 0.30, emerging: 0.10, kopernik: 0.05 },
+  SC3_SOBREVALORACION: { core: 0.50, quality: 0.30, emerging: 0.15, kopernik: 0.05 },
+  SC4_CORRECCION: { core: 0.40, quality: 0.25, emerging: 0.20, kopernik: 0.15 }
+};
+
+const ROTATION_INTENSITY = {
+  SC1_EXPANSION: 'baja',
+  SC2_DESACELERACION: 'media',
+  SC3_SOBREVALORACION: 'progresiva',
+  SC4_CORRECCION: 'agresiva'
+};
+
 async function fetchJson(path) {
-  const res = await fetch(path, { cache: "no-store" });
+  const res = await fetch(path, { cache: 'no-store' });
   if (!res.ok) throw new Error(`Error cargando ${path}`);
   return await res.json();
 }
 
 function formatNumber(value, decimals = 2) {
-  if (value === null || value === undefined || Number.isNaN(Number(value))) return "—";
+  if (value === null || value === undefined || Number.isNaN(Number(value))) return '—';
   return Number(value).toFixed(decimals).replace('.', ',');
 }
 
 function formatPercentNumber(value, decimals = 2) {
-  if (value === null || value === undefined || Number.isNaN(Number(value))) return "—";
+  if (value === null || value === undefined || Number.isNaN(Number(value))) return '—';
   return `${formatNumber(value, decimals)}%`;
 }
 
 function percentText(value) {
-  if (value === null || value === undefined || Number.isNaN(Number(value))) return "—";
+  if (value === null || value === undefined || Number.isNaN(Number(value))) return '—';
   return `${Math.round(Number(value) * 100)}%`;
 }
 
 function formatEuro(value) {
-  if (value === null || value === undefined || Number.isNaN(Number(value))) return "—";
+  if (value === null || value === undefined || Number.isNaN(Number(value))) return '—';
   return `${formatNumber(value, 2)} €`;
 }
 
 function formatDate(value) {
-  return value || "—";
+  return value || '—';
 }
 
 function formatFreshness(value) {
-  if (!value) return "—";
+  if (!value) return '—';
   if (typeof value === 'string') return value;
   return value.status || JSON.stringify(value);
 }
@@ -68,7 +141,6 @@ function objectTargetList(obj) {
   return Object.entries(obj).map(([k, v]) => `${k} ${percentText(v)}`).join(' · ');
 }
 
-
 function formatWeightMap(obj) {
   if (!obj || !Object.keys(obj).length) return '—';
   return Object.entries(obj).map(([k, v]) => `${mapName(k)} ${formatPercentNumber(Number(v) * 100, 2)}`).join(' · ');
@@ -91,6 +163,110 @@ function drawdownLabel(dd) {
   if (n > -7) return 'corrección leve';
   if (n > -10) return 'pre-trigger';
   return 'trigger';
+}
+
+function getStoredScenarioOverride() {
+  try {
+    const value = localStorage.getItem(SCREEN_SCENARIO_STORAGE_KEY);
+    return value || '';
+  } catch {
+    return '';
+  }
+}
+
+function setStoredScenarioOverride(value) {
+  try {
+    if (!value) {
+      localStorage.removeItem(SCREEN_SCENARIO_STORAGE_KEY);
+      return;
+    }
+    localStorage.setItem(SCREEN_SCENARIO_STORAGE_KEY, value);
+  } catch {
+    // ignore localStorage errors
+  }
+}
+
+function bindScenarioControls(reloadFn) {
+  const select = document.getElementById('scenario-screen-select');
+  const applyBtn = document.getElementById('scenario-screen-apply');
+  const resetBtn = document.getElementById('scenario-screen-reset');
+  if (!select || !applyBtn || !resetBtn) return;
+
+  select.value = getStoredScenarioOverride();
+
+  applyBtn.addEventListener('click', () => {
+    setStoredScenarioOverride(select.value);
+    reloadFn();
+  });
+
+  resetBtn.addEventListener('click', () => {
+    select.value = '';
+    setStoredScenarioOverride('');
+    reloadFn();
+  });
+}
+
+function deriveScenarioPayload(data, scenarioCode) {
+  if (!scenarioCode || !SCENARIO_LABELS[scenarioCode]) return data;
+
+  const drawdown = Number(data.drop_percent_display);
+  const vix = Number(data.vix);
+  const flashCrash = data.flash_crash || {};
+  const pauseMode = {
+    ...(data.pause_mode || {}),
+    active: Boolean(drawdown > -10 && !Number.isNaN(vix) && vix < 20),
+    reason: drawdown > -10 && !Number.isNaN(vix) && vix < 20
+      ? 'Drawdown insuficiente y VIX por debajo de validación'
+      : 'Sin pausa',
+    rule: 'No actuar si drawdown < -10% y VIX < 20'
+  };
+
+  const valuationAdjustment = data.valuation_adjustment || {};
+  const newMoneyRule = {
+    ...structuredClone(NEW_MONEY_MATRIX[scenarioCode]),
+    valuation_adjustment: valuationAdjustment
+  };
+
+  const rotationActive = scenarioCode === 'SC4_CORRECCION';
+  const blockedByFlashCrash = Boolean(flashCrash.blocking_window_active);
+  const rotationPlan = {
+    active: rotationActive,
+    matrix: rotationActive && !blockedByFlashCrash ? structuredClone(ROTATION_MATRIX[scenarioCode]) : null,
+    blocked_by_flash_crash: blockedByFlashCrash,
+    intensity: {
+      base: ROTATION_INTENSITY[scenarioCode],
+      valuation_state: valuationAdjustment.valuation_state,
+      bias: valuationAdjustment.rotation_bias,
+      multiplier: valuationAdjustment.multiplier
+    }
+  };
+
+  const signal = blockedByFlashCrash
+    ? 'ESPERAR 48H'
+    : pauseMode.active
+      ? 'NO HACER NADA'
+      : rotationActive
+        ? 'ACTIVAR ROTACIÓN'
+        : scenarioCode === 'SC3_SOBREVALORACION'
+          ? 'DEFENSIVO'
+          : drawdown <= -5
+            ? 'PREPARAR LIQUIDEZ'
+            : 'ESPERAR';
+
+  return {
+    ...data,
+    scenario_code: scenarioCode,
+    scenario: SCENARIO_LABELS[scenarioCode],
+    scenario_source: 'screen_override',
+    scenario_override_active: true,
+    scenario_mode: 'screen_manual',
+    phase: SCENARIO_PHASES[scenarioCode],
+    signal,
+    pause_mode: pauseMode,
+    new_money_rule: newMoneyRule,
+    rotation_plan: rotationPlan,
+    rotation_intensity: rotationPlan.intensity
+  };
 }
 
 function renderNewMoneySimulator(rule) {
@@ -134,9 +310,7 @@ function renderList(id, arr) {
   setText(id, Array.isArray(arr) && arr.length ? arr.join(' · ') : '—');
 }
 
-async function loadDashboard() {
-  const data = await fetchJson('./data/latest.json');
-
+function renderDashboard(data) {
   const valuation = data.valuation || {};
   const newMoneyRule = data.new_money_rule || data.new_money_rules || {};
   const rotationPlan = data.rotation_plan || {};
@@ -158,7 +332,9 @@ async function loadDashboard() {
   setText('next-trigger-value', data.next_trigger || '—');
   setText('freshness-value', formatFreshness(data.data_freshness));
 
-  const scenarioModeLabel = data.scenario_override_active ? 'Manual' : 'Automático';
+  const scenarioModeLabel = data.scenario_source === 'screen_override'
+    ? 'Manual pantalla'
+    : data.scenario_override_active ? 'Manual' : 'Automático';
   setText('scenario-value', `${data.scenario || '—'} (${scenarioModeLabel})`);
   setText('scenario-code-value', `${data.scenario_code || '—'} · ${data.scenario_source || '—'}`);
   setText('phase-value', data.phase || '—');
@@ -226,12 +402,34 @@ async function loadDashboard() {
   setText('risk-reduction-value', riskReduction.action || '—');
   setText('risk-reduction-active-value', riskReduction.active_now ? 'Sí' : 'No');
 
+  const storedOverride = getStoredScenarioOverride();
+  setText('scenario-screen-status', storedOverride
+    ? `Modo actual: manual en pantalla · ${SCENARIO_LABELS[storedOverride] || storedOverride}`
+    : 'Modo actual: automático');
+
   renderNewMoneySimulator(newMoneyRule);
   renderRotationSimulator(rotationPlan, pauseMode);
 
-  document.getElementById('new-money-input')?.addEventListener('input', () => renderNewMoneySimulator(newMoneyRule));
-  document.getElementById('rotation-input')?.addEventListener('input', () => renderRotationSimulator(rotationPlan, pauseMode));
+  document.getElementById('new-money-input')?.addEventListener('input', () => renderNewMoneySimulator(newMoneyRule), { once: true });
+  document.getElementById('rotation-input')?.addEventListener('input', () => renderRotationSimulator(rotationPlan, pauseMode), { once: true });
+  document.getElementById('new-money-input')?.oninput = () => renderNewMoneySimulator(newMoneyRule);
+  document.getElementById('rotation-input')?.oninput = () => renderRotationSimulator(rotationPlan, pauseMode);
 }
+
+async function loadDashboard() {
+  const baseData = await fetchJson('./data/latest.json');
+  const scenarioOverride = getStoredScenarioOverride();
+  const effectiveData = deriveScenarioPayload(baseData, scenarioOverride);
+  renderDashboard(effectiveData);
+}
+
+bindScenarioControls(() => {
+  loadDashboard().catch(err => {
+    console.error(err);
+    setText('signal-current', 'Error cargando dashboard');
+    setText('signal-summary', err.message);
+  });
+});
 
 loadDashboard().catch(err => {
   console.error(err);

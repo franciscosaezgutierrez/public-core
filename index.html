@@ -13,6 +13,25 @@
       <h1 id="signal-current">Cargando…</h1>
       <p id="signal-summary" class="muted">Cargando estado del sistema…</p>
 
+
+      <div class="scenario-toolbar">
+        <div class="scenario-toolbar-row">
+          <label for="scenario-screen-select">Escenario manual en pantalla</label>
+          <select id="scenario-screen-select">
+            <option value="">Automático</option>
+            <option value="SC1_EXPANSION">Expansión</option>
+            <option value="SC2_DESACELERACION">Desaceleración</option>
+            <option value="SC3_SOBREVALORACION">Sobrevaloración</option>
+            <option value="SC4_CORRECCION">Corrección</option>
+          </select>
+        </div>
+        <div class="scenario-toolbar-actions">
+          <button id="scenario-screen-apply" type="button">Aplicar</button>
+          <button id="scenario-screen-reset" type="button">Volver a automático</button>
+        </div>
+        <div class="scenario-toolbar-status" id="scenario-screen-status">Modo actual: automático</div>
+      </div>
+
       <div class="hero-grid">
         <div class="metric"><div class="label">NAV <span class="source-inline"><a href="https://es.finance.yahoo.com/quote/0P00000RQC.F/" target="_blank" rel="noopener noreferrer">fuente</a></span></div><div class="value" id="nav-value">—</div></div>
         <div class="metric"><div class="label">Máx 52 semanas <span class="source-inline"><a href="https://es.finance.yahoo.com/quote/0P00000RQC.F/" target="_blank" rel="noopener noreferrer">fuente</a></span></div><div class="value" id="max52-value">—</div></div>

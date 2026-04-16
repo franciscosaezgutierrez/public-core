@@ -224,3 +224,50 @@ select:focus {
   .kv { flex-direction: column; }
   .kv strong { text-align: left; }
 }
+
+
+.scenario-toolbar {
+  margin-top: 18px;
+  padding: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.scenario-toolbar-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scenario-toolbar-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.scenario-toolbar-status {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+button {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 14px;
+  background: #0f172a;
+  color: var(--text);
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: var(--accent);
+}
+
+button:focus {
+  outline: 1px solid var(--accent);
+  border-color: var(--accent);
+}
