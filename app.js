@@ -288,7 +288,7 @@ function deriveScenarioPayload(data, scenarioCode) {
 
 const MIN_PURCHASE_EUR = 100;
 
-function applyMinimumPurchaseRule(totalAmount, distribution) {
+function allocateWithMinimum(totalAmount, distribution) {
   const dist = distribution || {};
   const entries = Object.entries(dist).map(([asset, weight]) => ({
     asset,
@@ -320,26 +320,60 @@ function applyMinimumPurchaseRule(totalAmount, distribution) {
   });
 
   const executableTotal = Object.values(result).reduce((sum, item) => sum + Number(item.executable_amount || 0), 0);
-  const blockedTotal = eligible.length > 0 ? 0 : redistributionPool;
+  const blockedTotal = eligible.length > 0 ? 0 : totalAmount;
 
   return {
     by_asset: result,
     executable_total: executableTotal,
     blocked_total: blockedTotal,
     redistributed_total: eligible.length > 0 ? redistributionPool : 0,
+    has_eligible: eligible.length > 0,
   };
+}
+
+function redistributeTopLevelBuckets(buckets) {
+  const eligible = buckets.filter((item) => item.raw_amount >= MIN_PURCHASE_EUR);
+  const ineligible = buckets.filter((item) => item.raw_amount < MIN_PURCHASE_EUR);
+  const redistributionPool = ineligible.reduce((sum, item) => sum + item.raw_amount, 0);
+  const eligibleRawTotal = eligible.reduce((sum, item) => sum + item.raw_amount, 0);
+
+  return buckets.map((item) => {
+    if (eligibleRawTotal <= 0 || item.raw_amount < MIN_PURCHASE_EUR) {
+      return {
+        ...item,
+        effective_amount: 0,
+        allowed: false,
+      };
+    }
+
+    return {
+      ...item,
+      effective_amount: item.raw_amount + (redistributionPool * (item.raw_amount / eligibleRawTotal)),
+      allowed: true,
+    };
+  });
 }
 
 function renderNewMoneySimulator(rule) {
   const amount = Number(document.getElementById('new-money-input')?.value || 0);
   const reserveBase = amount * Number(rule?.reserve_pct || 0);
-  const rvTotal = amount * Number(rule?.rv_pct || 0);
-  const defensiveTotal = amount * Number(rule?.defensive_pct || 0);
+  const rvTotalBase = amount * Number(rule?.rv_pct || 0);
+  const defensiveTotalBase = amount * Number(rule?.defensive_pct || 0);
   const rvDist = rule?.rv_distribution || {};
   const defDist = rule?.defensive_distribution || {};
-  const rvPlan = applyMinimumPurchaseRule(rvTotal, rvDist);
-  const defPlan = applyMinimumPurchaseRule(defensiveTotal, defDist);
-  const blockedTotal = rvPlan.blocked_total + defPlan.blocked_total;
+
+  const topLevel = redistributeTopLevelBuckets([
+    { key: 'rv', raw_amount: rvTotalBase },
+    { key: 'defensive', raw_amount: defensiveTotalBase },
+  ]);
+
+  const rvEffectiveTotal = topLevel.find((item) => item.key === 'rv')?.effective_amount || 0;
+  const defensiveEffectiveTotal = topLevel.find((item) => item.key === 'defensive')?.effective_amount || 0;
+  const topLevelBlocked = (rvEffectiveTotal + defensiveEffectiveTotal) > 0 ? 0 : (rvTotalBase + defensiveTotalBase);
+
+  const rvPlan = allocateWithMinimum(rvEffectiveTotal, rvDist);
+  const defPlan = allocateWithMinimum(defensiveEffectiveTotal, defDist);
+  const blockedTotal = topLevelBlocked + rvPlan.blocked_total + defPlan.blocked_total;
   const executableInvestNow = rvPlan.executable_total + defPlan.executable_total;
   const reserveFinal = reserveBase + blockedTotal;
 
