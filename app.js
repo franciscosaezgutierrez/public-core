@@ -331,6 +331,11 @@ function allocateWithMinimum(totalAmount, distribution) {
   };
 }
 
+
+function applyMinimumPurchaseRule(totalAmount, distribution) {
+  return allocateWithMinimum(totalAmount, distribution);
+}
+
 function redistributeTopLevelBuckets(buckets) {
   const eligible = buckets.filter((item) => item.raw_amount >= MIN_PURCHASE_EUR);
   const ineligible = buckets.filter((item) => item.raw_amount < MIN_PURCHASE_EUR);
@@ -511,9 +516,6 @@ function renderDashboard(data) {
     ? `Modo actual: manual en pantalla · ${SCENARIO_LABELS[storedOverride] || storedOverride}`
     : 'Modo actual: automático');
 
-  renderNewMoneySimulator(newMoneyRule);
-  renderRotationSimulator(rotationPlan, pauseMode);
-
   const newMoneyInput = document.getElementById('new-money-input');
   const rotationInput = document.getElementById('rotation-input');
 
@@ -524,6 +526,9 @@ function renderDashboard(data) {
   if (rotationInput) {
     rotationInput.oninput = () => renderRotationSimulator(rotationPlan, pauseMode);
   }
+
+  renderNewMoneySimulator(newMoneyRule);
+  renderRotationSimulator(rotationPlan, pauseMode);
 }
 
 async function loadDashboard() {
