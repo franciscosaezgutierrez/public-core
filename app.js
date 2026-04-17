@@ -206,6 +206,26 @@ function bindScenarioControls(reloadFn) {
   });
 }
 
+function applyValuationToNewMoneyRule(rule, valuationAdjustment = {}) {
+  const multiplier = Number(valuationAdjustment?.multiplier ?? 1);
+  const baseInvestPct = Number(rule?.invest_pct || 0);
+  const adjustedInvestPct = Math.max(0, Math.min(1, baseInvestPct * multiplier));
+  const investShare = baseInvestPct > 0 ? adjustedInvestPct / baseInvestPct : 0;
+
+  return {
+    ...structuredClone(rule || {}),
+    base_invest_pct: baseInvestPct,
+    base_reserve_pct: Number(rule?.reserve_pct || 0),
+    effective_multiplier: multiplier,
+    invest_pct: adjustedInvestPct,
+    reserve_pct: 1 - adjustedInvestPct,
+    rv_pct: Number(rule?.rv_pct || 0) * investShare,
+    defensive_pct: Number(rule?.defensive_pct || 0) * investShare,
+    liquidity_pct: 1 - adjustedInvestPct,
+    valuation_adjustment: valuationAdjustment
+  };
+}
+
 function deriveScenarioPayload(data, scenarioCode) {
   if (!scenarioCode || !SCENARIO_LABELS[scenarioCode]) return data;
 
@@ -222,10 +242,7 @@ function deriveScenarioPayload(data, scenarioCode) {
   };
 
   const valuationAdjustment = data.valuation_adjustment || {};
-  const newMoneyRule = {
-    ...structuredClone(NEW_MONEY_MATRIX[scenarioCode]),
-    valuation_adjustment: valuationAdjustment
-  };
+  const newMoneyRule = applyValuationToNewMoneyRule(NEW_MONEY_MATRIX[scenarioCode], valuationAdjustment);
 
   const rotationActive = scenarioCode === 'SC4_CORRECCION';
   const blockedByFlashCrash = Boolean(flashCrash.blocking_window_active);
@@ -343,13 +360,15 @@ function renderRotationSimulator(rotationPlan, pauseMode) {
   const amount = Number(document.getElementById('rotation-input')?.value || 0);
   const matrix = rotationPlan?.matrix || null;
   const active = !!rotationPlan?.active;
+  const deploymentMultiplier = Number(rotationPlan?.deployment_multiplier || 1);
+  const effectiveAmount = amount * deploymentMultiplier;
 
   setText('rotation-state', active ? 'Trigger activo' : 'Sin señal');
   setText('rotation-action', active ? 'Comprar' : (pauseMode?.active ? 'No actuar' : 'Esperar'));
   setText('rotation-matrix', objectPercentList(matrix));
 
   const buy = active && matrix ? matrix : {};
-  const rotationPlanMin = applyMinimumPurchaseRule(amount, buy);
+  const rotationPlanMin = applyMinimumPurchaseRule(effectiveAmount, buy);
   setText('sim-rot-core', formatEuro(rotationPlanMin.by_asset.core?.executable_amount || 0));
   setText('sim-rot-quality', formatEuro(rotationPlanMin.by_asset.quality?.executable_amount || 0));
   setText('sim-rot-emerging', formatEuro(rotationPlanMin.by_asset.emerging?.executable_amount || 0));

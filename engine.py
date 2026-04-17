@@ -140,8 +140,31 @@ def get_valuation_adjustment(valuation):
 
 
 
+def clamp(value, lower=0.0, upper=1.0):
+    return max(lower, min(upper, value))
+
+
+
 def get_new_money_plan(scenario, valuation_adjustment=None):
     base = deepcopy(NEW_MONEY_MATRIX[scenario])
+    multiplier = float((valuation_adjustment or {}).get("multiplier", 1.0) or 1.0)
+
+    base_invest_pct = float(base.get("invest_pct", 0.0) or 0.0)
+    adjusted_invest_pct = clamp(base_invest_pct * multiplier)
+    invest_share = adjusted_invest_pct / base_invest_pct if base_invest_pct > 0 else 0.0
+
+    base_rv_pct = float(base.get("rv_pct", 0.0) or 0.0)
+    base_defensive_pct = float(base.get("defensive_pct", 0.0) or 0.0)
+
+    base["base_invest_pct"] = base_invest_pct
+    base["base_reserve_pct"] = float(base.get("reserve_pct", 0.0) or 0.0)
+    base["effective_multiplier"] = round(multiplier, 4)
+    base["invest_pct"] = round(adjusted_invest_pct, 6)
+    base["reserve_pct"] = round(1.0 - adjusted_invest_pct, 6)
+    base["rv_pct"] = round(base_rv_pct * invest_share, 6)
+    base["defensive_pct"] = round(base_defensive_pct * invest_share, 6)
+    base["liquidity_pct"] = round(base["reserve_pct"], 6)
+
     if valuation_adjustment:
         base["valuation_adjustment"] = valuation_adjustment
     return base
@@ -195,11 +218,14 @@ def get_rotation_plan(scenario, drawdown, vix, flash_crash=None, valuation_adjus
     active = drawdown <= -0.10 or (vix is not None and vix > 30)
     blocked_by_flash_crash = bool(flash_crash and flash_crash.get("blocking_window_active"))
     matrix = ROTATION_MATRIX[scenario] if active and not blocked_by_flash_crash else None
+    multiplier = float((valuation_adjustment or {}).get("multiplier", 1.0) or 1.0)
     return {
         "active": active,
         "matrix": matrix,
         "blocked_by_flash_crash": blocked_by_flash_crash,
         "intensity": get_rotation_intensity(scenario, valuation_adjustment),
+        "deployment_multiplier": round(multiplier, 4),
+        "deployment_bias": (valuation_adjustment or {}).get("rotation_bias"),
     }
 
 
