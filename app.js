@@ -484,12 +484,21 @@ function renderDashboard(data) {
   renderList('allowed-assets', data.allowed_assets);
   renderList('blocked-assets', data.blocked_assets);
   renderList('checklist-value', data.operational_checklist);
-  setText('cash-policy-value', data.cash_policy ? `CAPE alto ${data.cash_policy.high_cape_target} · medio ${data.cash_policy.medium_cape_target} · bajo ${data.cash_policy.low_cape_target}` : '—');
-
   setText('capital-layers-value', `Estructural: ${layers.structural || '—'} · Táctica: ${layers.tactical || '—'} · Flujos: ${layers.flows || '—'}`);
-  setText('capital-do-not-mix-value', layers.do_not_mix ? 'Sí' : 'No');
-  renderList('liquidity-assets-value', operMap.liquidity_assets);
-  setText('liquidity-sources-value', Array.isArray(operMap.rotation_capital_sources) && operMap.rotation_capital_sources.length ? operMap.rotation_capital_sources.map(mapName).join(' · ') : '—');
+
+  const liquidityAssets = Array.isArray(operMap.liquidity_assets) && operMap.liquidity_assets.length
+    ? operMap.liquidity_assets.map(mapName).join(' + ')
+    : '—';
+
+  const rotationSources = Array.isArray(operMap.rotation_capital_sources) && operMap.rotation_capital_sources.length
+    ? operMap.rotation_capital_sources.map(mapName).join(' · ')
+    : '—';
+
+  const cashPolicy = data.cash_policy
+    ? `CAPE alto ${data.cash_policy.high_cape_target} · medio ${data.cash_policy.medium_cape_target} · bajo ${data.cash_policy.low_cape_target}`
+    : '—';
+
+  setText('liquidity-summary-value', `Activos: ${liquidityAssets} · Fuentes rotación: ${rotationSources} · Política: ${cashPolicy}`);
 
   setText('target-composition-value', objectTargetList(compositionTarget));
   setText('purchase-priority-value', (data.priority_of_purchase || []).join(' → ') || '—');
