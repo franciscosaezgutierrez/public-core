@@ -234,8 +234,11 @@ def save_latest(payload):
 def normalize_current_weights(raw_weights, previous_payload):
     if isinstance(raw_weights, dict) and raw_weights:
         normalized = {}
+        legacy_groupama = raw_weights.get("groupama")
         for asset in TOTAL_TARGET_WEIGHTS:
             value = raw_weights.get(asset)
+            if asset == "cash_real" and value is None:
+                value = legacy_groupama
             normalized[asset] = float(value) if value is not None else TOTAL_TARGET_WEIGHTS[asset]
         return normalized
 
