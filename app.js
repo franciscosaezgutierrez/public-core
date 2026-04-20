@@ -126,7 +126,10 @@ function mapName(code) {
     dnca: 'DNCA',
     jupiter: 'Jupiter',
     gold: 'Oro',
-    pensions: 'Pensiones'
+    pensions: 'Pensiones',
+    dws: 'DWS',
+    cash_real: 'Cash real',
+    'Cash real': 'Cash real'
   };
   return names[code] || code;
 }
@@ -494,11 +497,20 @@ function renderDashboard(data) {
     ? operMap.rotation_capital_sources.map(mapName).join(' · ')
     : '—';
 
+  const xrayCashProxy = operMap.xray_cash_proxy ? mapName(operMap.xray_cash_proxy) : '';
+
   const cashPolicy = data.cash_policy
     ? `CAPE alto ${data.cash_policy.high_cape_target} · medio ${data.cash_policy.medium_cape_target} · bajo ${data.cash_policy.low_cape_target}`
     : '—';
 
-  setText('liquidity-summary-value', `Activos: ${liquidityAssets} · Fuentes rotación: ${rotationSources} · Política: ${cashPolicy}`);
+  const liquiditySummaryParts = [
+    `Activos: ${liquidityAssets}`,
+    xrayCashProxy ? `Proxy X-Ray: ${xrayCashProxy}` : '',
+    `Fuentes rotación: ${rotationSources}`,
+    `Política: ${cashPolicy}`
+  ].filter(Boolean);
+
+  setText('liquidity-summary-value', liquiditySummaryParts.join(' · '));
 
   setText('target-composition-value', objectTargetList(compositionTarget));
   setText('purchase-priority-value', (data.priority_of_purchase || []).join(' → ') || '—');

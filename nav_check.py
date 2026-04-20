@@ -376,7 +376,8 @@ def main():
         "flash_crash": flash_crash,
         "cash_policy": {"high_cape_target": "15–20%", "medium_cape_target": "12–15%", "low_cape_target": "10–12%"},
         "operational_mapping": {
-            "liquidity_assets": ["DWS Euro Ultra Short", "Groupama Trésorerie"],
+            "liquidity_assets": ["DWS Euro Ultra Short", "Cash real"],
+            "xray_cash_proxy": "Groupama Trésorerie",
             "rv_assets": ["Vanguard Global Stock", "Robeco BP Global Premium", "Heptagon Kopernik", "Robeco Emerging", "Plan Pensiones CaixaBank"],
             "operable_universe": OPERABLE_UNIVERSE,
             "non_operable_assets": ["Plan Pensiones CaixaBank", "Invesco Physical Gold"],
