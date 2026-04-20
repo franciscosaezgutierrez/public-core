@@ -78,8 +78,8 @@
     "dnca_alpha_bonds": 0.15,
     "jupiter_global_equity_absolute_return": 0.08,
     "dws_euro_ultra_short": 0.09,
-    "invesco_physical_gold": 0.04,
-    "cash_real": 0.08
+    "cash_real": 0.08,
+    "invesco_physical_gold": 0.04
   },
   "current_weights": {
     "core": 0.29,
@@ -90,8 +90,8 @@
     "dnca": 0.15,
     "jupiter": 0.08,
     "dws": 0.09,
-    "gold": 0.04,
-    "cash_real": 0.08
+    "cash_real": 0.08,
+    "gold": 0.04
   },
   "target_weights": {
     "core": 0.29,
@@ -102,8 +102,8 @@
     "dnca": 0.15,
     "jupiter": 0.08,
     "dws": 0.09,
-    "gold": 0.04,
-    "cash_real": 0.08
+    "cash_real": 0.08,
+    "gold": 0.04
   },
   "operable_target_weights": {
     "core": 0.29,
@@ -218,6 +218,7 @@
       "DWS Euro Ultra Short",
       "Cash real"
     ],
+    "xray_cash_proxy": "Groupama Trésorerie",
     "rv_assets": [
       "Vanguard Global Stock",
       "Robeco BP Global Premium",
@@ -241,8 +242,7 @@
       "dnca",
       "jupiter"
     ],
-    "gold_asset": "Invesco Physical Gold",
-    "xray_cash_proxy": "Groupama Trésorerie"
+    "gold_asset": "Invesco Physical Gold"
   },
   "capital_layers": {
     "structural": "escenario",
