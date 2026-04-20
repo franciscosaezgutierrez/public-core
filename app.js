@@ -126,10 +126,7 @@ function mapName(code) {
     dnca: 'DNCA',
     jupiter: 'Jupiter',
     gold: 'Oro',
-    pensions: 'Pensiones',
-    dws: 'DWS',
-    cash_real: 'Cash real',
-    groupama: 'Groupama (proxy X-Ray)'
+    pensions: 'Pensiones'
   };
   return names[code] || code;
 }
@@ -480,7 +477,7 @@ function renderDashboard(data) {
   setText('new-money-note', newMoneyRule.note || 'Regla calculada en backend.');
 
   setText('rotation-active-value', rotationPlan.active ? 'Sí' : 'No');
-  setText('rotation-source-value', rotationPlan.active ? 'DWS / Cash real / DNCA / Jupiter si necesario' : 'Sin activación');
+  setText('rotation-source-value', rotationPlan.active ? 'Liquidez / DNCA / Jupiter si necesario' : 'Sin activación');
   setText('rotation-plan-value', objectPercentList(rotationPlan.matrix));
   setText('rotation-executed-value', (data.rotation_state?.executed_levels || []).length ? data.rotation_state.executed_levels.join(' · ') : 'Sin ejecuciones');
 
@@ -501,9 +498,7 @@ function renderDashboard(data) {
     ? `CAPE alto ${data.cash_policy.high_cape_target} · medio ${data.cash_policy.medium_cape_target} · bajo ${data.cash_policy.low_cape_target}`
     : '—';
 
-  const xrayCashProxy = operMap.xray_cash_proxy || '—';
-
-  setText('liquidity-summary-value', `Operativa: ${liquidityAssets} · Proxy X-Ray: ${xrayCashProxy} · Fuentes rotación: ${rotationSources} · Política: ${cashPolicy}`);
+  setText('liquidity-summary-value', `Activos: ${liquidityAssets} · Fuentes rotación: ${rotationSources} · Política: ${cashPolicy}`);
 
   setText('target-composition-value', objectTargetList(compositionTarget));
   setText('purchase-priority-value', (data.priority_of_purchase || []).join(' → ') || '—');
