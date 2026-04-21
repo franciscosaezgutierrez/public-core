@@ -16,8 +16,8 @@ BASE_COMPOSITION = {
     "plan_pensiones_caixabank": 0.025,
     "dnca_alpha_bonds": 0.15,
     "jupiter_global_equity_absolute_return": 0.08,
-    "dws_euro_ultra_short": 0.09,
-    "cash_real": 0.08,
+    "dws_euro_ultra_short": 0.15,
+    "cash_real": 0.029,
     "invesco_physical_gold": 0.04,
 }
 
@@ -43,8 +43,8 @@ TOTAL_TARGET_WEIGHTS = {
     "pensions": 0.025,
     "dnca": 0.15,
     "jupiter": 0.08,
-    "dws": 0.09,
-    "cash_real": 0.08,
+    "dws": 0.15,
+    "cash_real": 0.029,
     "gold": 0.04,
 }
 
