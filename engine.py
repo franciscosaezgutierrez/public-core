@@ -267,6 +267,9 @@ def build_current_weights_from_payload(previous_payload):
     current = {}
     composition = (previous_payload or {}).get("current_weights") or {}
     if composition:
+        if "cash_real" not in composition and "groupama" in composition:
+            composition = {**composition, "cash_real": composition.get("groupama")}
+            composition.pop("groupama", None)
         return composition
     for asset, source_key in WEIGHT_SOURCE_KEYS.items():
         value = (previous_payload or {}).get("composition_target", {}).get(source_key)

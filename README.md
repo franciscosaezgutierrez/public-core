@@ -33,7 +33,8 @@ Dashboard estático para GitHub Pages basado en reglas mecánicas de asignación
 - La web no calcula CAPE, PMI ni LEI: los lee desde `data/latest.json`.
 - El dinero nuevo se decide por escenario, con ajuste por valoración (CAPE/PER).
 - La rotación por caída usa solo capital existente.
-- La secuencia de fuente para rotación es liquidez → DNCA → Jupiter.
+- La liquidez operativa del sistema es DWS + cash real; Groupama Trésorerie se usa solo como proxy de cash para Morningstar X-Ray.
+- La secuencia de fuente para rotación es DWS → cash real → DNCA → Jupiter.
 - Si falta VIX o hay datos con antigüedad superior a 1 día, el sistema bloquea decisiones.
 - Si faltan campos opcionales de mejora, el dashboard sigue cargando y muestra `—` solo en esos bloques.
 
