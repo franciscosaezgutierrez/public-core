@@ -129,7 +129,7 @@ function mapName(code) {
     pensions: 'Pensiones',
     dws: 'DWS',
     cash_real: 'Cash real',
-    groupama: 'Groupama (proxy X-Ray)'
+    groupama: 'Groupama proxy X-Ray'
   };
   return names[code] || code;
 }
@@ -141,7 +141,7 @@ function objectPercentList(obj) {
 
 function objectTargetList(obj) {
   if (!obj || !Object.keys(obj).length) return '—';
-  return Object.entries(obj).map(([k, v]) => `${k} ${percentText(v)}`).join(' · ');
+  return Object.entries(obj).map(([k, v]) => `${mapName(k)} ${percentText(v)}`).join(' · ');
 }
 
 function formatWeightMap(obj) {
@@ -474,13 +474,13 @@ function renderDashboard(data) {
   setHref('per-source-link', data.sources?.per_global);
 
   setText('new-money-rule', `${percentText(newMoneyRule.invest_pct)} invertir / ${percentText(newMoneyRule.reserve_pct)} liquidez`);
-  setText('new-money-destinations', `RV ${percentText(newMoneyRule.rv_pct)} · Defensivo ${percentText(newMoneyRule.defensive_pct)} · Liquidez ${percentText(newMoneyRule.liquidity_pct)}`);
+  setText('new-money-destinations', `RV ${percentText(newMoneyRule.rv_pct)} · Defensivo ${percentText(newMoneyRule.defensive_pct)} · Liquidez operativa ${percentText(newMoneyRule.liquidity_pct)}`);
   setText('new-money-rv-mix', objectPercentList(newMoneyRule.rv_distribution));
   setText('new-money-defensive-mix', objectPercentList(newMoneyRule.defensive_distribution));
   setText('new-money-note', newMoneyRule.note || 'Regla calculada en backend.');
 
   setText('rotation-active-value', rotationPlan.active ? 'Sí' : 'No');
-  setText('rotation-source-value', rotationPlan.active ? 'DWS / Cash real / DNCA / Jupiter si necesario' : 'Sin activación');
+  setText('rotation-source-value', rotationPlan.active ? rotationSources : 'Sin activación');
   setText('rotation-plan-value', objectPercentList(rotationPlan.matrix));
   setText('rotation-executed-value', (data.rotation_state?.executed_levels || []).length ? data.rotation_state.executed_levels.join(' · ') : 'Sin ejecuciones');
 
@@ -503,15 +503,15 @@ function renderDashboard(data) {
 
   const xrayCashProxy = operMap.xray_cash_proxy || '—';
 
-  setText('liquidity-summary-value', `DWS + cash real · Proxy X-Ray: ${xrayCashProxy} · Política: ${cashPolicy}`);
+  setText('liquidity-summary-value', `Liquidez operativa: DWS 15% + cash real 2,9% · ${xrayCashProxy} solo proxy X-Ray · Política: ${cashPolicy}`);
 
   setText('target-composition-value', objectTargetList(compositionTarget));
   setText('purchase-priority-value', (data.priority_of_purchase || []).join(' → ') || '—');
   setText('limits-value', data.system_limits ? `RV máx ${percentText(data.system_limits.rv_max)} · Liquidez ${percentText(data.system_limits.cash_min)}-${percentText(data.system_limits.cash_max)} · Oro máx ${percentText(data.system_limits.gold_max)} · Emergentes máx ${percentText(data.system_limits.emerging_max)}` : '—');
 
-  setText('target-summary-value', 'RV 60–62% · Bonos 15% · Liquidez 15–18% · Oro 3–5%');
+  setText('target-summary-value', 'RV 60–62% · Bonos 15% · Liquidez operativa: DWS 15% + cash real 2,9% · Oro 3–5%');
   setText('rotation-summary-value', `Trigger ${data.rotation_trigger || 'drawdown ≤ -10% / VIX > 30'} · Intensidad ${data.rotation_intensity ? data.rotation_intensity.base || '—' : '—'}`);
-  setText('hard-rules-summary-value', 'No vender en caídas · No oro · No DNCA en caídas · No mezclar');
+  setText('hard-rules-summary-value', 'No vender en caídas · No usar oro · No comprar DNCA en caídas · No mezclar capas · Groupama no es operativo');
 
 
   setText('rebalance-summary-value', rebalance ? `±${rebalance.deviation_tolerance_pp || '—'} pp · mensual` : '—');
