@@ -470,7 +470,7 @@ function renderDashboard(data) {
   setText('valuation-date', formatDate(data.per_global_date));
   setHref('per-source-link', data.sources?.per_global);
 
-  setText('new-money-rule', `${percentText(newMoneyRule.invest_pct)} invertir / ${percentText(newMoneyRule.reserve_pct)} reservar`);
+  setText('new-money-rule', `${percentText(newMoneyRule.invest_pct)} invertir / ${percentText(newMoneyRule.reserve_pct)} liquidez`);
   setText('new-money-destinations', `RV ${percentText(newMoneyRule.rv_pct)} · Defensivo ${percentText(newMoneyRule.defensive_pct)} · Liquidez ${percentText(newMoneyRule.liquidity_pct)}`);
   setText('new-money-rv-mix', objectPercentList(newMoneyRule.rv_distribution));
   setText('new-money-defensive-mix', objectPercentList(newMoneyRule.defensive_distribution));
@@ -484,21 +484,12 @@ function renderDashboard(data) {
   renderList('allowed-assets', data.allowed_assets);
   renderList('blocked-assets', data.blocked_assets);
   renderList('checklist-value', data.operational_checklist);
+  setText('cash-policy-value', data.cash_policy ? `CAPE alto ${data.cash_policy.high_cape_target} · medio ${data.cash_policy.medium_cape_target} · bajo ${data.cash_policy.low_cape_target}` : '—');
+
   setText('capital-layers-value', `Estructural: ${layers.structural || '—'} · Táctica: ${layers.tactical || '—'} · Flujos: ${layers.flows || '—'}`);
-
-  const liquidityAssets = Array.isArray(operMap.liquidity_assets) && operMap.liquidity_assets.length
-    ? operMap.liquidity_assets.map(mapName).join(' + ')
-    : '—';
-
-  const rotationSources = Array.isArray(operMap.rotation_capital_sources) && operMap.rotation_capital_sources.length
-    ? operMap.rotation_capital_sources.map(mapName).join(' · ')
-    : '—';
-
-  const cashPolicy = data.cash_policy
-    ? `CAPE alto ${data.cash_policy.high_cape_target} · medio ${data.cash_policy.medium_cape_target} · bajo ${data.cash_policy.low_cape_target}`
-    : '—';
-
-  setText('liquidity-summary-value', `Activos: ${liquidityAssets} · Fuentes rotación: ${rotationSources} · Política: ${cashPolicy}`);
+  setText('capital-do-not-mix-value', layers.do_not_mix ? 'Sí' : 'No');
+  renderList('liquidity-assets-value', operMap.liquidity_assets);
+  setText('liquidity-sources-value', Array.isArray(operMap.rotation_capital_sources) && operMap.rotation_capital_sources.length ? operMap.rotation_capital_sources.map(mapName).join(' · ') : '—');
 
   setText('target-composition-value', objectTargetList(compositionTarget));
   setText('purchase-priority-value', (data.priority_of_purchase || []).join(' → ') || '—');

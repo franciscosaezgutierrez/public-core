@@ -103,7 +103,7 @@
         <div class="sim-row sim-row-inline"><label for="new-money-input">Importe (€)</label><input id="new-money-input" type="number" min="0" step="50" value="600" /></div>
         <div class="kv-grid three-col compact-sim-grid">
           <div class="kv compact-kv"><span>Invertir ahora</span><strong id="sim-new-invest-now">—</strong></div>
-          <div class="kv compact-kv"><span>Reservar</span><strong id="sim-new-reserve">—</strong></div>
+          <div class="kv compact-kv"><span>Liquidez (reservar)</span><strong id="sim-new-reserve">—</strong></div>
           <div class="kv compact-kv"><span>RV total</span><strong id="sim-new-rv-total">—</strong></div>
           <div class="kv compact-kv"><span>Defensivo total</span><strong id="sim-new-defensive-total">—</strong></div>
           <div class="kv compact-kv"><span>Vanguard Global</span><strong id="sim-new-core">—</strong></div>
@@ -137,18 +137,42 @@
     </section>
 
     <section class="board-grid board-grid-bottom">
-      <article class="card dense-card wide-card">
-        <h2>Marco operativo</h2>
+      <article class="card dense-card">
+        <h2>Capas y liquidez</h2>
         <div class="kv-grid two-col">
-          <div class="kv kv-full"><span>Capas</span><strong id="capital-layers-value">—</strong></div>
-          <div class="kv kv-full"><span>Liquidez</span><strong id="liquidity-summary-value">—</strong></div>
+          <div class="kv"><span>Capas</span><strong id="capital-layers-value">—</strong></div>
+          <div class="kv"><span>No mezclar</span><strong id="capital-do-not-mix-value">—</strong></div>
+          <div class="kv"><span>Activos de liquidez</span><strong id="liquidity-assets-value">—</strong></div>
+          <div class="kv"><span>Fuentes para rotación</span><strong id="liquidity-sources-value">—</strong></div>
+          <div class="kv kv-full"><span>Política de liquidez</span><strong id="cash-policy-value">—</strong></div>
+        </div>
+      </article>
+
+      <article class="card dense-card">
+        <h2>Composición objetivo y límites</h2>
+        <div class="kv-grid two-col">
           <div class="kv kv-full"><span>Composición objetivo</span><strong id="target-composition-value">—</strong></div>
           <div class="kv"><span>Prioridad de compra</span><strong id="purchase-priority-value">—</strong></div>
           <div class="kv"><span>Límites</span><strong id="limits-value">—</strong></div>
+        </div>
+      </article>
+
+      <article class="card dense-card wide-card">
+        <h2>Permisos, pesos, flash crash y reglas</h2>
+        <div class="kv-grid three-col">
           <div class="kv"><span>Intensidad rotación</span><strong id="rotation-intensity-value">—</strong></div>
           <div class="kv"><span>Ajuste valoración</span><strong id="valuation-adjustment-value">—</strong></div>
           <div class="kv"><span>Flash crash</span><strong id="flash-crash-value">—</strong></div>
           <div class="kv"><span>Espera hasta</span><strong id="flash-crash-wait-value">—</strong></div>
+          <div class="kv kv-full"><span>Pesos actuales</span><strong id="current-weights-value">—</strong></div>
+          <div class="kv kv-full"><span>Objetivos operables</span><strong id="operable-targets-value">—</strong></div>
+          <div class="kv kv-full"><span>Desviaciones</span><strong id="deviations-value">—</strong></div>
+          <div class="kv kv-full"><span>Motivos de bloqueo</span><strong id="blocked-reasons-value">—</strong></div>
+          <div class="kv"><span>Rebalanceo</span><strong id="rebalance-summary-value">—</strong></div>
+          <div class="kv"><span>Tolerancias</span><strong id="rebalance-tolerances-value">—</strong></div>
+          <div class="kv"><span>Ámbito</span><strong id="rebalance-scope-value">—</strong></div>
+          <div class="kv"><span>Reducción de riesgo</span><strong id="risk-reduction-value">—</strong></div>
+          <div class="kv"><span>Reducción activa</span><strong id="risk-reduction-active-value">—</strong></div>
           <div class="kv kv-full"><span>Reglas duras</span><strong id="hard-rules-value">—</strong></div>
         </div>
       </article>

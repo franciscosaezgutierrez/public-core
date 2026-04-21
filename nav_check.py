@@ -234,11 +234,8 @@ def save_latest(payload):
 def normalize_current_weights(raw_weights, previous_payload):
     if isinstance(raw_weights, dict) and raw_weights:
         normalized = {}
-        legacy_groupama = raw_weights.get("groupama")
         for asset in TOTAL_TARGET_WEIGHTS:
             value = raw_weights.get(asset)
-            if asset == "cash_real" and value is None:
-                value = legacy_groupama
             normalized[asset] = float(value) if value is not None else TOTAL_TARGET_WEIGHTS[asset]
         return normalized
 
@@ -379,8 +376,7 @@ def main():
         "flash_crash": flash_crash,
         "cash_policy": {"high_cape_target": "15–20%", "medium_cape_target": "12–15%", "low_cape_target": "10–12%"},
         "operational_mapping": {
-            "liquidity_assets": ["DWS Euro Ultra Short", "Cash real"],
-            "xray_cash_proxy": "Groupama Trésorerie",
+            "liquidity_assets": ["DWS Euro Ultra Short", "Groupama Trésorerie"],
             "rv_assets": ["Vanguard Global Stock", "Robeco BP Global Premium", "Heptagon Kopernik", "Robeco Emerging", "Plan Pensiones CaixaBank"],
             "operable_universe": OPERABLE_UNIVERSE,
             "non_operable_assets": ["Plan Pensiones CaixaBank", "Invesco Physical Gold"],

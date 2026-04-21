@@ -17,7 +17,7 @@ BASE_COMPOSITION = {
     "dnca_alpha_bonds": 0.15,
     "jupiter_global_equity_absolute_return": 0.08,
     "dws_euro_ultra_short": 0.09,
-    "cash_real": 0.08,
+    "groupama_tresorerie": 0.08,
     "invesco_physical_gold": 0.04,
 }
 
@@ -44,7 +44,7 @@ TOTAL_TARGET_WEIGHTS = {
     "dnca": 0.15,
     "jupiter": 0.08,
     "dws": 0.09,
-    "cash_real": 0.08,
+    "groupama": 0.08,
     "gold": 0.04,
 }
 
@@ -57,7 +57,7 @@ WEIGHT_SOURCE_KEYS = {
     "dnca": "dnca_alpha_bonds",
     "jupiter": "jupiter_global_equity_absolute_return",
     "dws": "dws_euro_ultra_short",
-    "cash_real": "cash_real",
+    "groupama": "groupama_tresorerie",
     "gold": "invesco_physical_gold",
 }
 
@@ -67,7 +67,7 @@ NON_OPERABLE_UNIVERSE = {
 }
 
 NON_ROTATION_ASSETS = ["gold", "pensions", "dnca", "jupiter"]
-ROTATION_CAPITAL_SOURCES = ["dws", "cash_real", "dnca", "jupiter"]
+ROTATION_CAPITAL_SOURCES = ["dws", "groupama", "dnca", "jupiter"]
 TARGET_WEIGHT_TOLERANCE_PP = 0.0
 
 DEFENSIVE_DISTRIBUTION = {
