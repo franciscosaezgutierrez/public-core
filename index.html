@@ -1,160 +1,87 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard Operativo · Sistema de Rotación</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main class="container compact-dashboard">
-    <section class="hero card full-width">
-      <div class="hero-top">
-        <div>
-          <div class="eyebrow">Dashboard Operativo</div>
-          <h1 id="signal-current">Cargando…</h1>
-          <p id="signal-summary" class="muted">Cargando estado del sistema…</p>
-        </div>
 
-        <div class="scenario-toolbar compact-toolbar">
-          <div class="scenario-toolbar-row">
-            <label for="scenario-screen-select">Escenario manual en pantalla</label>
-            <select id="scenario-screen-select">
-              <option value="">Automático</option>
-              <option value="SC1_EXPANSION">Expansión</option>
-              <option value="SC2_DESACELERACION">Desaceleración</option>
-              <option value="SC3_SOBREVALORACION">Sobrevaloración</option>
-              <option value="SC4_CORRECCION">Corrección</option>
-            </select>
-          </div>
-          <div class="scenario-toolbar-actions">
-            <button id="scenario-screen-apply" type="button">Aplicar</button>
-            <button id="scenario-screen-reset" type="button">Volver a automático</button>
-          </div>
-          <div class="scenario-toolbar-status" id="scenario-screen-status">Modo actual: automático</div>
-        </div>
-      </div>
+<div class="board-grid">
 
-      <div class="hero-grid">
-        <div class="metric"><div class="label">NAV <span class="source-inline"><a href="https://es.finance.yahoo.com/quote/0P00000RQC.F/" target="_blank" rel="noopener noreferrer">fuente</a></span></div><div class="value" id="nav-value">—</div></div>
-        <div class="metric"><div class="label">Máx 52 semanas <span class="source-inline"><a href="https://es.finance.yahoo.com/quote/0P00000RQC.F/" target="_blank" rel="noopener noreferrer">fuente</a></span></div><div class="value" id="max52-value">—</div></div>
-        <div class="metric"><div class="label">Drawdown</div><div class="value"><span id="drawdown-value">—</span> <span id="drawdown-label" class="subvalue inline-subvalue">—</span></div></div>
-        <div class="metric"><div class="label">VIX <span class="source-inline"><a href="https://finance.yahoo.com/quote/%5EVIX/" target="_blank" rel="noopener noreferrer">fuente</a></span></div><div class="value" id="vix-value">—</div></div>
-        <div class="metric"><div class="label">Siguiente trigger</div><div class="value" id="next-trigger-value">—</div></div>
-        <div class="metric"><div class="label">Datos</div><div class="value" id="freshness-value">—</div></div>
-      </div>
-    </section>
+  <!-- MARCO OPERATIVO -->
+  <article class="card dense-card full-width">
+    <h2>Marco operativo</h2>
 
-    <section class="board-grid board-grid-top">
-      <article class="card dense-card status-card">
-        <h2>Estado operativo</h2>
-        <div class="status-grid">
-          <div class="kv"><span>Escenario</span><strong id="scenario-value">—</strong></div>
-          <div class="kv"><span>Código</span><strong id="scenario-code-value">—</strong></div>
-          <div class="kv"><span>Fase</span><strong id="phase-value">—</strong></div>
-          <div class="kv"><span>Acción</span><strong id="action-value">—</strong></div>
-          <div class="kv"><span>Pausa</span><strong id="pause-value">—</strong></div>
-          <div class="kv"><span>Motivo pausa</span><strong id="pause-reason-value">—</strong></div>
-          <div class="kv"><span>Bloqueada</span><strong id="blocked-value">—</strong></div>
-          <div class="kv"><span>Warnings</span><strong id="warnings-value">—</strong></div>
-          <div class="kv kv-full"><span>Actualizado</span><strong id="updated-at-value">—</strong></div>
-        </div>
-      </article>
+    <div class="kv">
+      <span>Capas</span>
+      <strong>estructural · táctica · flujos (no mezclar)</strong>
+    </div>
 
-      <article class="card dense-card macro-card">
-        <h2>Macro y valoración</h2>
-        <div class="compact-block compact-block-tight"><div class="compact-row"><span class="compact-label">Resumen macro</span><span class="compact-value" id="macro-signal-value">—</span></div></div>
-        <div class="macro-grid macro-grid-4">
-          <div class="mini-card"><div class="mini-title">CAPE <a href="https://www.multpl.com/shiller-pe" target="_blank" rel="noopener noreferrer">fuente</a></div><div class="mini-value" id="cape-value">—</div><div class="mini-sub" id="valuation-cape">—</div><div class="mini-date" id="cape-date-value">—</div></div>
-          <div class="mini-card"><div class="mini-title">PMI <a href="https://tradingeconomics.com/country-list/composite-pmi" target="_blank" rel="noopener noreferrer">fuente</a></div><div class="mini-value" id="pmi-value">—</div><div class="mini-date" id="pmi-date-value">—</div></div>
-          <div class="mini-card"><div class="mini-title">LEI <a href="https://tradingeconomics.com/united-states/leading-economic-index" target="_blank" rel="noopener noreferrer">fuente</a></div><div class="mini-value" id="lei-value">—</div><div class="mini-sub" id="lei-3m-ago-value">—</div><div class="mini-sub" id="lei-trend-value">—</div><div class="mini-date" id="lei-date-value">—</div></div>
-          <div class="mini-card"><div class="mini-title">PER Global <a id="per-source-link" href="#" target="_blank" rel="noopener noreferrer">fuente</a></div><div class="mini-value" id="valuation-per">—</div><div class="mini-sub" id="valuation-state">—</div><div class="mini-date" id="valuation-date">—</div></div>
-        </div>
-      </article>
-    </section>
+    <div class="kv">
+      <span>Liquidez</span>
+      <strong>DWS + cash real | CAPE alto 15–20%</strong>
+    </div>
 
-    <section class="board-grid board-grid-middle">
-      <article class="card dense-card">
-        <h2>Dinero nuevo</h2>
-        <div class="kv-grid two-col">
-          <div class="kv"><span>Regla</span><strong id="new-money-rule">—</strong></div>
-          <div class="kv"><span>Destino global</span><strong id="new-money-destinations">—</strong></div>
-          <div class="kv"><span>Mix RV</span><strong id="new-money-rv-mix">—</strong></div>
-          <div class="kv"><span>Mix defensivo</span><strong id="new-money-defensive-mix">—</strong></div>
-          <div class="kv kv-full"><span>Nota</span><strong id="new-money-note">—</strong></div>
-        </div>
-      </article>
+    <div class="kv">
+      <span>Objetivo</span>
+      <strong>RV 60–62% · Bonos 15% · Liquidez 15–18% · Oro 3–5%</strong>
+    </div>
 
-      <article class="card dense-card">
-        <h2>Rotación y universo operativo</h2>
-        <div class="kv-grid two-col">
-          <div class="kv"><span>Rotación activa</span><strong id="rotation-active-value">—</strong></div>
-          <div class="kv"><span>Fuente de capital</span><strong id="rotation-source-value">—</strong></div>
-          <div class="kv kv-full"><span>Plan de compra</span><strong id="rotation-plan-value">—</strong></div>
-          <div class="kv"><span>Ejecuciones</span><strong id="rotation-executed-value">—</strong></div>
-          <div class="kv"><span>Checklist</span><strong id="checklist-value">—</strong></div>
-          <div class="kv"><span>Permitidos</span><strong id="allowed-assets">—</strong></div>
-          <div class="kv"><span>Bloqueados</span><strong id="blocked-assets">—</strong></div>
-        </div>
-      </article>
+    <div class="kv">
+      <span>Límites</span>
+      <strong>RV ≤70% · Liquidez 10–25% · Oro ≤7% · Emergentes ≤8%</strong>
+    </div>
 
-      <article class="card dense-card">
-        <h2>Simulador dinero nuevo</h2>
-        <div class="sim-row sim-row-inline"><label for="new-money-input">Importe (€)</label><input id="new-money-input" type="number" min="0" step="50" value="600" /></div>
-        <div class="kv-grid three-col compact-sim-grid">
-          <div class="kv compact-kv"><span>Invertir ahora</span><strong id="sim-new-invest-now">—</strong></div>
-          <div class="kv compact-kv"><span>Reservar</span><strong id="sim-new-reserve">—</strong></div>
-          <div class="kv compact-kv"><span>RV total</span><strong id="sim-new-rv-total">—</strong></div>
-          <div class="kv compact-kv"><span>Defensivo total</span><strong id="sim-new-defensive-total">—</strong></div>
-          <div class="kv compact-kv"><span>Vanguard Global</span><strong id="sim-new-core">—</strong></div>
-          <div class="kv compact-kv"><span>Robeco BP</span><strong id="sim-new-quality">—</strong></div>
-          <div class="kv compact-kv"><span>Emergentes</span><strong id="sim-new-emerging">—</strong></div>
-          <div class="kv compact-kv"><span>Kopernik</span><strong id="sim-new-kopernik">—</strong></div>
-          <div class="kv compact-kv"><span>DNCA</span><strong id="sim-new-dnca">—</strong></div>
-          <div class="kv compact-kv"><span>Jupiter</span><strong id="sim-new-jupiter">—</strong></div>
-          <div class="kv compact-kv kv-full"><span>No ejecutable (&lt;100€)</span><strong id="sim-new-blocked">—</strong></div>
-        </div>
-        <p class="muted note-inline">Las compras individuales inferiores a 100 € no se ejecutan y pasan a reserva.</p>
-      </article>
+    <div class="kv">
+      <span>Rotación</span>
+      <strong>−10% / VIX>30 | Intensidad: agresiva</strong>
+    </div>
 
-      <article class="card dense-card">
-        <h2>Simulador rotación</h2>
-        <div class="sim-row sim-row-inline"><label for="rotation-input">Capital (€)</label><input id="rotation-input" type="number" min="0" step="100" value="1000" /></div>
-        <div class="compact-block compact-block-tight compact-block-surface">
-          <div class="compact-row"><span class="compact-label">Estado</span><span class="compact-value" id="rotation-state">—</span></div>
-          <div class="compact-row"><span class="compact-label">Acción</span><span class="compact-value" id="rotation-action">—</span></div>
-          <div class="compact-row"><span class="compact-label">Matriz</span><span class="compact-value" id="rotation-matrix">—</span></div>
-        </div>
-        <div class="kv-grid three-col compact-sim-grid">
-          <div class="kv compact-kv"><span>Vanguard</span><strong id="sim-rot-core">—</strong></div>
-          <div class="kv compact-kv"><span>Robeco BP</span><strong id="sim-rot-quality">—</strong></div>
-          <div class="kv compact-kv"><span>Emergentes</span><strong id="sim-rot-emerging">—</strong></div>
-          <div class="kv compact-kv"><span>Kopernik</span><strong id="sim-rot-kopernik">—</strong></div>
-          <div class="kv compact-kv kv-full"><span>No ejecutable (&lt;100€)</span><strong id="sim-rot-blocked">—</strong></div>
-        </div>
-        <p class="muted note-inline">Las compras individuales inferiores a 100 € se bloquean en la simulación.</p>
-      </article>
-    </section>
+    <div class="kv">
+      <span>Reglas</span>
+      <strong>no vender · no oro · no DNCA · no mezclar</strong>
+    </div>
+  </article>
 
-    <section class="board-grid board-grid-bottom">
-      <article class="card dense-card wide-card">
-        <h2>Marco operativo</h2>
-        <div class="kv-grid two-col">
-          <div class="kv kv-full"><span>Capas</span><strong id="capital-layers-value">—</strong></div>
-          <div class="kv kv-full"><span>Liquidez</span><strong id="liquidity-summary-value">—</strong></div>
-          <div class="kv kv-full"><span>Composición objetivo</span><strong id="target-composition-value">—</strong></div>
-          <div class="kv"><span>Prioridad de compra</span><strong id="purchase-priority-value">—</strong></div>
-          <div class="kv"><span>Límites</span><strong id="limits-value">—</strong></div>
-          <div class="kv"><span>Intensidad rotación</span><strong id="rotation-intensity-value">—</strong></div>
-          <div class="kv"><span>Ajuste valoración</span><strong id="valuation-adjustment-value">—</strong></div>
-          <div class="kv"><span>Flash crash</span><strong id="flash-crash-value">—</strong></div>
-          <div class="kv"><span>Espera hasta</span><strong id="flash-crash-wait-value">—</strong></div>
-          <div class="kv kv-full"><span>Reglas duras</span><strong id="hard-rules-value">—</strong></div>
-        </div>
-      </article>
-    </section>
-  </main>
+  <!-- DINERO NUEVO -->
+  <article class="card">
+    <h2>Dinero nuevo</h2>
 
-  <script src="app.js"></script>
+    <div class="kv">
+      <span>Regla</span>
+      <strong>45% invertir / 55% liquidez</strong>
+    </div>
+
+    <div class="kv">
+      <span>Destino</span>
+      <strong>RV 30% · Defensivo 15% · Liquidez 55%</strong>
+    </div>
+
+    <div class="kv">
+      <span>Mix RV</span>
+      <strong>Vanguard 55% · Robeco 35% · Emergentes 7% · Kopernik 3%</strong>
+    </div>
+
+    <div class="kv">
+      <span>Mix defensivo</span>
+      <strong>DNCA 60% · Jupiter 40%</strong>
+    </div>
+  </article>
+
+  <!-- SIMULADOR -->
+  <article class="card">
+    <h2>Simulador dinero nuevo</h2>
+
+    <input type="number" id="amount" placeholder="Importe (€)" />
+
+    <div class="kv"><span>Invertir</span><strong id="invest">0 €</strong></div>
+    <div class="kv"><span>Liquidez (reservar)</span><strong id="reserve">0 €</strong></div>
+
+  </article>
+
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>
