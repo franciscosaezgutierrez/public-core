@@ -23,14 +23,14 @@
   "score": -2,
   "score_text": "Defensivo",
   "cape": 40.57,
-  "cape_date": "2026-04-16",
-  "pmi": 50.3,
-  "pmi_date": "2026-04-16",
+  "cape_date": "2026-04-24",
+  "pmi": 52.0,
+  "pmi_date": "2026-04-24",
   "per_global": 23.1,
-  "per_global_date": "2026-04-15",
+  "per_global_date": "2026-04-24",
   "lei": {
     "value": 97.5,
-    "date": "2026-04-16",
+    "date": "2026-04-24",
     "value_3m_ago": 98.2,
     "trend_3m": -0.7
   },
@@ -345,10 +345,10 @@
     "rule": "No actuar si drawdown < -10% y VIX < 20"
   },
   "data_freshness": {
-    "cape_days": 6,
-    "pmi_days": 6,
-    "lei_days": 6,
-    "per_global_days": 7,
+    "cape_days": 0,
+    "pmi_days": 0,
+    "lei_days": 0,
+    "per_global_days": 0,
     "nav_days": 0,
     "vix_days": 0,
     "status": "Datos frescos"
