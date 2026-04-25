@@ -298,7 +298,7 @@ def compute_asset_permissions(current_weights, target_weights=None, rotation_act
             reasons.append("espera de 48h por flash crash")
         if rotation_active and asset in NON_ROTATION_ASSETS:
             reasons.append("activo excluido de la rotación")
-        if trigger_active and current is not None and current >= target + TARGET_WEIGHT_TOLERANCE_PP:
+        if current is not None and current >= target + TARGET_WEIGHT_TOLERANCE_PP:
             reasons.append("peso actual igual o superior al objetivo")
         if not trigger_active and rotation_active:
             reasons.append("sin trigger operativo")

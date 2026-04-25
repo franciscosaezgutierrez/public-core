@@ -291,8 +291,30 @@ function deriveScenarioPayload(data, scenarioCode) {
 
 const MIN_PURCHASE_EUR = 100;
 
-function allocateWithMinimum(totalAmount, distribution) {
+function isBlockedByWeight(asset, data) {
+  const currentWeights = data?.current_weights || {};
+  const targetWeights = data?.target_weights || data?.operable_target_weights || {};
+  const current = Number(currentWeights?.[asset]);
+  const target = Number(targetWeights?.[asset]);
+
+  if (Number.isNaN(current) || Number.isNaN(target)) return false;
+  return current >= target;
+}
+
+function normalizeDistribution(distribution, data) {
   const dist = distribution || {};
+  const filteredEntries = Object.entries(dist).filter(([asset, weight]) => Number(weight || 0) > 0 && !isBlockedByWeight(asset, data));
+  const totalWeight = filteredEntries.reduce((sum, [, weight]) => sum + Number(weight || 0), 0);
+
+  if (totalWeight <= 0) return {};
+
+  return Object.fromEntries(
+    filteredEntries.map(([asset, weight]) => [asset, Number(weight || 0) / totalWeight])
+  );
+}
+
+function allocateWithMinimum(totalAmount, distribution, data) {
+  const dist = normalizeDistribution(distribution, data);
   const entries = Object.entries(dist).map(([asset, weight]) => ({
     asset,
     weight: Number(weight || 0),
@@ -335,8 +357,8 @@ function allocateWithMinimum(totalAmount, distribution) {
 }
 
 
-function applyMinimumPurchaseRule(totalAmount, distribution) {
-  return allocateWithMinimum(totalAmount, distribution);
+function applyMinimumPurchaseRule(totalAmount, distribution, data) {
+  return allocateWithMinimum(totalAmount, distribution, data);
 }
 
 function redistributeTopLevelBuckets(buckets) {
@@ -362,7 +384,7 @@ function redistributeTopLevelBuckets(buckets) {
   });
 }
 
-function renderNewMoneySimulator(rule) {
+function renderNewMoneySimulator(rule, data = null) {
   const amount = Number(document.getElementById('new-money-input')?.value || 0);
   const reserveBase = amount * Number(rule?.reserve_pct || 0);
   const rvTotalBase = amount * Number(rule?.rv_pct || 0);
@@ -379,8 +401,8 @@ function renderNewMoneySimulator(rule) {
   const defensiveEffectiveTotal = topLevel.find((item) => item.key === 'defensive')?.effective_amount || 0;
   const topLevelBlocked = (rvEffectiveTotal + defensiveEffectiveTotal) > 0 ? 0 : (rvTotalBase + defensiveTotalBase);
 
-  const rvPlan = allocateWithMinimum(rvEffectiveTotal, rvDist);
-  const defPlan = allocateWithMinimum(defensiveEffectiveTotal, defDist);
+  const rvPlan = allocateWithMinimum(rvEffectiveTotal, rvDist, data);
+  const defPlan = allocateWithMinimum(defensiveEffectiveTotal, defDist, data);
   const blockedTotal = topLevelBlocked + rvPlan.blocked_total + defPlan.blocked_total;
   const executableInvestNow = rvPlan.executable_total + defPlan.executable_total;
   const reserveFinal = reserveBase + blockedTotal;
@@ -398,7 +420,7 @@ function renderNewMoneySimulator(rule) {
   setText('sim-new-blocked', formatEuro(blockedTotal));
 }
 
-function renderRotationSimulator(rotationPlan, pauseMode) {
+function renderRotationSimulator(rotationPlan, pauseMode, data = null) {
   const amount = Number(document.getElementById('rotation-input')?.value || 0);
   const matrix = rotationPlan?.matrix || null;
   const active = !!rotationPlan?.active;
@@ -410,7 +432,7 @@ function renderRotationSimulator(rotationPlan, pauseMode) {
   setText('rotation-matrix', objectPercentList(matrix));
 
   const buy = active && matrix ? matrix : {};
-  const rotationPlanMin = applyMinimumPurchaseRule(effectiveAmount, buy);
+  const rotationPlanMin = applyMinimumPurchaseRule(effectiveAmount, buy, data);
   setText('sim-rot-core', formatEuro(rotationPlanMin.by_asset.core?.executable_amount || 0));
   setText('sim-rot-quality', formatEuro(rotationPlanMin.by_asset.quality?.executable_amount || 0));
   setText('sim-rot-emerging', formatEuro(rotationPlanMin.by_asset.emerging?.executable_amount || 0));
@@ -539,15 +561,15 @@ function renderDashboard(data) {
   const rotationInput = document.getElementById('rotation-input');
 
   if (newMoneyInput) {
-    newMoneyInput.oninput = () => renderNewMoneySimulator(newMoneyRule);
+    newMoneyInput.oninput = () => renderNewMoneySimulator(newMoneyRule, data);
   }
 
   if (rotationInput) {
-    rotationInput.oninput = () => renderRotationSimulator(rotationPlan, pauseMode);
+    rotationInput.oninput = () => renderRotationSimulator(rotationPlan, pauseMode, data);
   }
 
-  renderNewMoneySimulator(newMoneyRule);
-  renderRotationSimulator(rotationPlan, pauseMode);
+  renderNewMoneySimulator(newMoneyRule, data);
+  renderRotationSimulator(rotationPlan, pauseMode, data);
 }
 
 async function loadDashboard() {
