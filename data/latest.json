@@ -94,16 +94,16 @@
     "gold": 0.025
   },
   "target_weights": {
-    "core": 0.30,
+    "core": 0.29,
     "quality": 0.16,
-    "emerging": 0.07,
-    "kopernik": 0.07,
+    "emerging": 0.065,
+    "kopernik": 0.065,
     "pensions": 0.025,
-    "dnca": 0.12,
-    "jupiter": 0.07,
+    "dnca": 0.15,
+    "jupiter": 0.08,
     "dws": 0.15,
     "cash_real": 0.029,
-    "gold": 0.025
+    "gold": 0.04
   },
   "operable_target_weights": {
     "core": 0.29,
@@ -114,8 +114,8 @@
   "deviations_pp": {
     "core": 0.0,
     "quality": 0.0,
-    "emerging": 0.0,
-    "kopernik": 0.0
+    "emerging": -0.002,
+    "kopernik": -0.004
   },
   "priority_of_purchase": [
     "Core",
@@ -274,10 +274,12 @@
   ],
   "blocked_reasons_by_asset": {
     "core": [
-      "modo pausa activo"
+      "modo pausa activo",
+      "peso actual igual o superior al objetivo"
     ],
     "quality": [
-      "modo pausa activo"
+      "modo pausa activo",
+      "peso actual igual o superior al objetivo"
     ],
     "emerging": [
       "modo pausa activo"
