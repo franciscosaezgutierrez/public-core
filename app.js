@@ -616,7 +616,7 @@ function renderDashboard(data) {
   setText('purchase-priority-value', (data.priority_of_purchase || []).join(' → ') || '—');
   setText('limits-value', data.system_limits ? `RV máx ${percentText(data.system_limits.rv_max)} · Liquidez ${percentText(data.system_limits.cash_min)}-${percentText(data.system_limits.cash_max)} · Oro máx ${percentText(data.system_limits.gold_max)} · Emergentes máx ${percentText(data.system_limits.emerging_max)}` : '—');
 
-  setText('target-summary-value', 'RV 60–62% · Bonos 15% · Liquidez operativa: DWS 15% + cash real 2,9% · Oro 3–5%');
+  setText('target-summary-value', 'RV 60–62% · DNCA objetivo 12% / límite 15% · Jupiter objetivo 7% / límite 8% · Liquidez 15–18% · Oro 2,5%');
   setText('rotation-summary-value', `Trigger ${data.rotation_trigger || 'drawdown ≤ -10% / VIX > 30'} · Intensidad ${data.rotation_intensity ? data.rotation_intensity.base || '—' : '—'}`);
   setText('hard-rules-summary-value', 'No vender en caídas · No usar oro · No comprar DNCA en caídas · No mezclar capas · Groupama no es operativo');
 
