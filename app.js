@@ -236,22 +236,29 @@ function deriveScenarioPayload(data, scenarioCode) {
   const drawdown = Number(data.drop_percent_display);
   const vix = Number(data.vix);
   const flashCrash = data.flash_crash || {};
+  const manualCorrectionActive = scenarioCode === 'SC4_CORRECCION';
+  const marketRotationTrigger = (drawdown <= -10) || (!Number.isNaN(vix) && vix > 30);
+  const pauseActive = !manualCorrectionActive && Boolean(drawdown > -10 && !Number.isNaN(vix) && vix < 20);
   const pauseMode = {
     ...(data.pause_mode || {}),
-    active: Boolean(drawdown > -10 && !Number.isNaN(vix) && vix < 20),
-    reason: drawdown > -10 && !Number.isNaN(vix) && vix < 20
+    active: pauseActive,
+    reason: pauseActive
       ? 'Drawdown insuficiente y VIX por debajo de validación'
-      : 'Sin pausa',
-    rule: 'No actuar si drawdown > -10% y VIX < 20'
+      : manualCorrectionActive
+        ? 'Pausa anulada por escenario manual de corrección'
+        : 'Sin pausa',
+    rule: 'No actuar si drawdown > -10% y VIX < 20, salvo Corrección manual'
   };
 
   const valuationAdjustment = data.valuation_adjustment || {};
   const newMoneyRule = applyValuationToNewMoneyRule(NEW_MONEY_MATRIX[scenarioCode], valuationAdjustment);
 
-  const rotationActive = (drawdown <= -10) || (!Number.isNaN(vix) && vix > 30);
+  const rotationActive = manualCorrectionActive || marketRotationTrigger;
   const blockedByFlashCrash = Boolean(flashCrash.blocking_window_active);
   const rotationPlan = {
     active: rotationActive,
+    manual_correction_active: manualCorrectionActive,
+    market_trigger_active: marketRotationTrigger,
     matrix: rotationActive && !blockedByFlashCrash ? structuredClone(ROTATION_MATRIX[scenarioCode]) : null,
     blocked_by_flash_crash: blockedByFlashCrash,
     intensity: {
@@ -428,7 +435,8 @@ function renderRotationSimulator(rotationPlan, pauseMode, data = null) {
   const deploymentMultiplier = Number(rotationPlan?.deployment_multiplier || 1);
   const effectiveAmount = amount * deploymentMultiplier;
 
-  setText('rotation-state', active ? 'Trigger activo' : 'Sin señal');
+  const manualCorrectionActive = !!rotationPlan?.manual_correction_active;
+  setText('rotation-state', active ? (manualCorrectionActive ? 'Corrección manual activa' : 'Trigger activo') : 'Sin señal');
   setText('rotation-action', active ? 'Comprar' : (pauseMode?.active ? 'No actuar' : 'Esperar'));
   setText('rotation-matrix', objectPercentList(matrix));
 

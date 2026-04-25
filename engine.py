@@ -215,12 +215,16 @@ def apply_flash_crash_window(flash_crash, now, event_time=None):
 
 
 def get_rotation_plan(scenario, drawdown, vix, flash_crash=None, valuation_adjustment=None):
-    active = drawdown <= -0.10 or (vix is not None and vix > 30)
+    market_trigger_active = drawdown <= -0.10 or (vix is not None and vix > 30)
+    manual_correction_active = scenario == "SC4_CORRECCION"
+    active = manual_correction_active or market_trigger_active
     blocked_by_flash_crash = bool(flash_crash and flash_crash.get("blocking_window_active"))
     matrix = ROTATION_MATRIX[scenario] if active and not blocked_by_flash_crash else None
     multiplier = float((valuation_adjustment or {}).get("multiplier", 1.0) or 1.0)
     return {
         "active": active,
+        "manual_correction_active": manual_correction_active and not market_trigger_active,
+        "market_trigger_active": market_trigger_active,
         "matrix": matrix,
         "blocked_by_flash_crash": blocked_by_flash_crash,
         "intensity": get_rotation_intensity(scenario, valuation_adjustment),
@@ -241,10 +245,10 @@ def get_action_label(scenario, drawdown, vix, pause_mode, decision_blocked=False
         return "SISTEMA BLOQUEADO"
     if flash_crash and flash_crash.get("blocking_window_active"):
         return "ESPERAR 48H"
-    if pause_mode["active"]:
-        return "NO HACER NADA"
     if scenario == "SC4_CORRECCION":
         return "ACTIVAR ROTACIÓN"
+    if pause_mode["active"]:
+        return "NO HACER NADA"
     if drawdown <= -0.05:
         return "PREPARAR LIQUIDEZ"
     if scenario == "SC3_SOBREVALORACION":

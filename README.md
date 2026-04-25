@@ -97,3 +97,8 @@ Qué hace:
 Limitación importante:
 - Al ser un dashboard estático para GitHub Pages, este selector **no escribe** en `data/manual_macro.json`.
 - El cambio es persistente en ese navegador, pero solo afecta a la visualización local hasta que se vuelva a poner en automático.
+
+
+### Corrección manual y simulador de rotación
+
+Si el selector de pantalla o el override manual fija `SC4_CORRECCION`, el simulador de rotación se activa aunque el drawdown/VIX real todavía no cumpla trigger. En modo automático, la rotación sigue dependiendo de `drawdown <= -10%` o `VIX > 30`.
