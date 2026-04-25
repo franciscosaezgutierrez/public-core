@@ -11,12 +11,12 @@
 CURRENT_WEIGHTS = {
     "core": 0.29,
     "quality": 0.16,
-    "emerging": 0.065,
-    "kopernik": 0.065,
+    "emerging": 0.063,
+    "kopernik": 0.061,
     "pensions": 0.025,
-    "dnca": 0.15,
-    "jupiter": 0.08,
+    "dnca": 0.12,
+    "jupiter": 0.06,
     "dws": 0.15,
     "cash_real": 0.029,
-    "gold": 0.04,
+    "gold": 0.025,
 }
