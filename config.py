@@ -89,9 +89,9 @@ SCENARIO_PHASES = {
 }
 
 SCENARIO_ALLOCATIONS = {
-    "SC1_EXPANSION": {"rv": "70–72%", "bonos": "8–10%", "liquidez": "~10%", "oro": "3–4%"},
-    "SC2_DESACELERACION": {"rv": "65–67%", "bonos": "~13%", "liquidez": "~13%", "oro": "3–4%"},
-    "SC3_SOBREVALORACION": {"rv": "60–62%", "bonos": "15%", "liquidez": "15–18%", "oro": "3–5%"},
+    "SC1_EXPANSION": {"rv": "70–72%", "bonos": "8–10%", "liquidez": "~10%", "oro": "2–4%"},
+    "SC2_DESACELERACION": {"rv": "65–67%", "bonos": "~13%", "liquidez": "~13%", "oro": "2–4%"},
+    "SC3_SOBREVALORACION": {"rv": "60–62%", "bonos": "15%", "liquidez": "15–18%", "oro": "2–5%"},
     "SC4_CORRECCION": {"rv": "60–70%", "bonos": "0–10%", "liquidez": "10–25%", "oro": "4–7%"},
 }
 
