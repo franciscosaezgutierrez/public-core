@@ -129,7 +129,8 @@ function mapName(code) {
     pensions: 'Pensiones',
     dws: 'DWS',
     cash_real: 'Cash real',
-    groupama: 'Groupama proxy X-Ray'
+    groupama: 'Groupama proxy X-Ray',
+    cash_proxy_xray: 'Groupama proxy X-Ray'
   };
   return names[code] || code;
 }
@@ -444,6 +445,90 @@ function renderList(id, arr) {
   setText(id, Array.isArray(arr) && arr.length ? arr.join(' · ') : '—');
 }
 
+const WEIGHT_DISPLAY_ORDER = [
+  'core',
+  'quality',
+  'emerging',
+  'kopernik',
+  'pensions',
+  'dnca',
+  'jupiter',
+  'dws',
+  'cash_real',
+  'cash_proxy_xray',
+  'gold'
+];
+
+const OPERABLE_WEIGHT_ASSETS = new Set(['core', 'quality', 'emerging', 'kopernik']);
+
+function formatWeightRatio(value) {
+  if (value === null || value === undefined || Number.isNaN(Number(value))) return '—';
+  return `${formatNumber(Number(value) * 100, 2)}%`;
+}
+
+function weightStatus(asset, current, target) {
+  if (Number.isNaN(current) || Number.isNaN(target)) return 'Sin datos';
+  const deltaPp = (current - target) * 100;
+
+  if (OPERABLE_WEIGHT_ASSETS.has(asset)) {
+    if (current >= target) return Math.abs(deltaPp) < 0.01 ? 'En objetivo · bloqueado' : 'Sobre objetivo · bloqueado';
+    return 'Infraponderado · comprable';
+  }
+
+  if (Math.abs(deltaPp) < 0.01) return 'En objetivo';
+  return deltaPp > 0 ? 'Sobre objetivo' : 'Bajo objetivo';
+}
+
+function renderWeightsComparison(data) {
+  const tbody = document.getElementById('weights-table-body');
+  if (!tbody) return;
+
+  const current = data.current_weights || {};
+  const target = data.target_weights || data.composition_target || {};
+  const keys = Array.from(new Set([
+    ...WEIGHT_DISPLAY_ORDER,
+    ...Object.keys(target),
+    ...Object.keys(current)
+  ])).filter((key) => key in current || key in target);
+
+  if (!keys.length) {
+    tbody.innerHTML = '<tr><td colspan="5">Sin datos de pesos.</td></tr>';
+    setText('weights-summary-value', 'Sin current_weights / target_weights');
+    return;
+  }
+
+  let operableUnderweight = 0;
+  let operableBlocked = 0;
+
+  const rows = keys.map((asset) => {
+    const c = Number(current?.[asset]);
+    const t = Number(target?.[asset]);
+    const hasC = !Number.isNaN(c);
+    const hasT = !Number.isNaN(t);
+    const delta = hasC && hasT ? (c - t) * 100 : null;
+    const status = hasC && hasT ? weightStatus(asset, c, t) : 'Sin datos';
+
+    if (OPERABLE_WEIGHT_ASSETS.has(asset) && hasC && hasT) {
+      if (c >= t) operableBlocked += 1;
+      else operableUnderweight += 1;
+    }
+
+    return `
+      <tr>
+        <td>${mapName(asset)}</td>
+        <td>${hasC ? formatWeightRatio(c) : '—'}</td>
+        <td>${hasT ? formatWeightRatio(t) : '—'}</td>
+        <td>${delta === null ? '—' : formatNumber(delta, 2)}</td>
+        <td>${status}</td>
+      </tr>
+    `;
+  }).join('');
+
+  tbody.innerHTML = rows;
+  setText('weights-summary-value', `Operativos comprables: ${operableUnderweight} · bloqueados por peso: ${operableBlocked}`);
+}
+
+
 function renderDashboard(data) {
   const valuation = data.valuation || {};
   const newMoneyRule = data.new_money_rule || data.new_money_rules || {};
@@ -454,6 +539,9 @@ function renderDashboard(data) {
   const layers = data.capital_layers || {};
   const compositionTarget = data.composition_target || {};
   const operMap = data.operational_mapping || {};
+  const rotationSources = Array.isArray(operMap.rotation_capital_sources) && operMap.rotation_capital_sources.length
+    ? operMap.rotation_capital_sources.map(mapName).join(' · ')
+    : '—';
 
   setText('signal-current', `${data.scenario || '—'} · ${data.phase || '—'} · ${data.signal || '—'}`);
   setText('signal-summary', `Actualizado ${data.updated_at || data.timestamp || '—'} · Datos ${formatFreshness(data.data_freshness)}`);
@@ -515,9 +603,6 @@ function renderDashboard(data) {
     ? operMap.liquidity_assets.map(mapName).join(' + ')
     : '—';
 
-  const rotationSources = Array.isArray(operMap.rotation_capital_sources) && operMap.rotation_capital_sources.length
-    ? operMap.rotation_capital_sources.map(mapName).join(' · ')
-    : '—';
 
   const cashPolicy = data.cash_policy
     ? `CAPE alto ${data.cash_policy.high_cape_target} · medio ${data.cash_policy.medium_cape_target} · bajo ${data.cash_policy.low_cape_target}`
@@ -547,6 +632,7 @@ function renderDashboard(data) {
   setText('flash-crash-wait-value', data.flash_crash?.wait_until || '—');
   setText('current-weights-value', formatWeightMap(data.current_weights));
   setText('operable-targets-value', formatWeightMap(data.operable_target_weights));
+  renderWeightsComparison(data);
   setText('deviations-value', formatDeviationMap(data.deviations_pp));
   setText('blocked-reasons-value', formatBlockedReasons(data.blocked_reasons_by_asset));
   setText('risk-reduction-value', riskReduction.action || '—');

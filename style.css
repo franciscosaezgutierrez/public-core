@@ -390,3 +390,41 @@ button:focus {
     grid-template-columns: 1fr;
   }
 }
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.weights-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.weights-table th,
+.weights-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.weights-table th:first-child,
+.weights-table td:first-child {
+  text-align: left;
+}
+
+.weights-table th {
+  color: var(--muted);
+  font-weight: 600;
+  background: rgba(255,255,255,0.025);
+}
+
+.weights-table tr:last-child td {
+  border-bottom: none;
+}
+
+.weights-card {
+  grid-column: 1 / -1;
+}

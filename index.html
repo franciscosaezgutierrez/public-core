@@ -137,6 +137,21 @@
     </section>
 
     <section class="board-grid board-grid-bottom">
+      <article class="card dense-card wide-card weights-card">
+        <h2>Pesos de cartera</h2>
+        <div class="compact-block compact-block-tight">
+          <div class="compact-row"><span class="compact-label">Fuente</span><span class="compact-value" id="weights-source-value">current_weights vs target_weights</span></div>
+          <div class="compact-row"><span class="compact-label">Lectura</span><span class="compact-value" id="weights-summary-value">—</span></div>
+        </div>
+        <div class="table-wrap">
+          <table class="weights-table">
+            <thead><tr><th>Activo</th><th>Actual</th><th>Objetivo</th><th>Δ pp</th><th>Estado</th></tr></thead>
+            <tbody id="weights-table-body"><tr><td colspan="5">Cargando…</td></tr></tbody>
+          </table>
+        </div>
+      </article>
+
+
       <article class="card dense-card wide-card marco-card">
         <h2>Marco operativo</h2>
         <div class="kv-grid marco-grid">
