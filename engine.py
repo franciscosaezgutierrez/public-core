@@ -232,7 +232,7 @@ def get_rotation_plan(scenario, drawdown, vix, flash_crash=None, valuation_adjus
 
 def get_pause_mode(drawdown, vix):
     active = bool(drawdown > -0.10 and (vix is not None and vix < 20))
-    return {"active": active, "reason": "Drawdown insuficiente y VIX por debajo de validación" if active else "Sin pausa", "rule": "No actuar si drawdown < -10% y VIX < 20"}
+    return {"active": active, "reason": "Drawdown insuficiente y VIX por debajo de validación" if active else "Sin pausa", "rule": "No actuar si drawdown > -10% y VIX < 20"}
 
 
 

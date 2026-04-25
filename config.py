@@ -3,8 +3,8 @@ SYSTEM_LIMITS = {
     "cash_min": 0.10,
     "cash_max": 0.25,
     "gold_max": 0.07,
-    "bond_target": 0.15,
-    "absolute_return_target": 0.08,
+    "bond_max": 0.15,
+    "absolute_return_max": 0.08,
     "emerging_max": 0.08,
 }
 

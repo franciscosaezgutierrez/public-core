@@ -242,13 +242,13 @@ function deriveScenarioPayload(data, scenarioCode) {
     reason: drawdown > -10 && !Number.isNaN(vix) && vix < 20
       ? 'Drawdown insuficiente y VIX por debajo de validación'
       : 'Sin pausa',
-    rule: 'No actuar si drawdown < -10% y VIX < 20'
+    rule: 'No actuar si drawdown > -10% y VIX < 20'
   };
 
   const valuationAdjustment = data.valuation_adjustment || {};
   const newMoneyRule = applyValuationToNewMoneyRule(NEW_MONEY_MATRIX[scenarioCode], valuationAdjustment);
 
-  const rotationActive = scenarioCode === 'SC4_CORRECCION';
+  const rotationActive = (drawdown <= -10) || (!Number.isNaN(vix) && vix > 30);
   const blockedByFlashCrash = Boolean(flashCrash.blocking_window_active);
   const rotationPlan = {
     active: rotationActive,
