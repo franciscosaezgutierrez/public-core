@@ -15,6 +15,7 @@ from config import (
     TOTAL_TARGET_WEIGHTS,
     WEIGHT_SOURCE_KEYS,
 )
+from portfolio import CURRENT_WEIGHTS
 from engine import (
     apply_flash_crash_window,
     build_current_weights_from_payload,
@@ -231,21 +232,23 @@ def save_latest(payload):
         json.dump(payload, f, ensure_ascii=False, indent=2)
 
 
-def normalize_current_weights(raw_weights, previous_payload):
-    if isinstance(raw_weights, dict) and raw_weights:
-        normalized = {}
-        legacy_groupama = raw_weights.get("groupama")
-        for asset in TOTAL_TARGET_WEIGHTS:
-            value = raw_weights.get(asset)
-            if asset == "cash_real" and value is None:
-                value = legacy_groupama
-            normalized[asset] = float(value) if value is not None else TOTAL_TARGET_WEIGHTS[asset]
-        return normalized
+def normalize_current_weights(raw_weights=None, previous_payload=None):
+    """
+    Pesos actuales de cartera.
 
-    previous_weights = build_current_weights_from_payload(previous_payload)
+    Fuente única editable: portfolio.py → CURRENT_WEIGHTS.
+    Se conservan los parámetros por compatibilidad, pero ya no se usa
+    manual_macro.json ni latest.json como origen principal de pesos.
+    """
     normalized = {}
+    legacy_groupama = CURRENT_WEIGHTS.get("groupama")
+
     for asset, default in TOTAL_TARGET_WEIGHTS.items():
-        normalized[asset] = float(previous_weights.get(asset, default))
+        value = CURRENT_WEIGHTS.get(asset)
+        if asset == "cash_real" and value is None:
+            value = legacy_groupama
+        normalized[asset] = float(value) if value is not None else float(default)
+
     return normalized
 
 
@@ -315,7 +318,7 @@ def main():
     decision_status = compute_decision_block(data_freshness, nav_available=nav is not None and nav_available, vix_available=vix_available)
     action = get_action_label(scenario_code, drop_pct, vix, pause_mode, decision_blocked=decision_status["blocked"], flash_crash=flash_crash)
 
-    current_weights = normalize_current_weights(macro.get("current_weights"), previous)
+    current_weights = normalize_current_weights()
     current_operable_weights = {asset: current_weights.get(asset) for asset in OPERABLE_TARGET_WEIGHTS}
     deviations_pp = compute_weight_deviations(current_operable_weights, OPERABLE_TARGET_WEIGHTS)
     permissions = compute_asset_permissions(

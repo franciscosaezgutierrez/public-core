@@ -8,34 +8,13 @@ SYSTEM_LIMITS = {
     "emerging_max": 0.08,
 }
 
-BASE_COMPOSITION = {
-    "vanguard_global_stock": 0.29,
-    "robeco_bp_global_premium": 0.16,
-    "heptagon_kopernik": 0.065,
-    "robeco_qi_emerging_conservative": 0.065,
-    "plan_pensiones_caixabank": 0.025,
-    "dnca_alpha_bonds": 0.15,
-    "jupiter_global_equity_absolute_return": 0.08,
-    "dws_euro_ultra_short": 0.15,
-    "cash_real": 0.029,
-    "invesco_physical_gold": 0.04,
-}
+# ============================================================
+# PESOS OBJETIVO — ÚNICO PUNTO DE EDICIÓN MANUAL
+# ============================================================
+# Edita aquí los pesos objetivo estructurales del sistema.
+# El resto de variables de objetivo se derivan de este bloque.
 
-OPERABLE_UNIVERSE = {
-    "core": "Vanguard Global Stock",
-    "quality": "Robeco BP Global Premium",
-    "emerging": "Robeco Emerging",
-    "kopernik": "Heptagon Kopernik",
-}
-
-OPERABLE_TARGET_WEIGHTS = {
-    "core": 0.29,
-    "quality": 0.16,
-    "emerging": 0.065,
-    "kopernik": 0.065,
-}
-
-TOTAL_TARGET_WEIGHTS = {
+TARGET_WEIGHTS = {
     "core": 0.29,
     "quality": 0.16,
     "emerging": 0.065,
@@ -46,6 +25,21 @@ TOTAL_TARGET_WEIGHTS = {
     "dws": 0.15,
     "cash_real": 0.029,
     "gold": 0.04,
+}
+
+# Compatibilidad: el código existente usa TOTAL_TARGET_WEIGHTS.
+TOTAL_TARGET_WEIGHTS = TARGET_WEIGHTS
+
+OPERABLE_UNIVERSE = {
+    "core": "Vanguard Global Stock",
+    "quality": "Robeco BP Global Premium",
+    "emerging": "Robeco Emerging",
+    "kopernik": "Heptagon Kopernik",
+}
+
+OPERABLE_TARGET_WEIGHTS = {
+    asset: TARGET_WEIGHTS[asset]
+    for asset in OPERABLE_UNIVERSE
 }
 
 WEIGHT_SOURCE_KEYS = {
@@ -59,6 +53,11 @@ WEIGHT_SOURCE_KEYS = {
     "dws": "dws_euro_ultra_short",
     "cash_real": "cash_real",
     "gold": "invesco_physical_gold",
+}
+
+BASE_COMPOSITION = {
+    source_key: TARGET_WEIGHTS[asset]
+    for asset, source_key in WEIGHT_SOURCE_KEYS.items()
 }
 
 NON_OPERABLE_UNIVERSE = {
