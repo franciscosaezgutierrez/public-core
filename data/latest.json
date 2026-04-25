@@ -70,52 +70,52 @@
     "emerging_max": 0.08
   },
   "composition_target": {
-    "vanguard_global_stock": 0.29,
+    "vanguard_global_stock": 0.3,
     "robeco_bp_global_premium": 0.16,
-    "robeco_qi_emerging_conservative": 0.065,
-    "heptagon_kopernik": 0.065,
+    "robeco_qi_emerging_conservative": 0.07,
+    "heptagon_kopernik": 0.07,
     "plan_pensiones_caixabank": 0.025,
-    "dnca_alpha_bonds": 0.15,
-    "jupiter_global_equity_absolute_return": 0.08,
+    "dnca_alpha_bonds": 0.12,
+    "jupiter_global_equity_absolute_return": 0.07,
     "dws_euro_ultra_short": 0.15,
     "cash_real": 0.029,
-    "invesco_physical_gold": 0.04
+    "invesco_physical_gold": 0.025
   },
   "current_weights": {
     "core": 0.29,
     "quality": 0.16,
-    "emerging": 0.065,
-    "kopernik": 0.065,
+    "emerging": 0.063,
+    "kopernik": 0.061,
     "pensions": 0.025,
-    "dnca": 0.15,
-    "jupiter": 0.08,
+    "dnca": 0.12,
+    "jupiter": 0.06,
     "dws": 0.15,
     "cash_real": 0.029,
-    "gold": 0.04
+    "gold": 0.025
   },
   "target_weights": {
-    "core": 0.29,
+    "core": 0.3,
     "quality": 0.16,
-    "emerging": 0.065,
-    "kopernik": 0.065,
+    "emerging": 0.07,
+    "kopernik": 0.07,
     "pensions": 0.025,
-    "dnca": 0.15,
-    "jupiter": 0.08,
+    "dnca": 0.12,
+    "jupiter": 0.07,
     "dws": 0.15,
     "cash_real": 0.029,
-    "gold": 0.04
+    "gold": 0.025
   },
   "operable_target_weights": {
-    "core": 0.29,
+    "core": 0.3,
     "quality": 0.16,
-    "emerging": 0.065,
-    "kopernik": 0.065
+    "emerging": 0.07,
+    "kopernik": 0.07
   },
   "deviations_pp": {
-    "core": 0.0,
+    "core": -0.01,
     "quality": 0.0,
-    "emerging": 0.0,
-    "kopernik": 0.0
+    "emerging": -0.007,
+    "kopernik": -0.009
   },
   "priority_of_purchase": [
     "Core",
@@ -274,20 +274,17 @@
   ],
   "blocked_reasons_by_asset": {
     "core": [
-      "modo pausa activo",
-      "peso actual igual o superior al objetivo"
+      "modo pausa activo"
     ],
     "quality": [
       "modo pausa activo",
       "peso actual igual o superior al objetivo"
     ],
     "emerging": [
-      "modo pausa activo",
-      "peso actual igual o superior al objetivo"
+      "modo pausa activo"
     ],
     "kopernik": [
-      "modo pausa activo",
-      "peso actual igual o superior al objetivo"
+      "modo pausa activo"
     ],
     "gold": [
       "oro no participa en rotación ni financia compras"
