@@ -72,8 +72,8 @@
   "composition_target": {
     "vanguard_global_stock": 0.29,
     "robeco_bp_global_premium": 0.16,
-    "heptagon_kopernik": 0.065,
     "robeco_qi_emerging_conservative": 0.065,
+    "heptagon_kopernik": 0.065,
     "plan_pensiones_caixabank": 0.025,
     "dnca_alpha_bonds": 0.15,
     "jupiter_global_equity_absolute_return": 0.08,
@@ -84,14 +84,14 @@
   "current_weights": {
     "core": 0.29,
     "quality": 0.16,
-    "emerging": 0.063,
-    "kopernik": 0.061,
+    "emerging": 0.065,
+    "kopernik": 0.065,
     "pensions": 0.025,
-    "dnca": 0.12,
-    "jupiter": 0.06,
+    "dnca": 0.15,
+    "jupiter": 0.08,
     "dws": 0.15,
     "cash_real": 0.029,
-    "gold": 0.025
+    "gold": 0.04
   },
   "target_weights": {
     "core": 0.29,
@@ -114,8 +114,8 @@
   "deviations_pp": {
     "core": 0.0,
     "quality": 0.0,
-    "emerging": -0.002,
-    "kopernik": -0.004
+    "emerging": 0.0,
+    "kopernik": 0.0
   },
   "priority_of_purchase": [
     "Core",
@@ -282,10 +282,12 @@
       "peso actual igual o superior al objetivo"
     ],
     "emerging": [
-      "modo pausa activo"
+      "modo pausa activo",
+      "peso actual igual o superior al objetivo"
     ],
     "kopernik": [
-      "modo pausa activo"
+      "modo pausa activo",
+      "peso actual igual o superior al objetivo"
     ],
     "gold": [
       "oro no participa en rotación ni financia compras"
