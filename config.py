@@ -15,16 +15,16 @@ SYSTEM_LIMITS = {
 # El resto de variables de objetivo se derivan de este bloque.
 
 TARGET_WEIGHTS = {
-    "core": 0.29,
+    "core": 0.30,
     "quality": 0.16,
-    "emerging": 0.065,
-    "kopernik": 0.065,
+    "emerging": 0.07,
+    "kopernik": 0.07,
     "pensions": 0.025,
-    "dnca": 0.15,
-    "jupiter": 0.08,
+    "dnca": 0.12,
+    "jupiter": 0.07,
     "dws": 0.15,
     "cash_real": 0.029,
-    "gold": 0.04,
+    "gold": 0.025,
 }
 
 # Compatibilidad: el código existente usa TOTAL_TARGET_WEIGHTS.
