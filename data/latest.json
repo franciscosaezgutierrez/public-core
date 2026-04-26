@@ -111,6 +111,32 @@
     "emerging": 0.07,
     "kopernik": 0.07
   },
+  "aggregate_current": {
+    "rv_total": 0.6101,
+    "rv_operable": 0.5883,
+    "liquidity": 0.1854,
+    "defensive": 0.1804,
+    "dnca": 0.12,
+    "jupiter": 0.0604,
+    "gold": 0.0242
+  },
+  "aggregate_target": {
+    "rv_total_min": 0.6,
+    "rv_total_max": 0.62,
+    "rv_operable": 0.6,
+    "liquidity_min": 0.15,
+    "liquidity_max": 0.18,
+    "defensive": 0.19,
+    "gold_min": 0.02,
+    "gold_max": 0.03
+  },
+  "aggregate_status": {
+    "rv_total": "Correcto",
+    "rv_operable": "Bajo",
+    "liquidity": "Alto",
+    "defensive": "Correcto",
+    "gold": "Correcto"
+  },
   "deviations_pp": {
     "core": -0.0009,
     "quality": 0.0046,
@@ -218,7 +244,7 @@
   "operational_mapping": {
     "liquidity_assets": [
       "DWS Euro Ultra Short",
-      "Cash real"
+      "Groupama Trésorerie"
     ],
     "xray_cash_proxy": "Groupama Trésorerie",
     "rv_assets": [
