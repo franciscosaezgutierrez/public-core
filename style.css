@@ -428,3 +428,45 @@ button:focus {
 .weights-card {
   grid-column: 1 / -1;
 }
+
+.allocation-card { grid-column: 1 / -1; }
+
+.allocation-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.allocation-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.025);
+  min-width: 0;
+}
+
+.allocation-row span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.allocation-row strong {
+  font-size: 16px;
+  overflow-wrap: anywhere;
+}
+
+.allocation-row small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@media (max-width: 980px) {
+  .allocation-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 640px) {
+  .allocation-summary-grid { grid-template-columns: 1fr; }
+}

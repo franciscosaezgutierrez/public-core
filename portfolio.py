@@ -5,8 +5,7 @@
 # desde Morningstar X-Ray o desde tu cartera real.
 #
 # Formato: 29,63% = 0.2963
-# Groupama no debe introducirse como cash_real: es proxy X-Ray.
-# cash_real debe representar solo efectivo operativo real.
+# Groupama Trésorerie debe introducirse como cash_real: es liquidez operativa real y, además, proxy X-Ray de efectivo.
 
 CURRENT_WEIGHTS = {
     "core": 0.2991,

@@ -128,7 +128,7 @@ function mapName(code) {
     gold: 'Oro',
     pensions: 'Pensiones',
     dws: 'DWS',
-    cash_real: 'Cash real',
+    cash_real: 'Groupama / cash real',
     groupama: 'Groupama proxy X-Ray',
     cash_proxy_xray: 'Groupama proxy X-Ray'
   };
@@ -487,6 +487,32 @@ function weightStatus(asset, current, target) {
   return deltaPp > 0 ? 'Sobre objetivo' : 'Bajo objetivo';
 }
 
+function renderAggregateAllocation(data) {
+  const current = data.aggregate_current || {};
+  const target = data.aggregate_target || {};
+  const status = data.aggregate_status || {};
+
+  const targetText = {
+    rv_total: data.allocations?.rv || '60–62%',
+    rv_operable: formatWeightRatio(target.rv_operable),
+    liquidity: data.allocations?.liquidez || '15–18%',
+    defensive: formatWeightRatio(target.defensive),
+    gold: data.allocations?.oro || '2–3%'
+  };
+
+  setText('agg-rv-total', `${formatWeightRatio(current.rv_total)} / obj ${targetText.rv_total}`);
+  setText('agg-rv-operable', `${formatWeightRatio(current.rv_operable)} / obj ${targetText.rv_operable}`);
+  setText('agg-liquidity', `${formatWeightRatio(current.liquidity)} / obj ${targetText.liquidity}`);
+  setText('agg-defensive', `${formatWeightRatio(current.defensive)} / obj ${targetText.defensive}`);
+  setText('agg-gold', `${formatWeightRatio(current.gold)} / obj ${targetText.gold}`);
+
+  setText('agg-rv-total-status', status.rv_total || '—');
+  setText('agg-rv-operable-status', status.rv_operable || '—');
+  setText('agg-liquidity-status', status.liquidity || '—');
+  setText('agg-defensive-status', status.defensive || '—');
+  setText('agg-gold-status', status.gold || '—');
+}
+
 function renderWeightsComparison(data) {
   const tbody = document.getElementById('weights-table-body');
   if (!tbody) return;
@@ -626,7 +652,7 @@ function renderDashboard(data) {
 
   setText('target-summary-value', 'RV 60–62% · DNCA objetivo 12% / límite 15% · Jupiter objetivo 7% / límite 8% · Liquidez 15–18% · Oro 2,5%');
   setText('rotation-summary-value', `Trigger ${data.rotation_trigger || 'drawdown ≤ -10% / VIX > 30'} · Intensidad ${data.rotation_intensity ? data.rotation_intensity.base || '—' : '—'}`);
-  setText('hard-rules-summary-value', 'No vender en caídas · No usar oro · No comprar DNCA en caídas · No mezclar capas · Groupama no es operativo');
+  setText('hard-rules-summary-value', 'No vender en caídas · No usar oro · No comprar DNCA en caídas · No mezclar capas · Groupama es liquidez operativa real');
 
 
   setText('rebalance-summary-value', rebalance ? `±${rebalance.deviation_tolerance_pp || '—'} pp · mensual` : '—');
@@ -640,6 +666,7 @@ function renderDashboard(data) {
   setText('flash-crash-wait-value', data.flash_crash?.wait_until || '—');
   setText('current-weights-value', formatWeightMap(data.current_weights));
   setText('operable-targets-value', formatWeightMap(data.operable_target_weights));
+  renderAggregateAllocation(data);
   renderWeightsComparison(data);
   setText('deviations-value', formatDeviationMap(data.deviations_pp));
   setText('blocked-reasons-value', formatBlockedReasons(data.blocked_reasons_by_asset));

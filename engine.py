@@ -330,6 +330,52 @@ def compute_asset_permissions(current_weights, target_weights=None, rotation_act
 
 
 
+def compute_aggregate_weights(weights):
+    """Agrupa pesos de cartera para control visual macro."""
+    weights = weights or {}
+
+    def w(key):
+        value = weights.get(key, 0)
+        return 0 if value is None else value
+
+    return {
+        "rv_total": round(w("core") + w("quality") + w("emerging") + w("kopernik") + w("pensions"), 6),
+        "rv_operable": round(w("core") + w("quality") + w("emerging") + w("kopernik"), 6),
+        "liquidity": round(w("dws") + w("cash_real"), 6),
+        "defensive": round(w("dnca") + w("jupiter"), 6),
+        "dnca": round(w("dnca"), 6),
+        "jupiter": round(w("jupiter"), 6),
+        "gold": round(w("gold"), 6),
+    }
+
+
+def compute_aggregate_status(aggregate_current, aggregate_target):
+    """Devuelve estados legibles para la vista agrupada."""
+
+    def status_range(value, low, high):
+        if value is None:
+            return "Sin datos"
+        if low <= value <= high:
+            return "Correcto"
+        return "Bajo" if value < low else "Alto"
+
+    def status_target(value, target, tolerance=0.005):
+        if value is None or target is None:
+            return "Sin datos"
+        delta = value - target
+        if abs(delta) <= tolerance:
+            return "Correcto"
+        return "Bajo" if delta < 0 else "Alto"
+
+    return {
+        "rv_total": status_range(aggregate_current.get("rv_total"), 0.60, 0.62),
+        "rv_operable": status_target(aggregate_current.get("rv_operable"), aggregate_target.get("rv_operable")),
+        "liquidity": status_range(aggregate_current.get("liquidity"), 0.15, 0.18),
+        "defensive": status_target(aggregate_current.get("defensive"), aggregate_target.get("defensive"), tolerance=0.01),
+        "gold": status_range(aggregate_current.get("gold"), 0.02, 0.03),
+    }
+
+
 def compute_weight_deviations(current_weights, target_weights=None):
     target_weights = target_weights or OPERABLE_TARGET_WEIGHTS
     deviations = {}
