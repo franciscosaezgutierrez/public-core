@@ -321,6 +321,20 @@ def main():
     action = get_action_label(scenario_code, drop_pct, vix, pause_mode, decision_blocked=decision_status["blocked"], flash_crash=flash_crash)
 
     current_weights = normalize_current_weights()
+
+    aggregate_current = compute_aggregate_weights(current_weights)
+    aggregate_target = {
+        "rv_total_min": 0.60,
+        "rv_total_max": 0.62,
+        "rv_operable": 0.60,
+        "liquidity_min": 0.15,
+        "liquidity_max": 0.18,
+        "defensive": 0.19,
+        "gold_min": 0.02,
+        "gold_max": 0.03,
+    }
+    aggregate_status = compute_aggregate_status(aggregate_current, aggregate_target)
+
     current_operable_weights = {asset: current_weights.get(asset) for asset in OPERABLE_TARGET_WEIGHTS}
     deviations_pp = compute_weight_deviations(current_operable_weights, OPERABLE_TARGET_WEIGHTS)
     permissions = compute_asset_permissions(
