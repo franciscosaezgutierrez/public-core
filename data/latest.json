@@ -166,6 +166,7 @@
       "jupiter": 0.4
     },
     "note": "Sobrevaloración: parte de la inversión nueva puede ir a defensivos.",
+    "distribution_mode": "gap_weighted",
     "base_invest_pct": 0.6,
     "base_reserve_pct": 0.4,
     "effective_multiplier": 0.75,
@@ -195,6 +196,7 @@
       "jupiter": 0.4
     },
     "note": "Sobrevaloración: parte de la inversión nueva puede ir a defensivos.",
+    "distribution_mode": "gap_weighted",
     "base_invest_pct": 0.6,
     "base_reserve_pct": 0.4,
     "effective_multiplier": 0.75,
@@ -306,7 +308,7 @@
     ],
     "quality": [
       "modo pausa activo",
-      "peso actual igual o superior al objetivo"
+      "peso actual igual o superior al límite aplicable"
     ],
     "emerging": [
       "modo pausa activo"
@@ -358,16 +360,98 @@
     "No usar Jupiter como liquidez estructural",
     "No mezclar dinero nuevo y rotación",
     "El plan de pensiones no participa en decisiones operativas",
-    "Bloquear compra si el peso actual ya alcanza o supera el objetivo",
+    "Bloquear compra si el peso actual ya alcanza o supera el límite aplicable",
+    "Comprar por gap frente al límite aplicable, no por distribución fija",
+    "No ejecutar compras inferiores a 100 €",
+    "Si no hay capacidad útil de compra, el sobrante queda en liquidez",
     "Sin NAV o sin VIX no se ejecuta el sistema"
   ],
   "operational_checklist": [
     "¿Drawdown ≥ -10%?",
     "¿VIX > 30?",
     "¿Liquidez suficiente?",
-    "¿Peso actual < peso objetivo?",
-    "¿No es dinero nuevo?"
+    "¿Peso actual < límite aplicable?",
+    "¿Orden ≥ 100 €?",
+    "¿No se mezclan capas?"
   ],
+  "purchase_execution_policy": {
+    "min_order_amount": 100,
+    "purchase_mode": "gap_weighted",
+    "do_not_force_investment": true,
+    "surplus_destination": "liquidez"
+  },
+  "applicable_limits": {
+    "new_money": {
+      "core": 0.3,
+      "quality": 0.16,
+      "emerging": 0.08,
+      "kopernik": 0.07
+    },
+    "rotation": {
+      "core": 0.3,
+      "quality": 0.16,
+      "emerging": 0.08,
+      "kopernik": 0.07
+    }
+  },
+  "purchase_capacity": {
+    "new_money": {
+      "core": 90.0,
+      "quality": 0.0,
+      "emerging": 1660.0,
+      "kopernik": 880.0
+    },
+    "rotation": {
+      "core": 90.0,
+      "quality": 0.0,
+      "emerging": 1660.0,
+      "kopernik": 880.0
+    }
+  },
+  "purchase_plan_example": {
+    "new_money_7500": {
+      "mode": "gap_weighted",
+      "capital_to_deploy": 7500.0,
+      "portfolio_value_reference": 100000,
+      "min_order_amount": 100,
+      "capacity_by_asset": {
+        "core": 90.0,
+        "quality": 0.0,
+        "emerging": 1660.0,
+        "kopernik": 880.0
+      },
+      "executed_by_asset": {
+        "emerging": 1660.0,
+        "kopernik": 880.0
+      },
+      "executed_total": 2540.0,
+      "surplus_to_liquidity": 4960.0,
+      "do_not_force_investment": true
+    },
+    "rotation_7500": {
+      "mode": "gap_weighted",
+      "capital_to_deploy": 7500.0,
+      "portfolio_value_reference": 100000,
+      "min_order_amount": 100,
+      "capacity_by_asset": {
+        "core": 90.0,
+        "quality": 0.0,
+        "emerging": 1660.0,
+        "kopernik": 880.0
+      },
+      "executed_by_asset": {
+        "emerging": 1660.0,
+        "kopernik": 880.0
+      },
+      "executed_total": 2540.0,
+      "surplus_to_liquidity": 4960.0,
+      "do_not_force_investment": true
+    }
+  },
+  "operational_card": {
+    "purchases": "gap vs objetivo · mínimo 100 € · no forzar inversión · sobrante a liquidez",
+    "limits": "RV máx 70% · liquidez 10–25% · oro máx 7% · emergentes máx 8% · límites dinámicos según capa/escenario"
+  },
   "pause_mode": {
     "active": true,
     "reason": "Drawdown insuficiente y VIX por debajo de validación",
