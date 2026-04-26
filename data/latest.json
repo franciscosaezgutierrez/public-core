@@ -363,6 +363,7 @@
     "Bloquear compra si el peso actual ya alcanza o supera el límite aplicable",
     "Comprar por gap frente al límite aplicable, no por distribución fija",
     "No ejecutar compras inferiores a 100 €",
+    "Los importes no ejecutados por mínimo operativo se acumulan como carry-over",
     "Si no hay capacidad útil de compra, el sobrante queda en liquidez",
     "Sin NAV o sin VIX no se ejecuta el sistema"
   ],
@@ -376,7 +377,9 @@
   ],
   "purchase_execution_policy": {
     "min_order_amount": 100,
+    "minimum_executable_assets": 2,
     "purchase_mode": "gap_weighted",
+    "carry_over_enabled": true,
     "do_not_force_investment": true,
     "surplus_destination": "liquidez"
   },
@@ -392,6 +395,20 @@
       "quality": 0.16,
       "emerging": 0.08,
       "kopernik": 0.07
+    }
+  },
+  "carry_over_pending": {
+    "new_money": {
+      "core": 0.0,
+      "quality": 0.0,
+      "emerging": 0.0,
+      "kopernik": 0.0
+    },
+    "rotation": {
+      "core": 0.0,
+      "quality": 0.0,
+      "emerging": 0.0,
+      "kopernik": 0.0
     }
   },
   "purchase_capacity": {
@@ -414,6 +431,8 @@
       "capital_to_deploy": 7500.0,
       "portfolio_value_reference": 100000,
       "min_order_amount": 100,
+      "minimum_executable_assets": 2,
+      "carry_over_enabled": true,
       "capacity_by_asset": {
         "core": 90.0,
         "quality": 0.0,
@@ -426,20 +445,37 @@
         "emerging": 660.0,
         "kopernik": 880.0
       },
+      "theoretical_by_asset": {
+        "core": 90.0,
+        "quality": 0.0,
+        "emerging": 660.0,
+        "kopernik": 880.0
+      },
+      "available_with_carry_by_asset": {
+        "core": 90.0,
+        "quality": 0.0,
+        "emerging": 660.0,
+        "kopernik": 880.0
+      },
       "executed_by_asset": {
         "emerging": 660.0,
         "kopernik": 880.0
       },
       "executed_total": 1540.0,
-      "surplus_to_liquidity": 5960.0,
-      "do_not_force_investment": true,
-      "minimum_executable_assets": 2
+      "carry_over_next": {
+        "core": 90.0
+      },
+      "carry_over_total": 90.0,
+      "surplus_to_liquidity": 5870.0,
+      "do_not_force_investment": true
     },
     "rotation_7500": {
       "mode": "gap_weighted",
       "capital_to_deploy": 7500.0,
       "portfolio_value_reference": 100000,
       "min_order_amount": 100,
+      "minimum_executable_assets": 2,
+      "carry_over_enabled": true,
       "capacity_by_asset": {
         "core": 90.0,
         "quality": 0.0,
@@ -452,14 +488,29 @@
         "emerging": 660.0,
         "kopernik": 880.0
       },
+      "theoretical_by_asset": {
+        "core": 90.0,
+        "quality": 0.0,
+        "emerging": 660.0,
+        "kopernik": 880.0
+      },
+      "available_with_carry_by_asset": {
+        "core": 90.0,
+        "quality": 0.0,
+        "emerging": 660.0,
+        "kopernik": 880.0
+      },
       "executed_by_asset": {
         "emerging": 660.0,
         "kopernik": 880.0
       },
       "executed_total": 1540.0,
-      "surplus_to_liquidity": 5960.0,
-      "do_not_force_investment": true,
-      "minimum_executable_assets": 2
+      "carry_over_next": {
+        "core": 90.0
+      },
+      "carry_over_total": 90.0,
+      "surplus_to_liquidity": 5870.0,
+      "do_not_force_investment": true
     }
   },
   "operational_card": {
