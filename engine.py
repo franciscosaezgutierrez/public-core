@@ -354,15 +354,28 @@ def compute_gap_purchase_capacity(current_weights, limits, portfolio_value=10000
     return capacity
 
 
-def compute_gap_purchase_plan(capital_to_deploy, current_weights, limits, target_weights=None, min_order_amount=None, portfolio_value=100000):
-    """Compra por gap a objetivo + límites + mínimo operativo.
+def compute_gap_purchase_plan(
+    capital_to_deploy,
+    current_weights,
+    limits,
+    target_weights=None,
+    min_order_amount=None,
+    portfolio_value=100000,
+    carry_over_pending=None,
+):
+    """Compra por gap a objetivo + límites + mínimo operativo + carry-over.
 
     La ponderación se calcula contra el peso objetivo estructural.
     El límite aplicable solo actúa como techo/capacidad.
-    Si quedan menos de dos líneas ejecutables, no se fuerza la compra:
-    el importe queda en liquidez.
+
+    Los importes teóricos inferiores al mínimo operativo no se pierden ni se
+    redistribuyen: quedan como carry-over para la siguiente aportación.
+    Si tras sumar carry-over quedan menos de dos líneas ejecutables, no se
+    fuerza una compra concentrada: el importe operativo queda pendiente.
     """
     min_order_amount = OPERATIONAL_RULES.get("min_order_amount", 100) if min_order_amount is None else min_order_amount
+    minimum_assets = int(OPERATIONAL_RULES.get("minimum_executable_assets", 2) or 2)
+    carry_over_pending = carry_over_pending or {}
     target_weights = target_weights or limits or {}
 
     capacity_to_limit = compute_gap_purchase_capacity(current_weights, limits, portfolio_value=portfolio_value)
@@ -377,37 +390,59 @@ def compute_gap_purchase_plan(capital_to_deploy, current_weights, limits, target
 
     total_gap = sum(target_gap.values())
     amount = float(capital_to_deploy or 0)
+    theoretical = {}
+    available_with_carry = {}
     executable = {}
+    carry_over_next = {}
 
     if amount > 0 and total_gap > 0:
         for asset, gap in target_gap.items():
             raw = amount * (gap / total_gap)
             capped = min(raw, capacity_to_limit.get(asset, 0), gap)
-            if capped >= min_order_amount:
-                executable[asset] = capped
+            pending = float((carry_over_pending or {}).get(asset, 0) or 0)
+            available = min(capped + pending, capacity_to_limit.get(asset, 0))
+            theoretical[asset] = round(capped, 2)
+            available_with_carry[asset] = round(available, 2)
+            if available >= min_order_amount:
+                executable[asset] = available
+            elif available > 0:
+                carry_over_next[asset] = available
 
     # Masa crítica: evitar concentrar una orden en una única línea ejecutable.
-    if len(executable) < 2:
+    if len(executable) < minimum_assets:
+        for asset, available in available_with_carry.items():
+            if available > 0:
+                carry_over_next[asset] = round(available, 2)
         executable = {}
+    else:
+        for asset in executable:
+            carry_over_next.pop(asset, None)
 
     executable = {a: round(v, 2) for a, v in executable.items() if v >= min_order_amount}
+    carry_over_next = {a: round(v, 2) for a, v in carry_over_next.items() if v > 0}
     executed_total = round(sum(executable.values()), 2)
-    surplus = round(amount - executed_total, 2)
+    theoretical_total = round(sum(theoretical.values()), 2)
+    carry_over_total = round(sum(carry_over_next.values()), 2)
+    surplus = round(max(0, amount - theoretical_total), 2)
 
     return {
         "mode": OPERATIONAL_RULES.get("purchase_mode", "gap_weighted"),
         "capital_to_deploy": round(amount, 2),
         "portfolio_value_reference": portfolio_value,
         "min_order_amount": min_order_amount,
+        "minimum_executable_assets": minimum_assets,
+        "carry_over_enabled": OPERATIONAL_RULES.get("carry_over_enabled", True),
         "capacity_by_asset": capacity_to_limit,
         "target_gap_by_asset": target_gap,
+        "theoretical_by_asset": theoretical,
+        "available_with_carry_by_asset": available_with_carry,
         "executed_by_asset": executable,
         "executed_total": executed_total,
-        "surplus_to_liquidity": max(0, surplus),
+        "carry_over_next": carry_over_next,
+        "carry_over_total": carry_over_total,
+        "surplus_to_liquidity": surplus,
         "do_not_force_investment": OPERATIONAL_RULES.get("do_not_force_investment", True),
-        "minimum_executable_assets": 2,
     }
-
 
 def compute_aggregate_weights(weights):
     """Agrupa pesos de cartera para control visual macro."""

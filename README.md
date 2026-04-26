@@ -102,3 +102,10 @@ Limitación importante:
 ### Corrección manual y simulador de rotación
 
 Si el selector de pantalla o el override manual fija `SC4_CORRECCION`, el simulador de rotación se activa aunque el drawdown/VIX real todavía no cumpla trigger. En modo automático, la rotación sigue dependiendo de `drawdown <= -10%` o `VIX > 30`.
+
+
+## v2.6.2
+
+- Añadido carry-over: los importes teóricos inferiores a 100 € se acumulan por activo y capa.
+- El carry-over se suma a la siguiente simulación/ejecución antes de validar el mínimo operativo.
+- Se mantiene la regla de masa crítica: mínimo dos líneas ejecutables para evitar concentración artificial.

@@ -376,6 +376,7 @@ function allocateGapWeighted(totalAmount, data, layer = 'new_money') {
   const currentWeights = data?.current_weights || {};
   const limits = data?.applicable_limits?.[layer] || data?.target_weights || {};
   const targetWeights = data?.target_weights || data?.operable_target_weights || {};
+  const carryOverPending = data?.carry_over_pending?.[layer] || {};
   const assets = ['core', 'quality', 'emerging', 'kopernik'];
   const portfolioValue = 100000;
   const amount = Number(totalAmount || 0);
@@ -404,22 +405,29 @@ function allocateGapWeighted(totalAmount, data, layer = 'new_money') {
     assets.forEach((asset) => {
       const raw = amount * (targetGap[asset] / totalTargetGap);
       const capped = Math.min(raw, capacity[asset], targetGap[asset]);
-      const allowed = capped >= MIN_PURCHASE_EUR;
+      const carry = Number(carryOverPending?.[asset] || 0);
+      const available = Math.min(capped + carry, capacity[asset]);
+      const allowed = available >= MIN_PURCHASE_EUR;
       byAsset[asset] = {
         raw_amount: raw,
         redistributed_amount: 0,
-        executable_amount: allowed ? capped : 0,
-        blocked_amount: allowed ? 0 : capped,
+        executable_amount: allowed ? available : 0,
+        blocked_amount: 0,
+        carry_over_input: carry,
+        carry_over_next: allowed ? 0 : available,
         allowed,
       };
     });
   } else {
     assets.forEach((asset) => {
+      const carry = Number(carryOverPending?.[asset] || 0);
       byAsset[asset] = {
         raw_amount: 0,
         redistributed_amount: 0,
         executable_amount: 0,
         blocked_amount: 0,
+        carry_over_input: carry,
+        carry_over_next: carry,
         allowed: false,
       };
     });
@@ -428,10 +436,11 @@ function allocateGapWeighted(totalAmount, data, layer = 'new_money') {
   let executableEntries = Object.entries(byAsset).filter(([, item]) => item.executable_amount >= MIN_PURCHASE_EUR);
 
   // Masa crítica: no se redistribuye toda la compra a un único activo.
-  // Si solo queda una línea ejecutable, la operación completa se mantiene en liquidez.
+  // Si quedan menos de dos líneas ejecutables, el importe operativo queda como carry-over.
   if (executableEntries.length < 2) {
     Object.keys(byAsset).forEach((asset) => {
-      byAsset[asset].blocked_amount += byAsset[asset].executable_amount;
+      const pending = Number(byAsset[asset].carry_over_next || 0) + Number(byAsset[asset].executable_amount || 0);
+      byAsset[asset].carry_over_next = pending;
       byAsset[asset].executable_amount = 0;
       byAsset[asset].allowed = false;
     });
@@ -439,17 +448,19 @@ function allocateGapWeighted(totalAmount, data, layer = 'new_money') {
   }
 
   const executableTotal = executableEntries.reduce((sum, [, item]) => sum + Number(item.executable_amount || 0), 0);
-  const blockedTotal = Math.max(0, amount - executableTotal);
+  const carryOverTotal = Object.values(byAsset).reduce((sum, item) => sum + Number(item.carry_over_next || 0), 0);
+  const theoreticalTotal = Object.values(byAsset).reduce((sum, item) => sum + Math.min(Number(item.raw_amount || 0), capacity[Object.keys(byAsset).find(k => byAsset[k] === item)] || 0), 0);
 
   return {
     by_asset: byAsset,
     executable_total: executableTotal,
-    blocked_total: blockedTotal,
+    blocked_total: carryOverTotal,
+    carry_over_total: carryOverTotal,
     redistributed_total: 0,
     has_eligible: executableEntries.length >= 2,
     capacity_by_asset: capacity,
     target_gap_by_asset: targetGap,
-    surplus_to_liquidity: 0,
+    surplus_to_liquidity: Math.max(0, amount - theoreticalTotal),
   };
 }
 
@@ -500,9 +511,9 @@ function renderNewMoneySimulator(rule, data = null) {
   const useGapMode = rule?.distribution_mode === 'gap_weighted';
   const rvPlan = useGapMode ? allocateGapWeighted(rvEffectiveTotal, data, 'new_money') : allocateWithMinimum(rvEffectiveTotal, rvDist, data, 'new_money');
   const defPlan = allocateWithMinimum(defensiveEffectiveTotal, defDist, data, 'new_money');
-  const blockedTotal = topLevelBlocked + rvPlan.blocked_total + defPlan.blocked_total + (rvPlan.surplus_to_liquidity || 0);
+  const blockedTotal = topLevelBlocked + rvPlan.blocked_total + defPlan.blocked_total;
   const executableInvestNow = rvPlan.executable_total + defPlan.executable_total;
-  const reserveFinal = reserveBase + blockedTotal;
+  const reserveFinal = reserveBase + topLevelBlocked + (rvPlan.surplus_to_liquidity || 0);
 
   setText('sim-new-invest-now', formatEuro(executableInvestNow));
   setText('sim-new-reserve', formatEuro(reserveFinal));
