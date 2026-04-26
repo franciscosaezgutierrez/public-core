@@ -363,7 +363,8 @@
     "Bloquear compra si el peso actual ya alcanza o supera el límite aplicable",
     "Comprar por gap frente al límite aplicable, no por distribución fija",
     "No ejecutar compras inferiores a 100 €",
-    "Los importes no ejecutados por mínimo operativo se acumulan como carry-over",
+    "No redistribuir toda la compra a un único activo",
+    "Si quedan menos de dos líneas ejecutables, el importe queda en liquidez",
     "Si no hay capacidad útil de compra, el sobrante queda en liquidez",
     "Sin NAV o sin VIX no se ejecuta el sistema"
   ],
@@ -379,9 +380,10 @@
     "min_order_amount": 100,
     "minimum_executable_assets": 2,
     "purchase_mode": "gap_weighted",
-    "carry_over_enabled": true,
+    "carry_over_enabled": false,
     "do_not_force_investment": true,
-    "surplus_destination": "liquidez"
+    "surplus_destination": "liquidez",
+    "gap_low_threshold": 0.002
   },
   "applicable_limits": {
     "new_money": {
@@ -395,20 +397,6 @@
       "quality": 0.16,
       "emerging": 0.08,
       "kopernik": 0.07
-    }
-  },
-  "carry_over_pending": {
-    "new_money": {
-      "core": 0.0,
-      "quality": 0.0,
-      "emerging": 0.0,
-      "kopernik": 0.0
-    },
-    "rotation": {
-      "core": 0.0,
-      "quality": 0.0,
-      "emerging": 0.0,
-      "kopernik": 0.0
     }
   },
   "purchase_capacity": {
@@ -432,7 +420,7 @@
       "portfolio_value_reference": 100000,
       "min_order_amount": 100,
       "minimum_executable_assets": 2,
-      "carry_over_enabled": true,
+      "carry_over_enabled": false,
       "capacity_by_asset": {
         "core": 90.0,
         "quality": 0.0,
@@ -451,22 +439,19 @@
         "emerging": 660.0,
         "kopernik": 880.0
       },
-      "available_with_carry_by_asset": {
-        "core": 90.0,
-        "quality": 0.0,
-        "emerging": 660.0,
-        "kopernik": 880.0
-      },
       "executed_by_asset": {
         "emerging": 660.0,
         "kopernik": 880.0
       },
       "executed_total": 1540.0,
-      "carry_over_next": {
-        "core": 90.0
+      "purchase_reasons_by_asset": {
+        "core": "gap bajo",
+        "quality": "bloqueado",
+        "emerging": "compra",
+        "kopernik": "compra"
       },
-      "carry_over_total": 90.0,
-      "surplus_to_liquidity": 5870.0,
+      "blocked_total": 5960.0,
+      "surplus_to_liquidity": 5960.0,
       "do_not_force_investment": true
     },
     "rotation_7500": {
@@ -475,7 +460,7 @@
       "portfolio_value_reference": 100000,
       "min_order_amount": 100,
       "minimum_executable_assets": 2,
-      "carry_over_enabled": true,
+      "carry_over_enabled": false,
       "capacity_by_asset": {
         "core": 90.0,
         "quality": 0.0,
@@ -494,22 +479,19 @@
         "emerging": 660.0,
         "kopernik": 880.0
       },
-      "available_with_carry_by_asset": {
-        "core": 90.0,
-        "quality": 0.0,
-        "emerging": 660.0,
-        "kopernik": 880.0
-      },
       "executed_by_asset": {
         "emerging": 660.0,
         "kopernik": 880.0
       },
       "executed_total": 1540.0,
-      "carry_over_next": {
-        "core": 90.0
+      "purchase_reasons_by_asset": {
+        "core": "gap bajo",
+        "quality": "bloqueado",
+        "emerging": "compra",
+        "kopernik": "compra"
       },
-      "carry_over_total": 90.0,
-      "surplus_to_liquidity": 5870.0,
+      "blocked_total": 5960.0,
+      "surplus_to_liquidity": 5960.0,
       "do_not_force_investment": true
     }
   },
