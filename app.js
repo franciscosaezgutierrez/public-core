@@ -375,37 +375,81 @@ function allocateWithMinimum(totalAmount, distribution, data, layer = 'new_money
 function allocateGapWeighted(totalAmount, data, layer = 'new_money') {
   const currentWeights = data?.current_weights || {};
   const limits = data?.applicable_limits?.[layer] || data?.target_weights || {};
+  const targetWeights = data?.target_weights || data?.operable_target_weights || {};
   const assets = ['core', 'quality', 'emerging', 'kopernik'];
   const portfolioValue = 100000;
+  const amount = Number(totalAmount || 0);
   const capacity = {};
-  let capacityTotal = 0;
+  const targetGap = {};
+  let totalTargetGap = 0;
 
   assets.forEach((asset) => {
     const current = Number(currentWeights?.[asset]);
     const limit = Number(limits?.[asset]);
-    const room = (!Number.isNaN(current) && !Number.isNaN(limit))
+    const target = Number(targetWeights?.[asset]);
+    const roomToLimit = (!Number.isNaN(current) && !Number.isNaN(limit))
       ? Math.max(0, (limit - current) * portfolioValue)
       : 0;
-    capacity[asset] = room;
-    capacityTotal += room;
+    const roomToTarget = (!Number.isNaN(current) && !Number.isNaN(target))
+      ? Math.max(0, (target - current) * portfolioValue)
+      : 0;
+
+    capacity[asset] = roomToLimit;
+    targetGap[asset] = Math.min(roomToTarget, roomToLimit);
+    totalTargetGap += targetGap[asset];
   });
 
-  const deployed = Math.min(Number(totalAmount || 0), capacityTotal);
-  const distribution = {};
-  if (capacityTotal > 0) {
+  const byAsset = {};
+  if (amount > 0 && totalTargetGap > 0) {
     assets.forEach((asset) => {
-      distribution[asset] = capacity[asset] / capacityTotal;
+      const raw = amount * (targetGap[asset] / totalTargetGap);
+      const capped = Math.min(raw, capacity[asset], targetGap[asset]);
+      const allowed = capped >= MIN_PURCHASE_EUR;
+      byAsset[asset] = {
+        raw_amount: raw,
+        redistributed_amount: 0,
+        executable_amount: allowed ? capped : 0,
+        blocked_amount: allowed ? 0 : capped,
+        allowed,
+      };
+    });
+  } else {
+    assets.forEach((asset) => {
+      byAsset[asset] = {
+        raw_amount: 0,
+        redistributed_amount: 0,
+        executable_amount: 0,
+        blocked_amount: 0,
+        allowed: false,
+      };
     });
   }
 
-  const plan = allocateWithMinimum(deployed, distribution, data, layer);
-  const executableTotal = plan.executable_total;
-  const surplus = Math.max(0, Number(totalAmount || 0) - executableTotal);
+  let executableEntries = Object.entries(byAsset).filter(([, item]) => item.executable_amount >= MIN_PURCHASE_EUR);
+
+  // Masa crítica: no se redistribuye toda la compra a un único activo.
+  // Si solo queda una línea ejecutable, la operación completa se mantiene en liquidez.
+  if (executableEntries.length < 2) {
+    Object.keys(byAsset).forEach((asset) => {
+      byAsset[asset].blocked_amount += byAsset[asset].executable_amount;
+      byAsset[asset].executable_amount = 0;
+      byAsset[asset].allowed = false;
+    });
+    executableEntries = [];
+  }
+
+  const executableTotal = executableEntries.reduce((sum, [, item]) => sum + Number(item.executable_amount || 0), 0);
+  const blockedTotal = Math.max(0, amount - executableTotal);
 
   return {
-    ...plan,
+    by_asset: byAsset,
+    executable_total: executableTotal,
+    blocked_total: blockedTotal,
+    redistributed_total: 0,
+    has_eligible: executableEntries.length >= 2,
     capacity_by_asset: capacity,
-    surplus_to_liquidity: surplus,
+    target_gap_by_asset: targetGap,
+    surplus_to_liquidity: 0,
   };
 }
 

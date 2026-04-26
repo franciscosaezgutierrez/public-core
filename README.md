@@ -8,7 +8,7 @@ Dashboard estático para GitHub Pages basado en reglas mecánicas de asignación
 - Escenario, fase operativa y señal actual
 - Asignación objetivo
 - Simulador de dinero nuevo basado en escenario con ajuste por valoración
-- Regla operativa de importe mínimo: no se ejecutan compras individuales inferiores a 100 € en los simuladores; el importe se redistribuye automáticamente entre las líneas ejecutables y solo queda bloqueado o en reserva si ninguna supera 100 €.
+- Regla operativa de importe mínimo: no se ejecutan compras individuales inferiores a 100 € en los simuladores; el importe no se ejecuta; si quedan menos de dos líneas ejecutables, el importe queda bloqueado en reserva/liquidez.
 - Rotación por caída por tramos
 - Validación del sistema y bloqueo de decisiones
 - Explicación del escenario
@@ -42,7 +42,7 @@ Dashboard estático para GitHub Pages basado en reglas mecánicas de asignación
 - Composición base del escenario 3 implementada.
 - Escenarios macro implementados.
 - Rotación por drawdown implementada con prioridad core → calidad → emergentes.
-- Dinero nuevo basado en escenario con ajuste por valoración y redistribución automática de importes no ejecutables (<100 €) hacia las líneas que sí superan el mínimo.
+- Dinero nuevo basado en escenario con ajuste por valoración y bloqueo de importes no ejecutables (<100 €) y exigencia de al menos dos líneas ejecutables.
 - Uso defensivo implementado: 60% DNCA / 40% Jupiter.
 - Jupiter incorporado como tercera fuente de rotación.
 - Bloqueo automático por datos > 1 día y por ausencia de VIX.
@@ -92,7 +92,7 @@ La interfaz incorpora un selector visible en la cabecera.
 Qué hace:
 - Permite cambiar el escenario desde la propia web.
 - Guarda la selección en el navegador mediante `localStorage`.
-- Recalcula en pantalla el escenario, la fase, la acción, el bloque de dinero nuevo y el simulador de rotación, aplicando redistribución automática del sobrante inferior a 100 €.
+- Recalcula en pantalla el escenario, la fase, la acción, el bloque de dinero nuevo y el simulador de rotación, aplicando bloqueo del sobrante inferior a 100 €.
 
 Limitación importante:
 - Al ser un dashboard estático para GitHub Pages, este selector **no escribe** en `data/manual_macro.json`.

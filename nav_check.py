@@ -363,8 +363,8 @@ def main():
         "rotation": compute_gap_purchase_capacity(current_operable_weights, rotation_limits),
     }
     purchase_plan_example = {
-        "new_money_7500": compute_gap_purchase_plan(7500, current_operable_weights, new_money_limits),
-        "rotation_7500": compute_gap_purchase_plan(7500, current_operable_weights, rotation_limits),
+        "new_money_7500": compute_gap_purchase_plan(7500, current_operable_weights, new_money_limits, OPERABLE_TARGET_WEIGHTS),
+        "rotation_7500": compute_gap_purchase_plan(7500, current_operable_weights, rotation_limits, OPERABLE_TARGET_WEIGHTS),
     }
 
     rotation_state_prev = previous.get("rotation_state", {}) if isinstance(previous, dict) else {}

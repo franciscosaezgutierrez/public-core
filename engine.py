@@ -354,54 +354,58 @@ def compute_gap_purchase_capacity(current_weights, limits, portfolio_value=10000
     return capacity
 
 
-def compute_gap_purchase_plan(capital_to_deploy, current_weights, limits, min_order_amount=None, portfolio_value=100000):
-    """Compra por gap + límites + mínimo operativo.
+def compute_gap_purchase_plan(capital_to_deploy, current_weights, limits, target_weights=None, min_order_amount=None, portfolio_value=100000):
+    """Compra por gap a objetivo + límites + mínimo operativo.
 
-    Si el capital no cabe dentro de la capacidad de compra, el sobrante queda
-    en liquidez. No se fuerza inversión.
+    La ponderación se calcula contra el peso objetivo estructural.
+    El límite aplicable solo actúa como techo/capacidad.
+    Si quedan menos de dos líneas ejecutables, no se fuerza la compra:
+    el importe queda en liquidez.
     """
     min_order_amount = OPERATIONAL_RULES.get("min_order_amount", 100) if min_order_amount is None else min_order_amount
-    capacity = compute_gap_purchase_capacity(current_weights, limits, portfolio_value=portfolio_value)
-    raw_total_capacity = sum(capacity.values())
+    target_weights = target_weights or limits or {}
+
+    capacity_to_limit = compute_gap_purchase_capacity(current_weights, limits, portfolio_value=portfolio_value)
+    target_gap = {}
+    for asset, limit_capacity in capacity_to_limit.items():
+        current = (current_weights or {}).get(asset)
+        target = (target_weights or {}).get(asset)
+        if current is None or target is None:
+            target_gap[asset] = 0
+        else:
+            target_gap[asset] = round(min(max(0.0, float(target) - float(current)) * float(portfolio_value), limit_capacity), 2)
+
+    total_gap = sum(target_gap.values())
+    amount = float(capital_to_deploy or 0)
     executable = {}
-    remaining_capacity = dict(capacity)
-    remaining_capital = min(float(capital_to_deploy or 0), raw_total_capacity)
 
-    while remaining_capital > 0:
-        eligible = {a: cap for a, cap in remaining_capacity.items() if cap >= min_order_amount}
-        if not eligible:
-            break
-        total_gap = sum(eligible.values())
-        if total_gap <= 0:
-            break
-        allocated_round = 0.0
-        for asset, room in list(eligible.items()):
-            proposed = remaining_capital * (room / total_gap)
-            amount = min(proposed, remaining_capacity[asset])
-            if amount < min_order_amount:
-                continue
-            executable[asset] = executable.get(asset, 0.0) + amount
-            remaining_capacity[asset] -= amount
-            allocated_round += amount
-        if allocated_round <= 0:
-            break
-        remaining_capital -= allocated_round
+    if amount > 0 and total_gap > 0:
+        for asset, gap in target_gap.items():
+            raw = amount * (gap / total_gap)
+            capped = min(raw, capacity_to_limit.get(asset, 0), gap)
+            if capped >= min_order_amount:
+                executable[asset] = capped
 
-    # Quitar importes residuales < mínimo que puedan aparecer por redondeos.
+    # Masa crítica: evitar concentrar una orden en una única línea ejecutable.
+    if len(executable) < 2:
+        executable = {}
+
     executable = {a: round(v, 2) for a, v in executable.items() if v >= min_order_amount}
     executed_total = round(sum(executable.values()), 2)
-    surplus = round(float(capital_to_deploy or 0) - executed_total, 2)
+    surplus = round(amount - executed_total, 2)
 
     return {
         "mode": OPERATIONAL_RULES.get("purchase_mode", "gap_weighted"),
-        "capital_to_deploy": round(float(capital_to_deploy or 0), 2),
+        "capital_to_deploy": round(amount, 2),
         "portfolio_value_reference": portfolio_value,
         "min_order_amount": min_order_amount,
-        "capacity_by_asset": capacity,
+        "capacity_by_asset": capacity_to_limit,
+        "target_gap_by_asset": target_gap,
         "executed_by_asset": executable,
         "executed_total": executed_total,
         "surplus_to_liquidity": max(0, surplus),
         "do_not_force_investment": OPERATIONAL_RULES.get("do_not_force_investment", True),
+        "minimum_executable_assets": 2,
     }
 
 
