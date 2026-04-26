@@ -372,11 +372,35 @@ function allocateWithMinimum(totalAmount, distribution, data, layer = 'new_money
 
 
 
+function purchaseReason(asset, current, target, theoreticalAmount) {
+  const gap = Number(target) - Number(current);
+  if (Number.isNaN(gap)) return 'sin datos';
+  if (gap <= 0) return '🔒 Bloqueado';
+  if (gap < 0.002) return '⚪ Gap bajo';
+  if (Number(theoreticalAmount || 0) < MIN_PURCHASE_EUR) return '⚠ <100€';
+  return '🟢 Compra';
+}
+
+function summarizeReasons(plan) {
+  const labels = {
+    core: 'Vanguard',
+    quality: 'Robeco BP',
+    emerging: 'Emergentes',
+    kopernik: 'Kopernik',
+    dnca: 'DNCA',
+    jupiter: 'Jupiter',
+  };
+  const reasons = plan?.reasons_by_asset || {};
+  const parts = Object.entries(reasons)
+    .filter(([, reason]) => reason && reason !== '🟢 Compra')
+    .map(([asset, reason]) => `${labels[asset] || asset}: ${reason}`);
+  return parts.length ? parts.join(' · ') : '—';
+}
+
 function allocateGapWeighted(totalAmount, data, layer = 'new_money') {
   const currentWeights = data?.current_weights || {};
   const limits = data?.applicable_limits?.[layer] || data?.target_weights || {};
   const targetWeights = data?.target_weights || data?.operable_target_weights || {};
-  const carryOverPending = data?.carry_over_pending?.[layer] || {};
   const assets = ['core', 'quality', 'emerging', 'kopernik'];
   const portfolioValue = 100000;
   const amount = Number(totalAmount || 0);
@@ -401,34 +425,31 @@ function allocateGapWeighted(totalAmount, data, layer = 'new_money') {
   });
 
   const byAsset = {};
+  assets.forEach((asset) => {
+    byAsset[asset] = {
+      raw_amount: 0,
+      redistributed_amount: 0,
+      executable_amount: 0,
+      blocked_amount: 0,
+      allowed: false,
+      reason: purchaseReason(asset, currentWeights?.[asset], targetWeights?.[asset], 0),
+    };
+  });
+
   if (amount > 0 && totalTargetGap > 0) {
     assets.forEach((asset) => {
       const raw = amount * (targetGap[asset] / totalTargetGap);
       const capped = Math.min(raw, capacity[asset], targetGap[asset]);
-      const carry = Number(carryOverPending?.[asset] || 0);
-      const available = Math.min(capped + carry, capacity[asset]);
-      const allowed = available >= MIN_PURCHASE_EUR;
+      const reason = purchaseReason(asset, currentWeights?.[asset], targetWeights?.[asset], capped);
+      const allowed = reason === '🟢 Compra';
+
       byAsset[asset] = {
         raw_amount: raw,
         redistributed_amount: 0,
-        executable_amount: allowed ? available : 0,
-        blocked_amount: 0,
-        carry_over_input: carry,
-        carry_over_next: allowed ? 0 : available,
+        executable_amount: allowed ? capped : 0,
+        blocked_amount: allowed ? 0 : capped,
         allowed,
-      };
-    });
-  } else {
-    assets.forEach((asset) => {
-      const carry = Number(carryOverPending?.[asset] || 0);
-      byAsset[asset] = {
-        raw_amount: 0,
-        redistributed_amount: 0,
-        executable_amount: 0,
-        blocked_amount: 0,
-        carry_over_input: carry,
-        carry_over_next: carry,
-        allowed: false,
+        reason,
       };
     });
   }
@@ -436,11 +457,12 @@ function allocateGapWeighted(totalAmount, data, layer = 'new_money') {
   let executableEntries = Object.entries(byAsset).filter(([, item]) => item.executable_amount >= MIN_PURCHASE_EUR);
 
   // Masa crítica: no se redistribuye toda la compra a un único activo.
-  // Si quedan menos de dos líneas ejecutables, el importe operativo queda como carry-over.
   if (executableEntries.length < 2) {
     Object.keys(byAsset).forEach((asset) => {
-      const pending = Number(byAsset[asset].carry_over_next || 0) + Number(byAsset[asset].executable_amount || 0);
-      byAsset[asset].carry_over_next = pending;
+      if (byAsset[asset].executable_amount > 0) {
+        byAsset[asset].reason = '⚠ <2 líneas';
+      }
+      byAsset[asset].blocked_amount += byAsset[asset].executable_amount;
       byAsset[asset].executable_amount = 0;
       byAsset[asset].allowed = false;
     });
@@ -448,19 +470,22 @@ function allocateGapWeighted(totalAmount, data, layer = 'new_money') {
   }
 
   const executableTotal = executableEntries.reduce((sum, [, item]) => sum + Number(item.executable_amount || 0), 0);
-  const carryOverTotal = Object.values(byAsset).reduce((sum, item) => sum + Number(item.carry_over_next || 0), 0);
-  const theoreticalTotal = Object.values(byAsset).reduce((sum, item) => sum + Math.min(Number(item.raw_amount || 0), capacity[Object.keys(byAsset).find(k => byAsset[k] === item)] || 0), 0);
+  const theoreticalTotal = Object.values(byAsset).reduce((sum, item) => sum + Number(item.raw_amount || 0), 0);
+  const blockedTotal = Math.max(0, amount - executableTotal);
+  const reasonsByAsset = {};
+  Object.keys(byAsset).forEach((asset) => { reasonsByAsset[asset] = byAsset[asset].reason; });
 
   return {
     by_asset: byAsset,
     executable_total: executableTotal,
-    blocked_total: carryOverTotal,
-    carry_over_total: carryOverTotal,
+    blocked_total: blockedTotal,
     redistributed_total: 0,
     has_eligible: executableEntries.length >= 2,
     capacity_by_asset: capacity,
     target_gap_by_asset: targetGap,
-    surplus_to_liquidity: Math.max(0, amount - theoreticalTotal),
+    reasons_by_asset: reasonsByAsset,
+    surplus_to_liquidity: Math.max(0, amount - executableTotal),
+    theoretical_total: theoreticalTotal,
   };
 }
 
@@ -525,7 +550,7 @@ function renderNewMoneySimulator(rule, data = null) {
   setText('sim-new-kopernik', formatEuro(rvPlan.by_asset.kopernik?.executable_amount || 0));
   setText('sim-new-dnca', formatEuro(defPlan.by_asset.dnca?.executable_amount || 0));
   setText('sim-new-jupiter', formatEuro(defPlan.by_asset.jupiter?.executable_amount || 0));
-  setText('sim-new-blocked', formatEuro(blockedTotal));
+  setText('sim-new-blocked', `${formatEuro(blockedTotal)} · ${summarizeReasons(rvPlan)}`);
 }
 
 function renderRotationSimulator(rotationPlan, pauseMode, data = null) {
@@ -540,13 +565,14 @@ function renderRotationSimulator(rotationPlan, pauseMode, data = null) {
   setText('rotation-action', active ? 'Comprar' : (pauseMode?.active ? 'No actuar' : 'Esperar'));
   setText('rotation-matrix', objectPercentList(matrix));
 
-  const buy = active && matrix ? matrix : {};
-  const rotationPlanMin = applyMinimumPurchaseRule(effectiveAmount, buy, data);
+  const rotationPlanMin = active && matrix
+    ? allocateGapWeighted(effectiveAmount, data, 'rotation')
+    : { by_asset: {}, blocked_total: effectiveAmount, reasons_by_asset: {} };
   setText('sim-rot-core', formatEuro(rotationPlanMin.by_asset.core?.executable_amount || 0));
   setText('sim-rot-quality', formatEuro(rotationPlanMin.by_asset.quality?.executable_amount || 0));
   setText('sim-rot-emerging', formatEuro(rotationPlanMin.by_asset.emerging?.executable_amount || 0));
   setText('sim-rot-kopernik', formatEuro(rotationPlanMin.by_asset.kopernik?.executable_amount || 0));
-  setText('sim-rot-blocked', formatEuro(rotationPlanMin.blocked_total));
+  setText('sim-rot-blocked', `${formatEuro(rotationPlanMin.blocked_total)} · ${summarizeReasons(rotationPlanMin)}`);
 }
 
 function renderList(id, arr) {
@@ -752,7 +778,7 @@ function renderDashboard(data) {
 
   setText('target-summary-value', 'RV 60–62% · DNCA objetivo 12% / límite 15% · Jupiter objetivo 7% / límite 8% · Liquidez 15–18% · Oro 2,5%');
   setText('rotation-summary-value', `Trigger ${data.rotation_trigger || 'drawdown ≤ -10% / VIX > 30'} · Intensidad ${data.rotation_intensity ? data.rotation_intensity.base || '—' : '—'}`);
-  setText('purchase-summary-value', data.operational_card?.purchases || 'gap vs objetivo · mínimo 100 € · no forzar inversión · sobrante a liquidez');
+  setText('purchase-summary-value', data.operational_card?.purchases || 'gap vs objetivo · mínimo 100 € · mínimo 2 líneas · no forzar inversión · sobrante a liquidez');
   setText('hard-rules-summary-value', 'No vender en caídas · No usar oro · No comprar DNCA en caídas · No mezclar capas · Groupama es liquidez operativa real');
 
 

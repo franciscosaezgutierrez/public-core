@@ -354,6 +354,28 @@ def compute_gap_purchase_capacity(current_weights, limits, portfolio_value=10000
     return capacity
 
 
+def explain_purchase_reason(asset, current, target, theoretical_amount, min_order_amount=None):
+    """Motivo operativo para la UI.
+
+    No altera la decisión; solo explica por qué se compra o no se compra.
+    """
+    min_order_amount = OPERATIONAL_RULES.get("min_order_amount", 100) if min_order_amount is None else min_order_amount
+    gap_low_threshold = float(OPERATIONAL_RULES.get("gap_low_threshold", 0.002) or 0.002)
+
+    if current is None or target is None:
+        return "sin datos"
+
+    gap = float(target) - float(current)
+
+    if gap <= 0:
+        return "bloqueado"
+    if gap < gap_low_threshold:
+        return "gap bajo"
+    if float(theoretical_amount or 0) < float(min_order_amount):
+        return "<100€"
+    return "compra"
+
+
 def compute_gap_purchase_plan(
     capital_to_deploy,
     current_weights,
@@ -363,22 +385,23 @@ def compute_gap_purchase_plan(
     portfolio_value=100000,
     carry_over_pending=None,
 ):
-    """Compra por gap a objetivo + límites + mínimo operativo + carry-over.
+    """Compra por gap a objetivo + límites + mínimo operativo, sin carry-over.
 
     La ponderación se calcula contra el peso objetivo estructural.
     El límite aplicable solo actúa como techo/capacidad.
 
-    Los importes teóricos inferiores al mínimo operativo no se pierden ni se
-    redistribuyen: quedan como carry-over para la siguiente aportación.
-    Si tras sumar carry-over quedan menos de dos líneas ejecutables, no se
-    fuerza una compra concentrada: el importe operativo queda pendiente.
+    Reglas:
+    - no se ejecutan compras individuales inferiores a 100 €
+    - no se redistribuye toda la compra a un único activo
+    - si quedan menos de dos líneas ejecutables, no se fuerza la inversión
+    - el sobrante queda en liquidez operativa
     """
     min_order_amount = OPERATIONAL_RULES.get("min_order_amount", 100) if min_order_amount is None else min_order_amount
     minimum_assets = int(OPERATIONAL_RULES.get("minimum_executable_assets", 2) or 2)
-    carry_over_pending = carry_over_pending or {}
     target_weights = target_weights or limits or {}
 
     capacity_to_limit = compute_gap_purchase_capacity(current_weights, limits, portfolio_value=portfolio_value)
+
     target_gap = {}
     for asset, limit_capacity in capacity_to_limit.items():
         current = (current_weights or {}).get(asset)
@@ -391,39 +414,42 @@ def compute_gap_purchase_plan(
     total_gap = sum(target_gap.values())
     amount = float(capital_to_deploy or 0)
     theoretical = {}
-    available_with_carry = {}
     executable = {}
-    carry_over_next = {}
+    reasons = {}
+
+    for asset in capacity_to_limit.keys():
+        theoretical[asset] = 0.0
 
     if amount > 0 and total_gap > 0:
         for asset, gap in target_gap.items():
-            raw = amount * (gap / total_gap)
+            raw = amount * (gap / total_gap) if total_gap > 0 else 0.0
             capped = min(raw, capacity_to_limit.get(asset, 0), gap)
-            pending = float((carry_over_pending or {}).get(asset, 0) or 0)
-            available = min(capped + pending, capacity_to_limit.get(asset, 0))
             theoretical[asset] = round(capped, 2)
-            available_with_carry[asset] = round(available, 2)
-            if available >= min_order_amount:
-                executable[asset] = available
-            elif available > 0:
-                carry_over_next[asset] = available
+
+            current = (current_weights or {}).get(asset)
+            target = (target_weights or {}).get(asset)
+            reason = explain_purchase_reason(asset, current, target, capped, min_order_amount)
+            reasons[asset] = reason
+
+            if reason == "compra":
+                executable[asset] = round(capped, 2)
+    else:
+        for asset in capacity_to_limit.keys():
+            current = (current_weights or {}).get(asset)
+            target = (target_weights or {}).get(asset)
+            reasons[asset] = explain_purchase_reason(asset, current, target, 0, min_order_amount)
 
     # Masa crítica: evitar concentrar una orden en una única línea ejecutable.
     if len(executable) < minimum_assets:
-        for asset, available in available_with_carry.items():
-            if available > 0:
-                carry_over_next[asset] = round(available, 2)
+        if executable:
+            for asset in executable.keys():
+                reasons[asset] = "menos de 2 líneas ejecutables"
         executable = {}
-    else:
-        for asset in executable:
-            carry_over_next.pop(asset, None)
 
-    executable = {a: round(v, 2) for a, v in executable.items() if v >= min_order_amount}
-    carry_over_next = {a: round(v, 2) for a, v in carry_over_next.items() if v > 0}
     executed_total = round(sum(executable.values()), 2)
     theoretical_total = round(sum(theoretical.values()), 2)
-    carry_over_total = round(sum(carry_over_next.values()), 2)
-    surplus = round(max(0, amount - theoretical_total), 2)
+    surplus = round(max(0, amount - executed_total), 2)
+    blocked_total = round(max(0, amount - executed_total), 2)
 
     return {
         "mode": OPERATIONAL_RULES.get("purchase_mode", "gap_weighted"),
@@ -431,15 +457,14 @@ def compute_gap_purchase_plan(
         "portfolio_value_reference": portfolio_value,
         "min_order_amount": min_order_amount,
         "minimum_executable_assets": minimum_assets,
-        "carry_over_enabled": OPERATIONAL_RULES.get("carry_over_enabled", True),
+        "carry_over_enabled": False,
         "capacity_by_asset": capacity_to_limit,
         "target_gap_by_asset": target_gap,
         "theoretical_by_asset": theoretical,
-        "available_with_carry_by_asset": available_with_carry,
         "executed_by_asset": executable,
         "executed_total": executed_total,
-        "carry_over_next": carry_over_next,
-        "carry_over_total": carry_over_total,
+        "purchase_reasons_by_asset": reasons,
+        "blocked_total": blocked_total,
         "surplus_to_liquidity": surplus,
         "do_not_force_investment": OPERATIONAL_RULES.get("do_not_force_investment", True),
     }

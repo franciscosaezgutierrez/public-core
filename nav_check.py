@@ -7,7 +7,6 @@ import requests
 
 from config import (
     BASE_COMPOSITION,
-    CARRY_OVER_PENDING,
     HARD_RULES,
     OPERABLE_TARGET_WEIGHTS,
     OPERABLE_UNIVERSE,
@@ -366,11 +365,9 @@ def main():
     purchase_plan_example = {
         "new_money_7500": compute_gap_purchase_plan(
             7500, current_operable_weights, new_money_limits, OPERABLE_TARGET_WEIGHTS,
-            carry_over_pending=CARRY_OVER_PENDING.get("new_money"),
         ),
         "rotation_7500": compute_gap_purchase_plan(
             7500, current_operable_weights, rotation_limits, OPERABLE_TARGET_WEIGHTS,
-            carry_over_pending=CARRY_OVER_PENDING.get("rotation"),
         ),
     }
 
@@ -457,7 +454,6 @@ def main():
         "operational_checklist": ["¿Drawdown ≥ -10%?", "¿VIX > 30?", "¿Liquidez suficiente?", "¿Peso actual < límite aplicable?", "¿Orden ≥ 100 €?", "¿No se mezclan capas?"],
         "purchase_execution_policy": OPERATIONAL_RULES,
         "applicable_limits": applicable_limits,
-        "carry_over_pending": CARRY_OVER_PENDING,
         "purchase_capacity": purchase_capacity,
         "purchase_plan_example": purchase_plan_example,
         "operational_card": {

@@ -12,17 +12,10 @@ OPERATIONAL_RULES = {
     "min_order_amount": 100,
     "minimum_executable_assets": 2,
     "purchase_mode": "gap_weighted",
-    "carry_over_enabled": True,
+    "carry_over_enabled": False,
     "do_not_force_investment": True,
     "surplus_destination": "liquidez",
-}
-
-# Importes teóricos no ejecutados por estar por debajo del mínimo operativo.
-# Se mantienen separados por capa. Editar solo si se quiere arrastrar
-# importes pendientes de una simulación/ejecución anterior.
-CARRY_OVER_PENDING = {
-    "new_money": {"core": 0.0, "quality": 0.0, "emerging": 0.0, "kopernik": 0.0},
-    "rotation": {"core": 0.0, "quality": 0.0, "emerging": 0.0, "kopernik": 0.0},
+    "gap_low_threshold": 0.002,
 }
 
 # ============================================================
@@ -248,7 +241,8 @@ HARD_RULES = [
     "Bloquear compra si el peso actual ya alcanza o supera el límite aplicable",
     "Comprar por gap frente al límite aplicable, no por distribución fija",
     "No ejecutar compras inferiores a 100 €",
-    "Los importes no ejecutados por mínimo operativo se acumulan como carry-over",
+    "No redistribuir toda la compra a un único activo",
+    "Si quedan menos de dos líneas ejecutables, el importe queda en liquidez",
     "Si no hay capacidad útil de compra, el sobrante queda en liquidez",
     "Sin NAV o sin VIX no se ejecuta el sistema",
 ]
