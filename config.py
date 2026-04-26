@@ -8,6 +8,13 @@ SYSTEM_LIMITS = {
     "emerging_max": 0.08,
 }
 
+OPERATIONAL_RULES = {
+    "min_order_amount": 100,
+    "purchase_mode": "gap_weighted",
+    "do_not_force_investment": True,
+    "surplus_destination": "liquidez",
+}
+
 # ============================================================
 # PESOS OBJETIVO — ÚNICO PUNTO DE EDICIÓN MANUAL
 # ============================================================
@@ -104,8 +111,8 @@ ROTATION_INTENSITY = {
 
 VALUATION_INTENSITY_ADJUSTMENTS = {
     "MUY_CARO": {"new_money_bias": "prudente", "rotation_bias": "reducida", "multiplier": 0.75},
-    "CARO_MODERADO": {"new_money_bias": "moderado", "rotation_bias": "normal", "multiplier": 0.90},
-    "CARO_DUDOSO": {"new_money_bias": "normal", "rotation_bias": "normal", "multiplier": 1.00},
+    "CARO_MODERADO": {"new_money_bias": "moderado", "rotation_bias": "normal", "multiplier": 0.85},
+    "CARO_DUDOSO": {"new_money_bias": "normal", "rotation_bias": "normal", "multiplier": 0.90},
     "NEUTRO": {"new_money_bias": "normal", "rotation_bias": "normal", "multiplier": 1.00},
     "BARATO": {"new_money_bias": "ofensivo", "rotation_bias": "ampliada", "multiplier": 1.10},
 }
@@ -125,6 +132,7 @@ NEW_MONEY_MATRIX = {
         "rv_distribution": {"core": 0.45, "quality": 0.25, "emerging": 0.15, "kopernik": 0.15},
         "defensive_distribution": None,
         "note": "Expansión: se prioriza riesgo.",
+        "distribution_mode": "gap_weighted",
     },
     "SC2_DESACELERACION": {
         "invest_pct": 0.70,
@@ -136,6 +144,7 @@ NEW_MONEY_MATRIX = {
         "defensive_distribution": DEFENSIVE_DISTRIBUTION,
         "defensive_optional_max_of_invested": 0.15,
         "note": "Desaceleración: sesgo prudente, con defensivo opcional.",
+        "distribution_mode": "gap_weighted",
     },
     "SC3_SOBREVALORACION": {
         "invest_pct": 0.60,
@@ -146,6 +155,7 @@ NEW_MONEY_MATRIX = {
         "rv_distribution": {"core": 0.55, "quality": 0.35, "emerging": 0.07, "kopernik": 0.03},
         "defensive_distribution": DEFENSIVE_DISTRIBUTION,
         "note": "Sobrevaloración: parte de la inversión nueva puede ir a defensivos.",
+        "distribution_mode": "gap_weighted",
     },
     "SC4_CORRECCION": {
         "invest_pct": 0.90,
@@ -156,6 +166,7 @@ NEW_MONEY_MATRIX = {
         "rv_distribution": {"core": 0.40, "quality": 0.25, "emerging": 0.20, "kopernik": 0.15},
         "defensive_distribution": None,
         "note": "Corrección: ofensivo, sin compras defensivas.",
+        "distribution_mode": "gap_weighted",
     },
 }
 
@@ -166,6 +177,56 @@ ROTATION_MATRIX = {
     "SC4_CORRECCION": {"core": 0.40, "quality": 0.25, "emerging": 0.20, "kopernik": 0.15},
 }
 
+
+# ============================================================
+# LÍMITES POR CAPA
+# ============================================================
+
+def limits_new_money(scenario_code):
+    """Límites aplicables a dinero nuevo.
+
+    En expansión se permite micro-flexibilidad. En el resto de escenarios
+    se respetan los pesos estructurales, salvo emergentes, que mantiene
+    su límite duro del sistema.
+    """
+    if scenario_code == "SC1_EXPANSION":
+        return {
+            "core": 0.32,
+            "quality": 0.175,
+            "emerging": SYSTEM_LIMITS["emerging_max"],
+            "kopernik": 0.08,
+        }
+
+    return {
+        "core": TARGET_WEIGHTS["core"],
+        "quality": TARGET_WEIGHTS["quality"],
+        "emerging": SYSTEM_LIMITS["emerging_max"],
+        "kopernik": TARGET_WEIGHTS["kopernik"],
+    }
+
+
+def limits_rotation(drawdown):
+    """Límites tácticos para rotación según profundidad de caída.
+
+    Solo se usan en la capa de rotación. No modifican los pesos objetivo.
+    """
+    if drawdown > -0.10:
+        return {
+            "core": TARGET_WEIGHTS["core"],
+            "quality": TARGET_WEIGHTS["quality"],
+            "emerging": SYSTEM_LIMITS["emerging_max"],
+            "kopernik": TARGET_WEIGHTS["kopernik"],
+        }
+
+    if drawdown <= -0.20:
+        return {"core": 0.35, "quality": 0.20, "emerging": 0.10, "kopernik": 0.10}
+
+    if drawdown <= -0.15:
+        return {"core": 0.34, "quality": 0.19, "emerging": 0.10, "kopernik": 0.09}
+
+    return {"core": 0.32, "quality": 0.18, "emerging": 0.09, "kopernik": 0.08}
+
+
 HARD_RULES = [
     "No comprar sin trigger",
     "No vender en caídas",
@@ -174,6 +235,9 @@ HARD_RULES = [
     "No usar Jupiter como liquidez estructural",
     "No mezclar dinero nuevo y rotación",
     "El plan de pensiones no participa en decisiones operativas",
-    "Bloquear compra si el peso actual ya alcanza o supera el objetivo",
+    "Bloquear compra si el peso actual ya alcanza o supera el límite aplicable",
+    "Comprar por gap frente al límite aplicable, no por distribución fija",
+    "No ejecutar compras inferiores a 100 €",
+    "Si no hay capacidad útil de compra, el sobrante queda en liquidez",
     "Sin NAV o sin VIX no se ejecuta el sistema",
 ]

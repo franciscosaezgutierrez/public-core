@@ -299,19 +299,25 @@ function deriveScenarioPayload(data, scenarioCode) {
 
 const MIN_PURCHASE_EUR = 100;
 
-function isBlockedByWeight(asset, data) {
-  const currentWeights = data?.current_weights || {};
+function getApplicableLimit(asset, data, layer = 'new_money') {
+  const currentLayerLimits = data?.applicable_limits?.[layer] || {};
   const targetWeights = data?.target_weights || data?.operable_target_weights || {};
-  const current = Number(currentWeights?.[asset]);
-  const target = Number(targetWeights?.[asset]);
-
-  if (Number.isNaN(current) || Number.isNaN(target)) return false;
-  return current >= target;
+  const limit = Number(currentLayerLimits?.[asset] ?? targetWeights?.[asset]);
+  return Number.isNaN(limit) ? null : limit;
 }
 
-function normalizeDistribution(distribution, data) {
+function isBlockedByWeight(asset, data, layer = 'new_money') {
+  const currentWeights = data?.current_weights || {};
+  const current = Number(currentWeights?.[asset]);
+  const limit = getApplicableLimit(asset, data, layer);
+
+  if (Number.isNaN(current) || limit === null) return false;
+  return current >= limit;
+}
+
+function normalizeDistribution(distribution, data, layer = 'new_money') {
   const dist = distribution || {};
-  const filteredEntries = Object.entries(dist).filter(([asset, weight]) => Number(weight || 0) > 0 && !isBlockedByWeight(asset, data));
+  const filteredEntries = Object.entries(dist).filter(([asset, weight]) => Number(weight || 0) > 0 && !isBlockedByWeight(asset, data, layer));
   const totalWeight = filteredEntries.reduce((sum, [, weight]) => sum + Number(weight || 0), 0);
 
   if (totalWeight <= 0) return {};
@@ -321,8 +327,8 @@ function normalizeDistribution(distribution, data) {
   );
 }
 
-function allocateWithMinimum(totalAmount, distribution, data) {
-  const dist = normalizeDistribution(distribution, data);
+function allocateWithMinimum(totalAmount, distribution, data, layer = 'new_money') {
+  const dist = normalizeDistribution(distribution, data, layer);
   const entries = Object.entries(dist).map(([asset, weight]) => ({
     asset,
     weight: Number(weight || 0),
@@ -364,6 +370,44 @@ function allocateWithMinimum(totalAmount, distribution, data) {
   };
 }
 
+
+
+function allocateGapWeighted(totalAmount, data, layer = 'new_money') {
+  const currentWeights = data?.current_weights || {};
+  const limits = data?.applicable_limits?.[layer] || data?.target_weights || {};
+  const assets = ['core', 'quality', 'emerging', 'kopernik'];
+  const portfolioValue = 100000;
+  const capacity = {};
+  let capacityTotal = 0;
+
+  assets.forEach((asset) => {
+    const current = Number(currentWeights?.[asset]);
+    const limit = Number(limits?.[asset]);
+    const room = (!Number.isNaN(current) && !Number.isNaN(limit))
+      ? Math.max(0, (limit - current) * portfolioValue)
+      : 0;
+    capacity[asset] = room;
+    capacityTotal += room;
+  });
+
+  const deployed = Math.min(Number(totalAmount || 0), capacityTotal);
+  const distribution = {};
+  if (capacityTotal > 0) {
+    assets.forEach((asset) => {
+      distribution[asset] = capacity[asset] / capacityTotal;
+    });
+  }
+
+  const plan = allocateWithMinimum(deployed, distribution, data, layer);
+  const executableTotal = plan.executable_total;
+  const surplus = Math.max(0, Number(totalAmount || 0) - executableTotal);
+
+  return {
+    ...plan,
+    capacity_by_asset: capacity,
+    surplus_to_liquidity: surplus,
+  };
+}
 
 function applyMinimumPurchaseRule(totalAmount, distribution, data) {
   return allocateWithMinimum(totalAmount, distribution, data);
@@ -409,9 +453,10 @@ function renderNewMoneySimulator(rule, data = null) {
   const defensiveEffectiveTotal = topLevel.find((item) => item.key === 'defensive')?.effective_amount || 0;
   const topLevelBlocked = (rvEffectiveTotal + defensiveEffectiveTotal) > 0 ? 0 : (rvTotalBase + defensiveTotalBase);
 
-  const rvPlan = allocateWithMinimum(rvEffectiveTotal, rvDist, data);
-  const defPlan = allocateWithMinimum(defensiveEffectiveTotal, defDist, data);
-  const blockedTotal = topLevelBlocked + rvPlan.blocked_total + defPlan.blocked_total;
+  const useGapMode = rule?.distribution_mode === 'gap_weighted';
+  const rvPlan = useGapMode ? allocateGapWeighted(rvEffectiveTotal, data, 'new_money') : allocateWithMinimum(rvEffectiveTotal, rvDist, data, 'new_money');
+  const defPlan = allocateWithMinimum(defensiveEffectiveTotal, defDist, data, 'new_money');
+  const blockedTotal = topLevelBlocked + rvPlan.blocked_total + defPlan.blocked_total + (rvPlan.surplus_to_liquidity || 0);
   const executableInvestNow = rvPlan.executable_total + defPlan.executable_total;
   const reserveFinal = reserveBase + blockedTotal;
 
@@ -648,10 +693,11 @@ function renderDashboard(data) {
 
   setText('target-composition-value', objectTargetList(compositionTarget));
   setText('purchase-priority-value', (data.priority_of_purchase || []).join(' → ') || '—');
-  setText('limits-value', data.system_limits ? `RV máx ${percentText(data.system_limits.rv_max)} · Liquidez ${percentText(data.system_limits.cash_min)}-${percentText(data.system_limits.cash_max)} · Oro máx ${percentText(data.system_limits.gold_max)} · Emergentes máx ${percentText(data.system_limits.emerging_max)}` : '—');
+  setText('limits-value', data.operational_card?.limits || (data.system_limits ? `RV máx ${percentText(data.system_limits.rv_max)} · Liquidez ${percentText(data.system_limits.cash_min)}-${percentText(data.system_limits.cash_max)} · Oro máx ${percentText(data.system_limits.gold_max)} · Emergentes máx ${percentText(data.system_limits.emerging_max)} · Límites dinámicos según capa/escenario` : '—'));
 
   setText('target-summary-value', 'RV 60–62% · DNCA objetivo 12% / límite 15% · Jupiter objetivo 7% / límite 8% · Liquidez 15–18% · Oro 2,5%');
   setText('rotation-summary-value', `Trigger ${data.rotation_trigger || 'drawdown ≤ -10% / VIX > 30'} · Intensidad ${data.rotation_intensity ? data.rotation_intensity.base || '—' : '—'}`);
+  setText('purchase-summary-value', data.operational_card?.purchases || 'gap vs objetivo · mínimo 100 € · no forzar inversión · sobrante a liquidez');
   setText('hard-rules-summary-value', 'No vender en caídas · No usar oro · No comprar DNCA en caídas · No mezclar capas · Groupama es liquidez operativa real');
 
 

@@ -9,6 +9,7 @@ from config import (
     NEW_MONEY_MATRIX,
     NON_ROTATION_ASSETS,
     OPERABLE_TARGET_WEIGHTS,
+    OPERATIONAL_RULES,
     ROTATION_INTENSITY,
     ROTATION_MATRIX,
     SCENARIO_ALLOCATIONS,
@@ -17,6 +18,8 @@ from config import (
     TARGET_WEIGHT_TOLERANCE_PP,
     VALUATION_INTENSITY_ADJUSTMENTS,
     WEIGHT_SOURCE_KEYS,
+    limits_new_money,
+    limits_rotation,
 )
 
 
@@ -285,7 +288,13 @@ def build_current_weights_from_payload(previous_payload):
 
 
 
+
 def compute_asset_permissions(current_weights, target_weights=None, rotation_active=False, trigger_active=False, pause_mode=None, flash_crash=None):
+    """Calcula activos permitidos frente al límite aplicable.
+
+    `target_weights` se mantiene como nombre por compatibilidad, pero puede
+    recibir límites dinámicos de dinero nuevo o de rotación.
+    """
     target_weights = target_weights or OPERABLE_TARGET_WEIGHTS
     pause_active = bool((pause_mode or {}).get("active"))
     flash_crash_block = bool((flash_crash or {}).get("blocking_window_active"))
@@ -303,7 +312,7 @@ def compute_asset_permissions(current_weights, target_weights=None, rotation_act
         if rotation_active and asset in NON_ROTATION_ASSETS:
             reasons.append("activo excluido de la rotación")
         if current is not None and current >= target + TARGET_WEIGHT_TOLERANCE_PP:
-            reasons.append("peso actual igual o superior al objetivo")
+            reasons.append("peso actual igual o superior al límite aplicable")
         if not trigger_active and rotation_active:
             reasons.append("sin trigger operativo")
 
@@ -328,6 +337,72 @@ def compute_asset_permissions(current_weights, target_weights=None, rotation_act
         "blocked_reasons_by_asset": blocked_reasons,
     }
 
+
+def compute_gap_purchase_capacity(current_weights, limits, portfolio_value=100000):
+    """Capacidad máxima de compra por activo según gap frente al límite aplicable.
+
+    El valor por defecto 100.000 permite expresar la capacidad como euros por
+    cada 100.000 € de cartera cuando no se recibe un valor real de cartera.
+    """
+    capacity = {}
+    for asset, limit in (limits or {}).items():
+        current = (current_weights or {}).get(asset)
+        if current is None or limit is None:
+            capacity[asset] = 0
+        else:
+            capacity[asset] = round(max(0.0, float(limit) - float(current)) * float(portfolio_value), 2)
+    return capacity
+
+
+def compute_gap_purchase_plan(capital_to_deploy, current_weights, limits, min_order_amount=None, portfolio_value=100000):
+    """Compra por gap + límites + mínimo operativo.
+
+    Si el capital no cabe dentro de la capacidad de compra, el sobrante queda
+    en liquidez. No se fuerza inversión.
+    """
+    min_order_amount = OPERATIONAL_RULES.get("min_order_amount", 100) if min_order_amount is None else min_order_amount
+    capacity = compute_gap_purchase_capacity(current_weights, limits, portfolio_value=portfolio_value)
+    raw_total_capacity = sum(capacity.values())
+    executable = {}
+    remaining_capacity = dict(capacity)
+    remaining_capital = min(float(capital_to_deploy or 0), raw_total_capacity)
+
+    while remaining_capital > 0:
+        eligible = {a: cap for a, cap in remaining_capacity.items() if cap >= min_order_amount}
+        if not eligible:
+            break
+        total_gap = sum(eligible.values())
+        if total_gap <= 0:
+            break
+        allocated_round = 0.0
+        for asset, room in list(eligible.items()):
+            proposed = remaining_capital * (room / total_gap)
+            amount = min(proposed, remaining_capacity[asset])
+            if amount < min_order_amount:
+                continue
+            executable[asset] = executable.get(asset, 0.0) + amount
+            remaining_capacity[asset] -= amount
+            allocated_round += amount
+        if allocated_round <= 0:
+            break
+        remaining_capital -= allocated_round
+
+    # Quitar importes residuales < mínimo que puedan aparecer por redondeos.
+    executable = {a: round(v, 2) for a, v in executable.items() if v >= min_order_amount}
+    executed_total = round(sum(executable.values()), 2)
+    surplus = round(float(capital_to_deploy or 0) - executed_total, 2)
+
+    return {
+        "mode": OPERATIONAL_RULES.get("purchase_mode", "gap_weighted"),
+        "capital_to_deploy": round(float(capital_to_deploy or 0), 2),
+        "portfolio_value_reference": portfolio_value,
+        "min_order_amount": min_order_amount,
+        "capacity_by_asset": capacity,
+        "executed_by_asset": executable,
+        "executed_total": executed_total,
+        "surplus_to_liquidity": max(0, surplus),
+        "do_not_force_investment": OPERATIONAL_RULES.get("do_not_force_investment", True),
+    }
 
 
 def compute_aggregate_weights(weights):

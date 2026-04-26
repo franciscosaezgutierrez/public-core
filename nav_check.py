@@ -10,6 +10,7 @@ from config import (
     HARD_RULES,
     OPERABLE_TARGET_WEIGHTS,
     OPERABLE_UNIVERSE,
+    OPERATIONAL_RULES,
     ROTATION_CAPITAL_SOURCES,
     SYSTEM_LIMITS,
     TOTAL_TARGET_WEIGHTS,
@@ -22,6 +23,8 @@ from engine import (
     compute_asset_permissions,
     compute_aggregate_status,
     compute_aggregate_weights,
+    compute_gap_purchase_capacity,
+    compute_gap_purchase_plan,
     compute_score,
     compute_valuation,
     compute_weight_deviations,
@@ -40,6 +43,7 @@ from engine import (
     resolve_scenario,
     score_label,
 )
+from config import limits_new_money, limits_rotation
 
 NAV_URL = "https://query1.finance.yahoo.com/v8/finance/chart/0P00000RQC.F?interval=1d&range=5d"
 VIX_URL = "https://query1.finance.yahoo.com/v8/finance/chart/^VIX?interval=1d&range=5d"
@@ -337,14 +341,31 @@ def main():
 
     current_operable_weights = {asset: current_weights.get(asset) for asset in OPERABLE_TARGET_WEIGHTS}
     deviations_pp = compute_weight_deviations(current_operable_weights, OPERABLE_TARGET_WEIGHTS)
+
+    new_money_limits = limits_new_money(scenario_code)
+    rotation_limits = limits_rotation(drop_pct)
+    applicable_limits = {
+        "new_money": new_money_limits,
+        "rotation": rotation_limits,
+    }
+
     permissions = compute_asset_permissions(
         current_weights=current_operable_weights,
-        target_weights=OPERABLE_TARGET_WEIGHTS,
+        target_weights=rotation_limits if rotation_plan["active"] else new_money_limits,
         rotation_active=rotation_plan["active"],
         trigger_active=rotation_plan["active"],
         pause_mode=pause_mode,
         flash_crash=flash_crash,
     )
+
+    purchase_capacity = {
+        "new_money": compute_gap_purchase_capacity(current_operable_weights, new_money_limits),
+        "rotation": compute_gap_purchase_capacity(current_operable_weights, rotation_limits),
+    }
+    purchase_plan_example = {
+        "new_money_7500": compute_gap_purchase_plan(7500, current_operable_weights, new_money_limits),
+        "rotation_7500": compute_gap_purchase_plan(7500, current_operable_weights, rotation_limits),
+    }
 
     rotation_state_prev = previous.get("rotation_state", {}) if isinstance(previous, dict) else {}
     now_iso = nav_time.isoformat()
@@ -426,7 +447,15 @@ def main():
             "action": "Aumentar liquidez 5–10% y reducir RV progresivamente", "active_now": detect_risk_reduction(cape, vix, market_plus_20),
         },
         "hard_rules": HARD_RULES,
-        "operational_checklist": ["¿Drawdown ≥ -10%?", "¿VIX > 30?", "¿Liquidez suficiente?", "¿Peso actual < peso objetivo?", "¿No es dinero nuevo?"],
+        "operational_checklist": ["¿Drawdown ≥ -10%?", "¿VIX > 30?", "¿Liquidez suficiente?", "¿Peso actual < límite aplicable?", "¿Orden ≥ 100 €?", "¿No se mezclan capas?"],
+        "purchase_execution_policy": OPERATIONAL_RULES,
+        "applicable_limits": applicable_limits,
+        "purchase_capacity": purchase_capacity,
+        "purchase_plan_example": purchase_plan_example,
+        "operational_card": {
+            "purchases": "gap vs objetivo · mínimo 100 € · no forzar inversión · sobrante a liquidez",
+            "limits": "RV máx 70% · liquidez 10–25% · oro máx 7% · emergentes máx 8% · límites dinámicos según capa/escenario",
+        },
         "pause_mode": pause_mode,
         "data_freshness": data_freshness,
         "decision_status": decision_status,
