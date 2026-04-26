@@ -23,7 +23,8 @@ const NEW_MONEY_MATRIX = {
     liquidity_pct: 0.15,
     rv_distribution: { core: 0.45, quality: 0.25, emerging: 0.15, kopernik: 0.15 },
     defensive_distribution: {},
-    note: 'Expansión: sesgo a renta variable.'
+    note: 'Expansión: sesgo a renta variable.',
+    distribution_mode: 'gap_weighted'
   },
   SC2_DESACELERACION: {
     invest_pct: 0.70,
@@ -33,7 +34,8 @@ const NEW_MONEY_MATRIX = {
     liquidity_pct: 0.30,
     rv_distribution: { core: 0.50, quality: 0.30, emerging: 0.10, kopernik: 0.10 },
     defensive_distribution: { dnca: 0.60, jupiter: 0.40 },
-    note: 'Desaceleración: más prudencia y opcional defensivo.'
+    note: 'Desaceleración: más prudencia y opcional defensivo.',
+    distribution_mode: 'gap_weighted'
   },
   SC3_SOBREVALORACION: {
     invest_pct: 0.60,
@@ -43,7 +45,8 @@ const NEW_MONEY_MATRIX = {
     liquidity_pct: 0.40,
     rv_distribution: { core: 0.55, quality: 0.35, emerging: 0.07, kopernik: 0.03 },
     defensive_distribution: { dnca: 0.60, jupiter: 0.40 },
-    note: 'Sobrevaloración: parte de la inversión nueva puede ir a defensivos.'
+    note: 'Sobrevaloración: parte de la inversión nueva puede ir a defensivos.',
+    distribution_mode: 'gap_weighted'
   },
   SC4_CORRECCION: {
     invest_pct: 0.90,
@@ -53,7 +56,8 @@ const NEW_MONEY_MATRIX = {
     liquidity_pct: 0.10,
     rv_distribution: { core: 0.40, quality: 0.25, emerging: 0.20, kopernik: 0.15 },
     defensive_distribution: {},
-    note: 'Corrección: uso agresivo del dinero nuevo.'
+    note: 'Corrección: uso agresivo del dinero nuevo.',
+    distribution_mode: 'gap_weighted'
   }
 };
 
@@ -538,7 +542,7 @@ function renderNewMoneySimulator(rule, data = null) {
   const defPlan = allocateWithMinimum(defensiveEffectiveTotal, defDist, data, 'new_money');
   const blockedTotal = topLevelBlocked + rvPlan.blocked_total + defPlan.blocked_total;
   const executableInvestNow = rvPlan.executable_total + defPlan.executable_total;
-  const reserveFinal = reserveBase + topLevelBlocked + (rvPlan.surplus_to_liquidity || 0);
+  const reserveFinal = reserveBase + topLevelBlocked + (rvPlan.surplus_to_liquidity || 0) + (defPlan.blocked_total || 0);
 
   setText('sim-new-invest-now', formatEuro(executableInvestNow));
   setText('sim-new-reserve', formatEuro(reserveFinal));

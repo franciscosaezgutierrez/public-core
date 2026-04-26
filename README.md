@@ -947,3 +947,9 @@ Sistema completo alineado con compra por gap, mínimo operativo de 100 €, regl
 
 Versión: 2.7.2
 Eliminado carry-over. Sistema simplificado: compra por gap, mínimo 100 €, mínimo 2 líneas ejecutables, sobrante a liquidez y motivos de no compra en UI.
+
+## NOTA DE IMPLEMENTACIÓN UI
+
+El escenario manual en pantalla solo sustituye el código de escenario efectivo. A partir de ahí debe utilizar exactamente la misma lógica que el escenario automático: `new_money_rule`, `distribution_mode = gap_weighted`, límites por capa, mínimo operativo de 100 €, mínimo de 2 líneas ejecutables y sobrante a liquidez.
+
+`SCENARIO_ALLOCATIONS` es informativo para resumen de asignación; no debe usarse como motor de compra. La compra operativa se calcula por gap frente a `target_weights` y `applicable_limits`.
