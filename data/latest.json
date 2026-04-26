@@ -420,13 +420,20 @@
         "emerging": 1660.0,
         "kopernik": 880.0
       },
-      "executed_by_asset": {
-        "emerging": 1660.0,
+      "target_gap_by_asset": {
+        "core": 90.0,
+        "quality": 0.0,
+        "emerging": 660.0,
         "kopernik": 880.0
       },
-      "executed_total": 2540.0,
-      "surplus_to_liquidity": 4960.0,
-      "do_not_force_investment": true
+      "executed_by_asset": {
+        "emerging": 660.0,
+        "kopernik": 880.0
+      },
+      "executed_total": 1540.0,
+      "surplus_to_liquidity": 5960.0,
+      "do_not_force_investment": true,
+      "minimum_executable_assets": 2
     },
     "rotation_7500": {
       "mode": "gap_weighted",
@@ -439,13 +446,20 @@
         "emerging": 1660.0,
         "kopernik": 880.0
       },
-      "executed_by_asset": {
-        "emerging": 1660.0,
+      "target_gap_by_asset": {
+        "core": 90.0,
+        "quality": 0.0,
+        "emerging": 660.0,
         "kopernik": 880.0
       },
-      "executed_total": 2540.0,
-      "surplus_to_liquidity": 4960.0,
-      "do_not_force_investment": true
+      "executed_by_asset": {
+        "emerging": 660.0,
+        "kopernik": 880.0
+      },
+      "executed_total": 1540.0,
+      "surplus_to_liquidity": 5960.0,
+      "do_not_force_investment": true,
+      "minimum_executable_assets": 2
     }
   },
   "operational_card": {
