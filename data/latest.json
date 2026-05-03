@@ -82,16 +82,16 @@
     "invesco_physical_gold": 0.025
   },
   "current_weights": {
-    "core": 0.2991,
-    "quality": 0.1646,
-    "emerging": 0.0634,
+    "core": 0.3008,
+    "quality": 0.1628,
+    "emerging": 0.0636,
     "kopernik": 0.0612,
-    "pensions": 0.0218,
-    "dnca": 0.12,
+    "pensions": 0.0217,
+    "dnca": 0.1193,
     "jupiter": 0.0604,
-    "dws": 0.1569,
-    "cash_real": 0.0285,
-    "gold": 0.0242
+    "dws": 0.1576,
+    "cash_real": 0.029,
+    "gold": 0.0236
   },
   "target_weights": {
     "core": 0.3,
@@ -113,12 +113,12 @@
   },
   "aggregate_current": {
     "rv_total": 0.6101,
-    "rv_operable": 0.5883,
-    "liquidity": 0.1854,
-    "defensive": 0.1804,
-    "dnca": 0.12,
+    "rv_operable": 0.5884,
+    "liquidity": 0.1866,
+    "defensive": 0.1797,
+    "dnca": 0.1193,
     "jupiter": 0.0604,
-    "gold": 0.0242
+    "gold": 0.0236
   },
   "aggregate_target": {
     "rv_total_min": 0.6,
@@ -134,13 +134,13 @@
     "rv_total": "Correcto",
     "rv_operable": "Bajo",
     "liquidity": "Alto",
-    "defensive": "Correcto",
+    "defensive": "Bajo",
     "gold": "Correcto"
   },
   "deviations_pp": {
-    "core": -0.0009,
-    "quality": 0.0046,
-    "emerging": -0.0066,
+    "core": 0.0008,
+    "quality": 0.0028,
+    "emerging": -0.0064,
     "kopernik": -0.0088
   },
   "priority_of_purchase": [
@@ -304,7 +304,8 @@
   ],
   "blocked_reasons_by_asset": {
     "core": [
-      "modo pausa activo"
+      "modo pausa activo",
+      "peso actual igual o superior al límite aplicable"
     ],
     "quality": [
       "modo pausa activo",
@@ -401,15 +402,15 @@
   },
   "purchase_capacity": {
     "new_money": {
-      "core": 90.0,
+      "core": 0.0,
       "quality": 0.0,
-      "emerging": 1660.0,
+      "emerging": 1640.0,
       "kopernik": 880.0
     },
     "rotation": {
-      "core": 90.0,
+      "core": 0.0,
       "quality": 0.0,
-      "emerging": 1660.0,
+      "emerging": 1640.0,
       "kopernik": 880.0
     }
   },
@@ -422,36 +423,36 @@
       "minimum_executable_assets": 2,
       "carry_over_enabled": false,
       "capacity_by_asset": {
-        "core": 90.0,
+        "core": 0.0,
         "quality": 0.0,
-        "emerging": 1660.0,
+        "emerging": 1640.0,
         "kopernik": 880.0
       },
       "target_gap_by_asset": {
-        "core": 90.0,
+        "core": 0.0,
         "quality": 0.0,
-        "emerging": 660.0,
+        "emerging": 640.0,
         "kopernik": 880.0
       },
       "theoretical_by_asset": {
-        "core": 90.0,
+        "core": 0.0,
         "quality": 0.0,
-        "emerging": 660.0,
+        "emerging": 640.0,
         "kopernik": 880.0
       },
       "executed_by_asset": {
-        "emerging": 660.0,
+        "emerging": 640.0,
         "kopernik": 880.0
       },
-      "executed_total": 1540.0,
+      "executed_total": 1520.0,
       "purchase_reasons_by_asset": {
-        "core": "gap bajo",
+        "core": "bloqueado",
         "quality": "bloqueado",
         "emerging": "compra",
         "kopernik": "compra"
       },
-      "blocked_total": 5960.0,
-      "surplus_to_liquidity": 5960.0,
+      "blocked_total": 5980.0,
+      "surplus_to_liquidity": 5980.0,
       "do_not_force_investment": true
     },
     "rotation_7500": {
@@ -462,36 +463,36 @@
       "minimum_executable_assets": 2,
       "carry_over_enabled": false,
       "capacity_by_asset": {
-        "core": 90.0,
+        "core": 0.0,
         "quality": 0.0,
-        "emerging": 1660.0,
+        "emerging": 1640.0,
         "kopernik": 880.0
       },
       "target_gap_by_asset": {
-        "core": 90.0,
+        "core": 0.0,
         "quality": 0.0,
-        "emerging": 660.0,
+        "emerging": 640.0,
         "kopernik": 880.0
       },
       "theoretical_by_asset": {
-        "core": 90.0,
+        "core": 0.0,
         "quality": 0.0,
-        "emerging": 660.0,
+        "emerging": 640.0,
         "kopernik": 880.0
       },
       "executed_by_asset": {
-        "emerging": 660.0,
+        "emerging": 640.0,
         "kopernik": 880.0
       },
-      "executed_total": 1540.0,
+      "executed_total": 1520.0,
       "purchase_reasons_by_asset": {
-        "core": "gap bajo",
+        "core": "bloqueado",
         "quality": "bloqueado",
         "emerging": "compra",
         "kopernik": "compra"
       },
-      "blocked_total": 5960.0,
-      "surplus_to_liquidity": 5960.0,
+      "blocked_total": 5980.0,
+      "surplus_to_liquidity": 5980.0,
       "do_not_force_investment": true
     }
   },
