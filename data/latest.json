@@ -14,7 +14,7 @@
   "scenario_override_active": false,
   "scenario_mode": "automatic",
   "signal": "NO HACER NADA",
-  "vix": 17.48,
+  "vix": 17.46,
   "previous_vix_close": 16.99,
   "vix_date": "2026-05-04",
   "phase": "Fase 0 · Normal",
@@ -74,12 +74,12 @@
     "robeco_bp_global_premium": 0.16,
     "robeco_qi_emerging_conservative": 0.07,
     "heptagon_kopernik": 0.07,
-    "plan_pensiones_caixabank": 0.025,
+    "plan_pensiones_caixabank": 0.023,
     "dnca_alpha_bonds": 0.12,
     "jupiter_global_equity_absolute_return": 0.07,
     "dws_euro_ultra_short": 0.15,
-    "cash_real": 0.029,
-    "invesco_physical_gold": 0.025
+    "cash_real": 0.024,
+    "invesco_physical_gold": 0.023
   },
   "current_weights": {
     "core": 0.3008,
@@ -98,12 +98,12 @@
     "quality": 0.16,
     "emerging": 0.07,
     "kopernik": 0.07,
-    "pensions": 0.025,
+    "pensions": 0.023,
     "dnca": 0.12,
     "jupiter": 0.07,
     "dws": 0.15,
-    "cash_real": 0.029,
-    "gold": 0.025
+    "cash_real": 0.024,
+    "gold": 0.023
   },
   "operable_target_weights": {
     "core": 0.3,
@@ -295,7 +295,7 @@
     "active": false,
     "reason": "Sin flash crash",
     "nav_change_1d": 0.009222591936124847,
-    "vix_jump": 0.49000022888183636,
+    "vix_jump": 0.4700002288818368,
     "wait_hours": 48,
     "entry_mode": "progresiva",
     "blocking_window_active": false,
