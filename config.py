@@ -29,12 +29,12 @@ TARGET_WEIGHTS = {
     "quality": 0.16,
     "emerging": 0.07,
     "kopernik": 0.07,
-    "pensions": 0.023,
+    "pensions": 0.02,
     "dnca": 0.12,
-    "jupiter": 0.07,
+    "jupiter": 0.065,
     "dws": 0.15,
-    "cash_real": 0.024,
-    "gold": 0.023,
+    "cash_real": 0.025,
+    "gold": 0.02,
 }
 
 # Compatibilidad: el código existente usa TOTAL_TARGET_WEIGHTS.
