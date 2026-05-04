@@ -23,6 +23,7 @@ from engine import (
     compute_asset_permissions,
     compute_aggregate_status,
     compute_aggregate_weights,
+    compute_core_satellite_allocation,
     compute_gap_purchase_capacity,
     compute_gap_purchase_plan,
     compute_score,
@@ -327,6 +328,7 @@ def main():
     current_weights = normalize_current_weights()
 
     aggregate_current = compute_aggregate_weights(current_weights)
+    core_satellite_allocation = compute_core_satellite_allocation(current_weights)
     aggregate_target = {
         "rv_total_min": 0.60,
         "rv_total_max": 0.62,
@@ -415,6 +417,7 @@ def main():
         "target_weights": TOTAL_TARGET_WEIGHTS,
         "operable_target_weights": OPERABLE_TARGET_WEIGHTS,
         "aggregate_current": aggregate_current,
+        "core_satellite_allocation": core_satellite_allocation,
         "aggregate_target": aggregate_target,
         "aggregate_status": aggregate_status,
         "deviations_pp": deviations_pp,

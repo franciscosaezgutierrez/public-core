@@ -953,3 +953,15 @@ Eliminado carry-over. Sistema simplificado: compra por gap, mínimo 100 €, mí
 El escenario manual en pantalla solo sustituye el código de escenario efectivo. A partir de ahí debe utilizar exactamente la misma lógica que el escenario automático: `new_money_rule`, `distribution_mode = gap_weighted`, límites por capa, mínimo operativo de 100 €, mínimo de 2 líneas ejecutables y sobrante a liquidez.
 
 `SCENARIO_ALLOCATIONS` es informativo para resumen de asignación; no debe usarse como motor de compra. La compra operativa se calcula por gap frente a `target_weights` y `applicable_limits`.
+
+
+## Visualización core / satélite
+
+Se añade una capa de lectura patrimonial independiente de las reglas operativas:
+
+- **Core**: Vanguard Global Stock, Robeco BP, DWS Euro Ultra Short y DNCA Alpha Bonds.
+- **Satélite estructural**: Jupiter, Kopernik, emergentes y oro.
+- **Satélite táctico**: plan de pensiones, con intención de traspaso futuro a una opción de menor riesgo.
+- **Liquidez operativa**: `cash_real` / Groupama como proxy X-Ray de efectivo.
+
+Esta clasificación solo afecta a la visualización de pantalla y al `latest.json`; no modifica señales, límites, compras, rotaciones ni reglas de bloqueo.

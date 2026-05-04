@@ -18,6 +18,7 @@ from config import (
     TARGET_WEIGHT_TOLERANCE_PP,
     VALUATION_INTENSITY_ADJUSTMENTS,
     WEIGHT_SOURCE_KEYS,
+    CORE_SATELLITE_CLASSIFICATION,
     limits_new_money,
     limits_rotation,
 )
@@ -485,6 +486,58 @@ def compute_aggregate_weights(weights):
         "dnca": round(w("dnca"), 6),
         "jupiter": round(w("jupiter"), 6),
         "gold": round(w("gold"), 6),
+    }
+
+
+
+def compute_core_satellite_allocation(weights, classification=None):
+    """Agrega la cartera por capa core / satélite / táctico.
+
+    La clasificación se mantiene separada de la lógica operativa de compras: sirve
+    para visualizar arquitectura patrimonial, no para modificar señales.
+    """
+    weights = weights or {}
+    classification = classification or CORE_SATELLITE_CLASSIFICATION
+
+    def w(key):
+        value = weights.get(key, 0)
+        return 0.0 if value is None else float(value)
+
+    layers = {}
+    assigned_assets = set()
+    for layer_key, layer in classification.items():
+        assets = list(layer.get("assets", []))
+        assigned_assets.update(assets)
+        asset_weights = {asset: round(w(asset), 6) for asset in assets}
+        layers[layer_key] = {
+            "label": layer.get("label", layer_key),
+            "description": layer.get("description", ""),
+            "assets": assets,
+            "asset_weights": asset_weights,
+            "weight": round(sum(asset_weights.values()), 6),
+        }
+
+    unassigned_assets = [asset for asset in weights.keys() if asset not in assigned_assets]
+    if unassigned_assets:
+        asset_weights = {asset: round(w(asset), 6) for asset in unassigned_assets}
+        layers["unassigned"] = {
+            "label": "Sin clasificar",
+            "description": "Activos no incluidos en la clasificación core/satélite.",
+            "assets": unassigned_assets,
+            "asset_weights": asset_weights,
+            "weight": round(sum(asset_weights.values()), 6),
+        }
+
+    investment_total = round(
+        sum(layer["weight"] for key, layer in layers.items() if key != "operational_liquidity"),
+        6,
+    )
+
+    return {
+        "layers": layers,
+        "investment_total_ex_liquidity": investment_total,
+        "total_with_liquidity": round(sum(layer["weight"] for layer in layers.values()), 6),
+        "rule": "Visualización patrimonial; no altera señales, límites ni compras.",
     }
 
 

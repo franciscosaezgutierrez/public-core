@@ -76,7 +76,7 @@ body {
 }
 
 .board-grid-bottom {
-  grid-template-columns: .8fr .8fr 1.4fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-bottom: 10px;
 }
 
@@ -470,3 +470,8 @@ button:focus {
 @media (max-width: 640px) {
   .allocation-summary-grid { grid-template-columns: 1fr; }
 }
+
+.core-satellite-card { min-width: 0; }
+.core-satellite-grid { margin-top: 10px; }
+.core-satellite-row { align-items: flex-start; }
+.core-satellite-row small { line-height: 1.35; }

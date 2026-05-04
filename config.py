@@ -70,6 +70,39 @@ BASE_COMPOSITION = {
     for asset, source_key in WEIGHT_SOURCE_KEYS.items()
 }
 
+
+# ============================================================
+# CLASIFICACIÓN CORE / SATÉLITE
+# ============================================================
+# Criterio patrimonial del usuario:
+# - Core: posiciones estructurales que no se mueven a largo plazo.
+# - Satélite estructural: posiciones de convicción mantenibles, pero no núcleo.
+# - Satélite táctico: posición prevista para traspaso futuro o reducción de riesgo.
+# - Liquidez operativa: caja/proxy de efectivo; se muestra separada para no contaminar core/satélite.
+
+CORE_SATELLITE_CLASSIFICATION = {
+    "core": {
+        "label": "Core",
+        "assets": ["core", "quality", "dws", "dnca"],
+        "description": "Núcleo estructural de largo plazo: Vanguard, Robeco BP, DWS y DNCA.",
+    },
+    "satellite_structural": {
+        "label": "Satélite estructural",
+        "assets": ["jupiter", "kopernik", "emerging", "gold"],
+        "description": "Satélites mantenibles: Jupiter, Kopernik, emergentes y oro.",
+    },
+    "satellite_tactical": {
+        "label": "Satélite táctico",
+        "assets": ["pensions"],
+        "description": "Plan de pensiones: posición táctica con intención de traspaso posterior a menor riesgo.",
+    },
+    "operational_liquidity": {
+        "label": "Liquidez operativa",
+        "assets": ["cash_real"],
+        "description": "Liquidez real / Groupama como proxy X-Ray de efectivo.",
+    },
+}
+
 NON_OPERABLE_UNIVERSE = {
     "pensions": "Plan Pensiones CaixaBank",
     "gold": "Invesco Physical Gold",

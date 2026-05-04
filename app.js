@@ -693,6 +693,42 @@ function renderWeightsComparison(data) {
 }
 
 
+
+function renderCoreSatelliteAllocation(data) {
+  const container = document.getElementById('core-satellite-body');
+  if (!container) return;
+
+  const payload = data.core_satellite_allocation || {};
+  const layers = payload.layers || {};
+  const order = ['core', 'satellite_structural', 'satellite_tactical', 'operational_liquidity', 'unassigned'];
+  const keys = order.filter((key) => layers[key]).concat(Object.keys(layers).filter((key) => !order.includes(key)));
+
+  if (!keys.length) {
+    container.innerHTML = '<div class="allocation-row"><span>Sin datos</span><strong>—</strong><small>—</small></div>';
+    setText('core-satellite-summary', 'Sin clasificación core/satélite');
+    return;
+  }
+
+  container.innerHTML = keys.map((key) => {
+    const layer = layers[key] || {};
+    const assetList = Object.entries(layer.asset_weights || {})
+      .map(([asset, weight]) => `${mapName(asset)} ${formatWeightRatio(weight)}`)
+      .join(' · ');
+    return `
+      <div class="allocation-row core-satellite-row">
+        <span>${layer.label || key}</span>
+        <strong>${formatWeightRatio(layer.weight)}</strong>
+        <small>${assetList || layer.description || '—'}</small>
+      </div>
+    `;
+  }).join('');
+
+  setText(
+    'core-satellite-summary',
+    `Total inversión ex-liquidez: ${formatWeightRatio(payload.investment_total_ex_liquidity)} · Total cartera: ${formatWeightRatio(payload.total_with_liquidity)}`
+  );
+}
+
 function renderDashboard(data) {
   const valuation = data.valuation || {};
   const newMoneyRule = data.new_money_rule || data.new_money_rules || {};
@@ -798,6 +834,7 @@ function renderDashboard(data) {
   setText('current-weights-value', formatWeightMap(data.current_weights));
   setText('operable-targets-value', formatWeightMap(data.operable_target_weights));
   renderAggregateAllocation(data);
+  renderCoreSatelliteAllocation(data);
   renderWeightsComparison(data);
   setText('deviations-value', formatDeviationMap(data.deviations_pp));
   setText('blocked-reasons-value', formatBlockedReasons(data.blocked_reasons_by_asset));
