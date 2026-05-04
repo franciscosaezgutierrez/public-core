@@ -14,9 +14,9 @@
   "scenario_override_active": false,
   "scenario_mode": "automatic",
   "signal": "NO HACER NADA",
-  "vix": 16.99,
-  "previous_vix_close": 16.89,
-  "vix_date": "2026-05-01",
+  "vix": 17.48,
+  "previous_vix_close": 16.99,
+  "vix_date": "2026-05-04",
   "phase": "Fase 0 · Normal",
   "entry_label": "Sin entrada",
   "next_trigger": "-5%",
@@ -119,6 +119,69 @@
     "dnca": 0.1193,
     "jupiter": 0.0604,
     "gold": 0.0236
+  },
+  "core_satellite_allocation": {
+    "layers": {
+      "core": {
+        "label": "Core",
+        "description": "Núcleo estructural de largo plazo: Vanguard, Robeco BP, DWS y DNCA.",
+        "assets": [
+          "core",
+          "quality",
+          "dws",
+          "dnca"
+        ],
+        "asset_weights": {
+          "core": 0.3008,
+          "quality": 0.1628,
+          "dws": 0.1576,
+          "dnca": 0.1193
+        },
+        "weight": 0.7405
+      },
+      "satellite_structural": {
+        "label": "Satélite estructural",
+        "description": "Satélites mantenibles: Jupiter, Kopernik, emergentes y oro.",
+        "assets": [
+          "jupiter",
+          "kopernik",
+          "emerging",
+          "gold"
+        ],
+        "asset_weights": {
+          "jupiter": 0.0604,
+          "kopernik": 0.0612,
+          "emerging": 0.0636,
+          "gold": 0.0236
+        },
+        "weight": 0.2088
+      },
+      "satellite_tactical": {
+        "label": "Satélite táctico",
+        "description": "Plan de pensiones: posición táctica con intención de traspaso posterior a menor riesgo.",
+        "assets": [
+          "pensions"
+        ],
+        "asset_weights": {
+          "pensions": 0.0217
+        },
+        "weight": 0.0217
+      },
+      "operational_liquidity": {
+        "label": "Liquidez operativa",
+        "description": "Liquidez real / Groupama como proxy X-Ray de efectivo.",
+        "assets": [
+          "cash_real"
+        ],
+        "asset_weights": {
+          "cash_real": 0.029
+        },
+        "weight": 0.029
+      }
+    },
+    "investment_total_ex_liquidity": 0.971,
+    "total_with_liquidity": 1.0,
+    "rule": "Visualización patrimonial; no altera señales, límites ni compras."
   },
   "aggregate_target": {
     "rv_total_min": 0.6,
@@ -232,7 +295,7 @@
     "active": false,
     "reason": "Sin flash crash",
     "nav_change_1d": 0.009222591936124847,
-    "vix_jump": 0.10000061035156094,
+    "vix_jump": 0.49000022888183636,
     "wait_hours": 48,
     "entry_mode": "progresiva",
     "blocking_window_active": false,
