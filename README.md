@@ -348,7 +348,7 @@ RV:
 
 ## 7.3 Importes mínimos operativos
 
-Cuando una compra calculada sea inferior al mínimo operativo de 100 €:
+Cuando una compra calculada sea inferior al mínimo operativo de 50 €:
 
 - no se ejecuta esa compra individual
 - no se redistribuye automáticamente a un único activo
@@ -356,7 +356,7 @@ Cuando una compra calculada sea inferior al mínimo operativo de 100 €:
 
 Regla anti-concentración:
 
-- Tras aplicar el mínimo de 100 €, debe haber al menos 2 activos ejecutables.
+- Tras aplicar el mínimo de 50 €, debe haber al menos 2 activos ejecutables.
 - Si queda solo 1 activo ejecutable, no se fuerza la compra.
 - El importe queda en liquidez operativa.
 
@@ -381,15 +381,15 @@ La compra se asigna proporcionalmente al gap ejecutable:
 ```text
 peso_compra_i = gap_ejecutable_i / suma_gaps_ejecutables
 compra_teorica_i = capital_a_desplegar × peso_compra_i
-compra_ejecutable_i = compra_teorica_i si compra_teorica_i >= 100 €
+compra_ejecutable_i = compra_teorica_i si compra_teorica_i >= 50 €
 ```
 
 ### Reglas de ejecución
 
 - Solo se consideran activos operativos: Core, Calidad, Emergentes y Kopernik.
 - Si `peso_actual >= límite_aplicable`, el activo queda bloqueado.
-- Si la orden calculada es inferior a 100 €, no se ejecuta.
-- Tras aplicar el mínimo de 100 €, debe haber al menos 2 activos ejecutables para realizar compra.
+- Si la orden calculada es inferior a 50 €, no se ejecuta.
+- Tras aplicar el mínimo de 50 €, debe haber al menos 2 activos ejecutables para realizar compra.
 - Si queda 0 o 1 activo ejecutable, no se concentra la compra en una sola línea y el importe queda en liquidez operativa.
 - Si un activo alcanza su límite, el sobrante se redistribuye únicamente entre activos elegibles que sigan respetando gap, límite y mínimo operativo.
 - Si no quedan activos elegibles, el sobrante queda en liquidez.
@@ -401,7 +401,7 @@ El mínimo operativo no debe provocar concentración artificial.
 
 Ejemplo:
 
-- Si el cálculo genera una orden inferior a 100 € en Core, esa orden se elimina.
+- Si el cálculo genera una orden inferior a 50 € en Core, esa orden se elimina.
 - El sobrante no puede trasladarse automáticamente a un único activo restante.
 - La redistribución solo es válida si permanecen al menos 2 activos ejecutables.
 - Si no se cumple, el sobrante queda en liquidez operativa.
@@ -700,7 +700,7 @@ Reglas:
 * no comprar DNCA en caídas
 * no mezclar dinero nuevo y rotación
 * no forzar inversión si no hay gap suficiente
-* aplicar mínimo operativo de 100 €
+* aplicar mínimo operativo de 50 €
 * el sobrante no ejecutable queda en liquidez
 * no redistribuir todo el importe a un único activo ejecutable
 
@@ -889,7 +889,7 @@ Rotación:
 Trigger drawdown ≤ -10% / VIX > 30 · intensidad progresiva
 
 Compras:
-gap vs objetivo con límite aplicable como techo · mínimo 100 € · mínimo 2 líneas ejecutables · no forzar inversión · sobrante a liquidez
+gap vs objetivo con límite aplicable como techo · mínimo 50 € · mínimo 2 líneas ejecutables · no forzar inversión · sobrante a liquidez
 
 Reglas:
 No vender en caídas · No usar oro · No comprar DNCA en caídas · No mezclar capas · Groupama es liquidez operativa real
@@ -906,10 +906,10 @@ Estados posibles:
 
 | Estado | Significado |
 |--------|-------------|
-| 🟢 Compra | Gap suficiente e importe ≥ 100 € |
+| 🟢 Compra | Gap suficiente e importe ≥ 50 € |
 | 🔒 Bloqueado | Peso actual igual o superior al objetivo/límite aplicable |
 | ⚪ Gap bajo | Gap positivo pero inferior a 0,2 pp |
-| ⚠ <100€ | Compra teórica inferior al mínimo operativo |
+| ⚠ <50€ | Compra teórica inferior al mínimo operativo |
 | ⚠ <2 líneas | Tras aplicar mínimos queda menos de dos activos ejecutables |
 
 Regla:
@@ -936,7 +936,7 @@ sin intervención discrecional
 ## VERSIONADO
 
 Versión: 2.7.2
-Sistema completo alineado con compra por gap, mínimo operativo de 100 €, regla anti-concentración, motivos de no compra en UI, límites dinámicos por capa y marco operativo actualizado
+Sistema completo alineado con compra por gap, mínimo operativo de 50 €, regla anti-concentración, motivos de no compra en UI, límites dinámicos por capa y marco operativo actualizado
 
 ---
 
@@ -946,11 +946,11 @@ Sistema completo alineado con compra por gap, mínimo operativo de 100 €, regl
 ## VERSIONADO
 
 Versión: 2.7.2
-Eliminado carry-over. Sistema simplificado: compra por gap, mínimo 100 €, mínimo 2 líneas ejecutables, sobrante a liquidez y motivos de no compra en UI.
+Eliminado carry-over. Sistema simplificado: compra por gap, mínimo 50 €, mínimo 2 líneas ejecutables, sobrante a liquidez y motivos de no compra en UI.
 
 ## NOTA DE IMPLEMENTACIÓN UI
 
-El escenario manual en pantalla solo sustituye el código de escenario efectivo. A partir de ahí debe utilizar exactamente la misma lógica que el escenario automático: `new_money_rule`, `distribution_mode = gap_weighted`, límites por capa, mínimo operativo de 100 €, mínimo de 2 líneas ejecutables y sobrante a liquidez.
+El escenario manual en pantalla solo sustituye el código de escenario efectivo. A partir de ahí debe utilizar exactamente la misma lógica que el escenario automático: `new_money_rule`, `distribution_mode = gap_weighted`, límites por capa, mínimo operativo de 50 €, mínimo de 2 líneas ejecutables y sobrante a liquidez.
 
 `SCENARIO_ALLOCATIONS` es informativo para resumen de asignación; no debe usarse como motor de compra. La compra operativa se calcula por gap frente a `target_weights` y `applicable_limits`.
 

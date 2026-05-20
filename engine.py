@@ -360,7 +360,7 @@ def explain_purchase_reason(asset, current, target, theoretical_amount, min_orde
 
     No altera la decisión; solo explica por qué se compra o no se compra.
     """
-    min_order_amount = OPERATIONAL_RULES.get("min_order_amount", 100) if min_order_amount is None else min_order_amount
+    min_order_amount = OPERATIONAL_RULES.get("min_order_amount", 50) if min_order_amount is None else min_order_amount
     gap_low_threshold = float(OPERATIONAL_RULES.get("gap_low_threshold", 0.002) or 0.002)
 
     if current is None or target is None:
@@ -373,7 +373,7 @@ def explain_purchase_reason(asset, current, target, theoretical_amount, min_orde
     if gap < gap_low_threshold:
         return "gap bajo"
     if float(theoretical_amount or 0) < float(min_order_amount):
-        return "<100€"
+        return "<50€"
     return "compra"
 
 
@@ -392,12 +392,12 @@ def compute_gap_purchase_plan(
     El límite aplicable solo actúa como techo/capacidad.
 
     Reglas:
-    - no se ejecutan compras individuales inferiores a 100 €
+    - no se ejecutan compras individuales inferiores a 50 €
     - no se redistribuye toda la compra a un único activo
     - si quedan menos de dos líneas ejecutables, no se fuerza la inversión
     - el sobrante queda en liquidez operativa
     """
-    min_order_amount = OPERATIONAL_RULES.get("min_order_amount", 100) if min_order_amount is None else min_order_amount
+    min_order_amount = OPERATIONAL_RULES.get("min_order_amount", 50) if min_order_amount is None else min_order_amount
     minimum_assets = int(OPERATIONAL_RULES.get("minimum_executable_assets", 2) or 2)
     target_weights = target_weights or limits or {}
 

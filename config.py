@@ -9,7 +9,7 @@ SYSTEM_LIMITS = {
 }
 
 OPERATIONAL_RULES = {
-    "min_order_amount": 100,
+    "min_order_amount": 50,
     "minimum_executable_assets": 2,
     "purchase_mode": "gap_weighted",
     "carry_over_enabled": False,
@@ -273,7 +273,7 @@ HARD_RULES = [
     "El plan de pensiones no participa en decisiones operativas",
     "Bloquear compra si el peso actual ya alcanza o supera el límite aplicable",
     "Comprar por gap frente al límite aplicable, no por distribución fija",
-    "No ejecutar compras inferiores a 100 €",
+    "No ejecutar compras inferiores a 50 €",
     "No redistribuir toda la compra a un único activo",
     "Si quedan menos de dos líneas ejecutables, el importe queda en liquidez",
     "Si no hay capacidad útil de compra, el sobrante queda en liquidez",

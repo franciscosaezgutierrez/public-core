@@ -301,7 +301,7 @@ function deriveScenarioPayload(data, scenarioCode) {
   };
 }
 
-const MIN_PURCHASE_EUR = 100;
+const MIN_PURCHASE_EUR = 50;
 
 function getApplicableLimit(asset, data, layer = 'new_money') {
   const currentLayerLimits = data?.applicable_limits?.[layer] || {};
@@ -381,7 +381,7 @@ function purchaseReason(asset, current, target, theoreticalAmount) {
   if (Number.isNaN(gap)) return 'sin datos';
   if (gap <= 0) return '🔒 Bloqueado';
   if (gap < 0.002) return '⚪ Gap bajo';
-  if (Number(theoreticalAmount || 0) < MIN_PURCHASE_EUR) return '⚠ <100€';
+  if (Number(theoreticalAmount || 0) < MIN_PURCHASE_EUR) return '⚠ <50€';
   return '🟢 Compra';
 }
 
@@ -818,7 +818,7 @@ function renderDashboard(data) {
 
   setText('target-summary-value', 'RV 60–62% · DNCA objetivo 12% / límite 15% · Jupiter objetivo 7% / límite 8% · Liquidez 15–18% · Oro 2,5%');
   setText('rotation-summary-value', `Trigger ${data.rotation_trigger || 'drawdown ≤ -10% / VIX > 30'} · Intensidad ${data.rotation_intensity ? data.rotation_intensity.base || '—' : '—'}`);
-  setText('purchase-summary-value', data.operational_card?.purchases || 'gap vs objetivo · mínimo 100 € · mínimo 2 líneas · no forzar inversión · sobrante a liquidez');
+  setText('purchase-summary-value', data.operational_card?.purchases || 'gap vs objetivo · mínimo 50 € · mínimo 2 líneas · no forzar inversión · sobrante a liquidez');
   setText('hard-rules-summary-value', 'No vender en caídas · No usar oro · No comprar DNCA en caídas · No mezclar capas · Groupama es liquidez operativa real');
 
 
