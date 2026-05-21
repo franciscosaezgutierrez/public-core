@@ -1,22 +1,22 @@
 {
-  "timestamp": "2026-05-18T20:00:00+00:00",
-  "updated_at": "2026-05-18T20:00:00+00:00",
-  "nav_date": "2026-05-18",
-  "nav": 59.263,
-  "previous_nav_close": 59.329,
-  "nav_change_1d": -0.001112,
+  "timestamp": "2026-05-19T20:00:00+00:00",
+  "updated_at": "2026-05-19T20:00:00+00:00",
+  "nav_date": "2026-05-19",
+  "nav": 59.2123,
+  "previous_nav_close": 59.2628,
+  "nav_change_1d": -0.000852,
   "max52": 59.3667,
-  "drop_pct": -0.001747,
-  "drop_percent_display": -0.17,
+  "drop_pct": -0.002601,
+  "drop_percent_display": -0.26,
   "scenario_code": "SC3_SOBREVALORACION",
   "scenario": "🟠 Escenario 3 · Sobrevaloración",
   "scenario_source": "automatic",
   "scenario_override_active": false,
   "scenario_mode": "automatic",
   "signal": "NO HACER NADA",
-  "vix": 18.06,
-  "previous_vix_close": 17.82,
-  "vix_date": "2026-05-19",
+  "vix": 17.44,
+  "previous_vix_close": 18.06,
+  "vix_date": "2026-05-20",
   "phase": "Fase 0 · Normal",
   "entry_label": "Sin entrada",
   "next_trigger": "-5%",
@@ -294,8 +294,8 @@
   "flash_crash": {
     "active": false,
     "reason": "Sin flash crash",
-    "nav_change_1d": -0.0011124166473293062,
-    "vix_jump": 0.24000030517577997,
+    "nav_change_1d": -0.0008521080807321058,
+    "vix_jump": -0.6199994659423815,
     "wait_hours": 48,
     "entry_mode": "progresiva",
     "blocking_window_active": false,
@@ -412,7 +412,7 @@
     "market_plus_20_from_low_required": true,
     "market_plus_20_from_low": false,
     "market_low_reference": 56.1337,
-    "market_rebound_from_low": 0.055747,
+    "market_rebound_from_low": 0.054844,
     "action": "Aumentar liquidez 5–10% y reducir RV progresivamente",
     "active_now": false
   },
@@ -426,7 +426,7 @@
     "El plan de pensiones no participa en decisiones operativas",
     "Bloquear compra si el peso actual ya alcanza o supera el límite aplicable",
     "Comprar por gap frente al límite aplicable, no por distribución fija",
-    "No ejecutar compras inferiores a 100 €",
+    "No ejecutar compras inferiores a 50 €",
     "No redistribuir toda la compra a un único activo",
     "Si quedan menos de dos líneas ejecutables, el importe queda en liquidez",
     "Si no hay capacidad útil de compra, el sobrante queda en liquidez",
@@ -437,11 +437,11 @@
     "¿VIX > 30?",
     "¿Liquidez suficiente?",
     "¿Peso actual < límite aplicable?",
-    "¿Orden ≥ 100 €?",
+    "¿Orden ≥ 50 €?",
     "¿No se mezclan capas?"
   ],
   "purchase_execution_policy": {
-    "min_order_amount": 100,
+    "min_order_amount": 50,
     "minimum_executable_assets": 2,
     "purchase_mode": "gap_weighted",
     "carry_over_enabled": false,
@@ -482,7 +482,7 @@
       "mode": "gap_weighted",
       "capital_to_deploy": 7500.0,
       "portfolio_value_reference": 100000,
-      "min_order_amount": 100,
+      "min_order_amount": 50,
       "minimum_executable_assets": 2,
       "carry_over_enabled": false,
       "capacity_by_asset": {
@@ -522,7 +522,7 @@
       "mode": "gap_weighted",
       "capital_to_deploy": 7500.0,
       "portfolio_value_reference": 100000,
-      "min_order_amount": 100,
+      "min_order_amount": 50,
       "minimum_executable_assets": 2,
       "carry_over_enabled": false,
       "capacity_by_asset": {
@@ -560,7 +560,7 @@
     }
   },
   "operational_card": {
-    "purchases": "gap vs objetivo · mínimo 100 € · no forzar inversión · sobrante a liquidez",
+    "purchases": "gap vs objetivo · mínimo 50 € · no forzar inversión · sobrante a liquidez",
     "limits": "RV máx 70% · liquidez 10–25% · oro máx 7% · emergentes máx 8% · límites dinámicos según capa/escenario"
   },
   "pause_mode": {
@@ -569,10 +569,10 @@
     "rule": "No actuar si drawdown > -10% y VIX < 20"
   },
   "data_freshness": {
-    "cape_days": 14,
-    "pmi_days": 14,
-    "lei_days": 14,
-    "per_global_days": 14,
+    "cape_days": 15,
+    "pmi_days": 15,
+    "lei_days": 15,
+    "per_global_days": 15,
     "nav_days": 0,
     "vix_days": 0,
     "status": "Datos frescos"
