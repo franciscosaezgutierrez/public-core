@@ -8,14 +8,14 @@
 # Groupama Trésorerie debe introducirse como cash_real: es liquidez operativa real y, además, proxy X-Ray de efectivo.
 
 CURRENT_WEIGHTS = {
-    "core": 0.3065,
-    "quality": 0.1635,
-    "emerging": 0.0664,
-    "kopernik": 0.0600,
-    "pensions": 0.0224,
-    "dnca": 0.1169,
-    "jupiter": 0.0597,
-    "dws": 0.1544,
-    "cash_real": 0.0283,
-    "gold": 0.0220,
+    "core": 0.3210,
+    "quality": 0.1527,
+    "emerging": 0.0681,
+    "kopernik": 0.0583,
+    "pensions": 0.0221,
+    "dnca": 0.1160,
+    "jupiter": 0.0602,
+    "dws": 0.1534,
+    "cash_real": 0.0280,
+    "gold": 0.0210,
 }
