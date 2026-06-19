@@ -41,3 +41,4 @@ timestamp,nav,max52,drop_pct,scenario,signal,vix,phase,cape,pmi,lei,score
 2026-06-12 20:00:00+00:00,60.2652,61.0245,-0.012443,🟠 Escenario 3 · Sobrevaloración,SISTEMA BLOQUEADO,16.18,Fase 0 · Normal,41.06,52.0,97.3,-2
 2026-06-15 20:00:00+00:00,61.0697,61.0697,0.0,🟠 Escenario 3 · Sobrevaloración,SISTEMA BLOQUEADO,16.41,Fase 0 · Normal,41.06,52.0,97.3,-2
 2026-06-16 20:00:00+00:00,60.8047,61.0697,-0.004339,🟠 Escenario 3 · Sobrevaloración,SISTEMA BLOQUEADO,18.44,Fase 0 · Normal,41.06,52.0,97.3,-2
+2026-06-17 20:00:00+00:00,60.418,61.0697,-0.010671,🟠 Escenario 3 · Sobrevaloración,SISTEMA BLOQUEADO,16.4,Fase 0 · Normal,41.06,52.0,97.3,-2
