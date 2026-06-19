@@ -25,8 +25,8 @@ OPERATIONAL_RULES = {
 # El resto de variables de objetivo se derivan de este bloque.
 
 TARGET_WEIGHTS = {
-    "core": 0.30,
-    "quality": 0.16,
+    "core": 0.32,
+    "quality": 0.14,
     "emerging": 0.07,
     "kopernik": 0.07,
     "pensions": 0.02,
