@@ -14,9 +14,9 @@
   "scenario_override_active": false,
   "scenario_mode": "automatic",
   "signal": "SISTEMA BLOQUEADO",
-  "vix": 18.41,
-  "previous_vix_close": 18.89,
-  "vix_date": "2026-06-26",
+  "vix": 18.38,
+  "previous_vix_close": 18.41,
+  "vix_date": "2026-06-29",
   "phase": "Fase 0 · Normal",
   "entry_label": "Sin entrada",
   "next_trigger": "-5%",
@@ -82,16 +82,16 @@
     "invesco_physical_gold": 0.02
   },
   "current_weights": {
-    "core": 0.3205,
-    "quality": 0.1396,
-    "emerging": 0.0682,
-    "kopernik": 0.0662,
-    "pensions": 0.0221,
-    "dnca": 0.116,
-    "jupiter": 0.0601,
-    "dws": 0.1581,
-    "cash_real": 0.028,
-    "gold": 0.0211
+    "core": 0.3156,
+    "quality": 0.1404,
+    "emerging": 0.0671,
+    "kopernik": 0.0635,
+    "pensions": 0.0217,
+    "dnca": 0.1181,
+    "jupiter": 0.0608,
+    "dws": 0.1569,
+    "cash_real": 0.0353,
+    "gold": 0.0207
   },
   "target_weights": {
     "core": 0.32,
@@ -112,13 +112,13 @@
     "kopernik": 0.07
   },
   "aggregate_current": {
-    "rv_total": 0.6166,
-    "rv_operable": 0.5945,
-    "liquidity": 0.1861,
-    "defensive": 0.1761,
-    "dnca": 0.116,
-    "jupiter": 0.0601,
-    "gold": 0.0211
+    "rv_total": 0.6083,
+    "rv_operable": 0.5866,
+    "liquidity": 0.1922,
+    "defensive": 0.1789,
+    "dnca": 0.1181,
+    "jupiter": 0.0608,
+    "gold": 0.0207
   },
   "core_satellite_allocation": {
     "layers": {
@@ -132,12 +132,12 @@
           "dnca"
         ],
         "asset_weights": {
-          "core": 0.3205,
-          "quality": 0.1396,
-          "dws": 0.1581,
-          "dnca": 0.116
+          "core": 0.3156,
+          "quality": 0.1404,
+          "dws": 0.1569,
+          "dnca": 0.1181
         },
-        "weight": 0.7342
+        "weight": 0.731
       },
       "satellite_structural": {
         "label": "Satélite estructural",
@@ -149,12 +149,12 @@
           "gold"
         ],
         "asset_weights": {
-          "jupiter": 0.0601,
-          "kopernik": 0.0662,
-          "emerging": 0.0682,
-          "gold": 0.0211
+          "jupiter": 0.0608,
+          "kopernik": 0.0635,
+          "emerging": 0.0671,
+          "gold": 0.0207
         },
-        "weight": 0.2156
+        "weight": 0.2121
       },
       "satellite_tactical": {
         "label": "Satélite táctico",
@@ -163,9 +163,9 @@
           "pensions"
         ],
         "asset_weights": {
-          "pensions": 0.0221
+          "pensions": 0.0217
         },
-        "weight": 0.0221
+        "weight": 0.0217
       },
       "operational_liquidity": {
         "label": "Liquidez operativa",
@@ -174,13 +174,13 @@
           "cash_real"
         ],
         "asset_weights": {
-          "cash_real": 0.028
+          "cash_real": 0.0353
         },
-        "weight": 0.028
+        "weight": 0.0353
       }
     },
-    "investment_total_ex_liquidity": 0.9719,
-    "total_with_liquidity": 0.9999,
+    "investment_total_ex_liquidity": 0.9648,
+    "total_with_liquidity": 1.0001,
     "rule": "Visualización patrimonial; no altera señales, límites ni compras."
   },
   "aggregate_target": {
@@ -201,10 +201,10 @@
     "gold": "Correcto"
   },
   "deviations_pp": {
-    "core": 0.0005,
-    "quality": -0.0004,
-    "emerging": -0.0018,
-    "kopernik": -0.0038
+    "core": -0.0044,
+    "quality": 0.0004,
+    "emerging": -0.0029,
+    "kopernik": -0.0065
   },
   "priority_of_purchase": [
     "Core",
@@ -295,7 +295,7 @@
     "active": false,
     "reason": "Sin flash crash",
     "nav_change_1d": -0.0009991239771482974,
-    "vix_jump": -0.47999938964843736,
+    "vix_jump": -0.02999984741211037,
     "wait_hours": 48,
     "entry_mode": "progresiva",
     "blocking_window_active": false,
@@ -367,11 +367,11 @@
   ],
   "blocked_reasons_by_asset": {
     "core": [
-      "modo pausa activo",
-      "peso actual igual o superior al límite aplicable"
+      "modo pausa activo"
     ],
     "quality": [
-      "modo pausa activo"
+      "modo pausa activo",
+      "peso actual igual o superior al límite aplicable"
     ],
     "emerging": [
       "modo pausa activo"
@@ -464,16 +464,16 @@
   },
   "purchase_capacity": {
     "new_money": {
-      "core": 0.0,
-      "quality": 40.0,
-      "emerging": 1180.0,
-      "kopernik": 380.0
+      "core": 440.0,
+      "quality": 0.0,
+      "emerging": 1290.0,
+      "kopernik": 650.0
     },
     "rotation": {
-      "core": 0.0,
-      "quality": 40.0,
-      "emerging": 1180.0,
-      "kopernik": 380.0
+      "core": 440.0,
+      "quality": 0.0,
+      "emerging": 1290.0,
+      "kopernik": 650.0
     }
   },
   "purchase_plan_example": {
@@ -485,33 +485,37 @@
       "minimum_executable_assets": 2,
       "carry_over_enabled": false,
       "capacity_by_asset": {
-        "core": 0.0,
-        "quality": 40.0,
-        "emerging": 1180.0,
-        "kopernik": 380.0
+        "core": 440.0,
+        "quality": 0.0,
+        "emerging": 1290.0,
+        "kopernik": 650.0
       },
       "target_gap_by_asset": {
-        "core": 0.0,
-        "quality": 40.0,
-        "emerging": 180.0,
-        "kopernik": 380.0
+        "core": 440.0,
+        "quality": 0.0,
+        "emerging": 290.0,
+        "kopernik": 650.0
       },
       "theoretical_by_asset": {
-        "core": 0.0,
-        "quality": 40.0,
-        "emerging": 180.0,
-        "kopernik": 380.0
+        "core": 440.0,
+        "quality": 0.0,
+        "emerging": 290.0,
+        "kopernik": 650.0
       },
-      "executed_by_asset": {},
-      "executed_total": 0,
+      "executed_by_asset": {
+        "core": 440.0,
+        "emerging": 290.0,
+        "kopernik": 650.0
+      },
+      "executed_total": 1380.0,
       "purchase_reasons_by_asset": {
-        "core": "bloqueado",
-        "quality": "gap bajo",
-        "emerging": "gap bajo",
-        "kopernik": "menos de 2 líneas ejecutables"
+        "core": "compra",
+        "quality": "bloqueado",
+        "emerging": "compra",
+        "kopernik": "compra"
       },
-      "blocked_total": 7500.0,
-      "surplus_to_liquidity": 7500.0,
+      "blocked_total": 6120.0,
+      "surplus_to_liquidity": 6120.0,
       "do_not_force_investment": true
     },
     "rotation_7500": {
@@ -522,33 +526,37 @@
       "minimum_executable_assets": 2,
       "carry_over_enabled": false,
       "capacity_by_asset": {
-        "core": 0.0,
-        "quality": 40.0,
-        "emerging": 1180.0,
-        "kopernik": 380.0
+        "core": 440.0,
+        "quality": 0.0,
+        "emerging": 1290.0,
+        "kopernik": 650.0
       },
       "target_gap_by_asset": {
-        "core": 0.0,
-        "quality": 40.0,
-        "emerging": 180.0,
-        "kopernik": 380.0
+        "core": 440.0,
+        "quality": 0.0,
+        "emerging": 290.0,
+        "kopernik": 650.0
       },
       "theoretical_by_asset": {
-        "core": 0.0,
-        "quality": 40.0,
-        "emerging": 180.0,
-        "kopernik": 380.0
+        "core": 440.0,
+        "quality": 0.0,
+        "emerging": 290.0,
+        "kopernik": 650.0
       },
-      "executed_by_asset": {},
-      "executed_total": 0,
+      "executed_by_asset": {
+        "core": 440.0,
+        "emerging": 290.0,
+        "kopernik": 650.0
+      },
+      "executed_total": 1380.0,
       "purchase_reasons_by_asset": {
-        "core": "bloqueado",
-        "quality": "gap bajo",
-        "emerging": "gap bajo",
-        "kopernik": "menos de 2 líneas ejecutables"
+        "core": "compra",
+        "quality": "bloqueado",
+        "emerging": "compra",
+        "kopernik": "compra"
       },
-      "blocked_total": 7500.0,
-      "surplus_to_liquidity": 7500.0,
+      "blocked_total": 6120.0,
+      "surplus_to_liquidity": 6120.0,
       "do_not_force_investment": true
     }
   },
