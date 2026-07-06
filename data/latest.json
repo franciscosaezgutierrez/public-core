@@ -13,26 +13,26 @@
   "scenario_source": "automatic",
   "scenario_override_active": false,
   "scenario_mode": "automatic",
-  "signal": "SISTEMA BLOQUEADO",
-  "vix": 15.81,
-  "previous_vix_close": 16.59,
-  "vix_date": "2026-07-03",
+  "signal": "NO HACER NADA",
+  "vix": 16.34,
+  "previous_vix_close": 16.15,
+  "vix_date": "2026-07-06",
   "phase": "Fase 0 · Normal",
   "entry_label": "Sin entrada",
   "next_trigger": "-5%",
   "score": -2,
   "score_text": "Defensivo",
-  "cape": 41.06,
-  "cape_date": "2026-05-04",
-  "pmi": 52.0,
-  "pmi_date": "2026-05-04",
-  "per_global": 23.1,
-  "per_global_date": "2026-05-04",
+  "cape": 41.6,
+  "cape_date": "2026-07-04",
+  "pmi": 52.2,
+  "pmi_date": "2026-07-04",
+  "per_global": 24.8,
+  "per_global_date": "2026-07-04",
   "lei": {
-    "value": 97.3,
-    "date": "2026-05-04",
-    "value_3m_ago": 97.6,
-    "trend_3m": -0.3
+    "value": 97.4,
+    "date": "2026-07-04",
+    "value_3m_ago": 97.5,
+    "trend_3m": -0.1
   },
   "macro_signal": "CAPE alto · PMI OK · LEI negativo · VIX normal",
   "score_components": {
@@ -42,8 +42,8 @@
     "vix": 0
   },
   "valuation": {
-    "cape_sp500": 41.06,
-    "per_global": 23.1,
+    "cape_sp500": 41.6,
+    "per_global": 24.8,
     "cape_state": "CARO",
     "per_state": "CARO",
     "composite_state": "MUY_CARO"
@@ -295,7 +295,7 @@
     "active": false,
     "reason": "Sin flash crash",
     "nav_change_1d": -0.00047093809865816905,
-    "vix_jump": -0.7800001525878901,
+    "vix_jump": 0.19000038146972642,
     "wait_hours": 48,
     "entry_mode": "progresiva",
     "blocking_window_active": false,
@@ -570,22 +570,17 @@
     "rule": "No actuar si drawdown > -10% y VIX < 20"
   },
   "data_freshness": {
-    "cape_days": 59,
-    "pmi_days": 59,
-    "lei_days": 59,
-    "per_global_days": 59,
+    "cape_days": 0,
+    "pmi_days": 0,
+    "lei_days": 0,
+    "per_global_days": 0,
     "nav_days": 0,
     "vix_days": 0,
     "status": "Datos frescos"
   },
   "decision_status": {
-    "blocked": true,
-    "reasons": [
-      "CAPE > 35 días",
-      "PMI > 35 días",
-      "LEI > 35 días",
-      "PER > 35 días"
-    ],
+    "blocked": false,
+    "reasons": [],
     "warnings": []
   },
   "rotation_state": {
