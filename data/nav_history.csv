@@ -55,3 +55,4 @@ timestamp,nav,max52,drop_pct,scenario,signal,vix,phase,cape,pmi,lei,score
 2026-07-03 20:00:00+00:00,61.6818,61.6818,0.0,🟠 Escenario 3 · Sobrevaloración,NO HACER NADA,15.57,Fase 0 · Normal,41.6,52.2,97.4,-2
 2026-07-06 20:00:00+00:00,62.1099,62.1099,0.0,🟠 Escenario 3 · Sobrevaloración,NO HACER NADA,16.13,Fase 0 · Normal,41.6,52.2,97.4,-2
 2026-07-07 20:00:00+00:00,61.7451,62.1099,-0.005873,🟠 Escenario 3 · Sobrevaloración,NO HACER NADA,16.9,Fase 0 · Normal,41.6,52.2,97.4,-2
+2026-07-08 20:00:00+00:00,61.4844,62.1099,-0.010071,🟠 Escenario 3 · Sobrevaloración,NO HACER NADA,15.84,Fase 0 · Normal,41.6,52.2,97.4,-2
