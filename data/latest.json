@@ -13,37 +13,37 @@
   "scenario_source": "automatic",
   "scenario_override_active": false,
   "scenario_mode": "automatic",
-  "signal": "SISTEMA BLOQUEADO",
-  "vix": 14.63,
-  "previous_vix_close": 14.55,
-  "vix_date": "2026-08-13",
+  "signal": "NO HACER NADA",
+  "vix": 14.62,
+  "previous_vix_close": 14.63,
+  "vix_date": "2026-08-14",
   "phase": "Fase 0 · Normal",
   "entry_label": "Sin entrada",
   "next_trigger": "-5%",
-  "score": -2,
-  "score_text": "Defensivo",
-  "cape": 41.6,
-  "cape_date": "2026-07-04",
-  "pmi": 52.2,
-  "pmi_date": "2026-07-04",
-  "per_global": 24.8,
-  "per_global_date": "2026-07-04",
+  "score": -1,
+  "score_text": "Neutral",
+  "cape": 42.65,
+  "cape_date": "2026-08-04",
+  "pmi": 54.5,
+  "pmi_date": "2026-08-04",
+  "per_global": 24.6,
+  "per_global_date": "2026-08-04",
   "lei": {
     "value": 97.4,
-    "date": "2026-07-04",
-    "value_3m_ago": 97.5,
-    "trend_3m": -0.1
+    "date": "2026-08-04",
+    "value_3m_ago": 99.3,
+    "trend_3m": 2.0
   },
-  "macro_signal": "CAPE alto · PMI OK · LEI negativo · VIX normal",
+  "macro_signal": "CAPE alto · PMI OK · LEI OK · VIX normal",
   "score_components": {
     "cape": -1,
     "pmi": 0,
-    "lei": -1,
+    "lei": 0,
     "vix": 0
   },
   "valuation": {
-    "cape_sp500": 41.6,
-    "per_global": 24.8,
+    "cape_sp500": 42.65,
+    "per_global": 24.6,
     "cape_state": "CARO",
     "per_state": "CARO",
     "composite_state": "MUY_CARO"
@@ -82,16 +82,16 @@
     "invesco_physical_gold": 0.02
   },
   "current_weights": {
-    "core": 0.3156,
-    "quality": 0.1404,
-    "emerging": 0.0671,
-    "kopernik": 0.0635,
-    "pensions": 0.0217,
-    "dnca": 0.1181,
-    "jupiter": 0.0608,
-    "dws": 0.1569,
-    "cash_real": 0.0353,
-    "gold": 0.0207
+    "core": 0.3186,
+    "quality": 0.1442,
+    "emerging": 0.0647,
+    "kopernik": 0.0667,
+    "pensions": 0.022,
+    "dnca": 0.1151,
+    "jupiter": 0.0599,
+    "dws": 0.153,
+    "cash_real": 0.0346,
+    "gold": 0.0211
   },
   "target_weights": {
     "core": 0.32,
@@ -112,13 +112,13 @@
     "kopernik": 0.07
   },
   "aggregate_current": {
-    "rv_total": 0.6083,
-    "rv_operable": 0.5866,
-    "liquidity": 0.1922,
-    "defensive": 0.1789,
-    "dnca": 0.1181,
-    "jupiter": 0.0608,
-    "gold": 0.0207
+    "rv_total": 0.6162,
+    "rv_operable": 0.5942,
+    "liquidity": 0.1876,
+    "defensive": 0.175,
+    "dnca": 0.1151,
+    "jupiter": 0.0599,
+    "gold": 0.0211
   },
   "core_satellite_allocation": {
     "layers": {
@@ -132,12 +132,12 @@
           "dnca"
         ],
         "asset_weights": {
-          "core": 0.3156,
-          "quality": 0.1404,
-          "dws": 0.1569,
-          "dnca": 0.1181
+          "core": 0.3186,
+          "quality": 0.1442,
+          "dws": 0.153,
+          "dnca": 0.1151
         },
-        "weight": 0.731
+        "weight": 0.7309
       },
       "satellite_structural": {
         "label": "Satélite estructural",
@@ -149,12 +149,12 @@
           "gold"
         ],
         "asset_weights": {
-          "jupiter": 0.0608,
-          "kopernik": 0.0635,
-          "emerging": 0.0671,
-          "gold": 0.0207
+          "jupiter": 0.0599,
+          "kopernik": 0.0667,
+          "emerging": 0.0647,
+          "gold": 0.0211
         },
-        "weight": 0.2121
+        "weight": 0.2124
       },
       "satellite_tactical": {
         "label": "Satélite táctico",
@@ -163,9 +163,9 @@
           "pensions"
         ],
         "asset_weights": {
-          "pensions": 0.0217
+          "pensions": 0.022
         },
-        "weight": 0.0217
+        "weight": 0.022
       },
       "operational_liquidity": {
         "label": "Liquidez operativa",
@@ -174,13 +174,13 @@
           "cash_real"
         ],
         "asset_weights": {
-          "cash_real": 0.0353
+          "cash_real": 0.0346
         },
-        "weight": 0.0353
+        "weight": 0.0346
       }
     },
-    "investment_total_ex_liquidity": 0.9648,
-    "total_with_liquidity": 1.0001,
+    "investment_total_ex_liquidity": 0.9653,
+    "total_with_liquidity": 0.9999,
     "rule": "Visualización patrimonial; no altera señales, límites ni compras."
   },
   "aggregate_target": {
@@ -201,10 +201,10 @@
     "gold": "Correcto"
   },
   "deviations_pp": {
-    "core": -0.0044,
-    "quality": 0.0004,
-    "emerging": -0.0029,
-    "kopernik": -0.0065
+    "core": -0.0014,
+    "quality": 0.0042,
+    "emerging": -0.0053,
+    "kopernik": -0.0033
   },
   "priority_of_purchase": [
     "Core",
@@ -295,7 +295,7 @@
     "active": false,
     "reason": "Sin flash crash",
     "nav_change_1d": 0.0026000409061437413,
-    "vix_jump": 0.0799998092651375,
+    "vix_jump": -0.01000011444091875,
     "wait_hours": 48,
     "entry_mode": "progresiva",
     "blocking_window_active": false,
@@ -464,16 +464,16 @@
   },
   "purchase_capacity": {
     "new_money": {
-      "core": 440.0,
+      "core": 140.0,
       "quality": 0.0,
-      "emerging": 1290.0,
-      "kopernik": 650.0
+      "emerging": 1530.0,
+      "kopernik": 330.0
     },
     "rotation": {
-      "core": 440.0,
+      "core": 140.0,
       "quality": 0.0,
-      "emerging": 1290.0,
-      "kopernik": 650.0
+      "emerging": 1530.0,
+      "kopernik": 330.0
     }
   },
   "purchase_plan_example": {
@@ -485,37 +485,36 @@
       "minimum_executable_assets": 2,
       "carry_over_enabled": false,
       "capacity_by_asset": {
-        "core": 440.0,
+        "core": 140.0,
         "quality": 0.0,
-        "emerging": 1290.0,
-        "kopernik": 650.0
+        "emerging": 1530.0,
+        "kopernik": 330.0
       },
       "target_gap_by_asset": {
-        "core": 440.0,
+        "core": 140.0,
         "quality": 0.0,
-        "emerging": 290.0,
-        "kopernik": 650.0
+        "emerging": 530.0,
+        "kopernik": 330.0
       },
       "theoretical_by_asset": {
-        "core": 440.0,
+        "core": 140.0,
         "quality": 0.0,
-        "emerging": 290.0,
-        "kopernik": 650.0
+        "emerging": 530.0,
+        "kopernik": 330.0
       },
       "executed_by_asset": {
-        "core": 440.0,
-        "emerging": 290.0,
-        "kopernik": 650.0
+        "emerging": 530.0,
+        "kopernik": 330.0
       },
-      "executed_total": 1380.0,
+      "executed_total": 860.0,
       "purchase_reasons_by_asset": {
-        "core": "compra",
+        "core": "gap bajo",
         "quality": "bloqueado",
         "emerging": "compra",
         "kopernik": "compra"
       },
-      "blocked_total": 6120.0,
-      "surplus_to_liquidity": 6120.0,
+      "blocked_total": 6640.0,
+      "surplus_to_liquidity": 6640.0,
       "do_not_force_investment": true
     },
     "rotation_7500": {
@@ -526,37 +525,36 @@
       "minimum_executable_assets": 2,
       "carry_over_enabled": false,
       "capacity_by_asset": {
-        "core": 440.0,
+        "core": 140.0,
         "quality": 0.0,
-        "emerging": 1290.0,
-        "kopernik": 650.0
+        "emerging": 1530.0,
+        "kopernik": 330.0
       },
       "target_gap_by_asset": {
-        "core": 440.0,
+        "core": 140.0,
         "quality": 0.0,
-        "emerging": 290.0,
-        "kopernik": 650.0
+        "emerging": 530.0,
+        "kopernik": 330.0
       },
       "theoretical_by_asset": {
-        "core": 440.0,
+        "core": 140.0,
         "quality": 0.0,
-        "emerging": 290.0,
-        "kopernik": 650.0
+        "emerging": 530.0,
+        "kopernik": 330.0
       },
       "executed_by_asset": {
-        "core": 440.0,
-        "emerging": 290.0,
-        "kopernik": 650.0
+        "emerging": 530.0,
+        "kopernik": 330.0
       },
-      "executed_total": 1380.0,
+      "executed_total": 860.0,
       "purchase_reasons_by_asset": {
-        "core": "compra",
+        "core": "gap bajo",
         "quality": "bloqueado",
         "emerging": "compra",
         "kopernik": "compra"
       },
-      "blocked_total": 6120.0,
-      "surplus_to_liquidity": 6120.0,
+      "blocked_total": 6640.0,
+      "surplus_to_liquidity": 6640.0,
       "do_not_force_investment": true
     }
   },
@@ -570,23 +568,23 @@
     "rule": "No actuar si drawdown > -10% y VIX < 20"
   },
   "data_freshness": {
-    "cape_days": 39,
-    "pmi_days": 39,
-    "lei_days": 39,
-    "per_global_days": 39,
+    "cape_days": 8,
+    "pmi_days": 8,
+    "lei_days": 8,
+    "per_global_days": 8,
     "nav_days": 0,
     "vix_days": 0,
     "status": "Datos frescos"
   },
   "decision_status": {
-    "blocked": true,
-    "reasons": [
-      "CAPE > 35 días",
-      "PMI > 35 días",
-      "LEI > 35 días",
-      "PER > 35 días"
-    ],
-    "warnings": []
+    "blocked": false,
+    "reasons": [],
+    "warnings": [
+      "CAPE > 7 días",
+      "PMI > 7 días",
+      "LEI > 7 días",
+      "PER > 7 días"
+    ]
   },
   "rotation_state": {
     "executed_levels": [],
