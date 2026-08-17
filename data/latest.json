@@ -1,11 +1,11 @@
 {
-  "timestamp": "2026-08-12T20:00:00+00:00",
-  "updated_at": "2026-08-12T20:00:00+00:00",
-  "nav_date": "2026-08-12",
-  "nav": 63.279,
+  "timestamp": "2026-08-13T20:00:00+00:00",
+  "updated_at": "2026-08-13T20:00:00+00:00",
+  "nav_date": "2026-08-13",
+  "nav": 63.596,
   "previous_nav_close": 63.279,
-  "nav_change_1d": 0.0,
-  "max52": 63.279,
+  "nav_change_1d": 0.00501,
+  "max52": 63.596,
   "drop_pct": 0.0,
   "drop_percent_display": 0.0,
   "scenario_code": "SC3_SOBREVALORACION",
@@ -294,7 +294,7 @@
   "flash_crash": {
     "active": false,
     "reason": "Sin flash crash",
-    "nav_change_1d": 1.0609945366724105e-08,
+    "nav_change_1d": 0.005009571496864318,
     "vix_jump": -0.38000011444091797,
     "wait_hours": 48,
     "entry_mode": "progresiva",
@@ -411,7 +411,7 @@
     "market_plus_20_from_low_required": true,
     "market_plus_20_from_low": false,
     "market_low_reference": 56.1337,
-    "market_rebound_from_low": 0.127291,
+    "market_rebound_from_low": 0.132938,
     "action": "Aumentar liquidez 5–10% y reducir RV progresivamente",
     "active_now": false
   },
@@ -568,10 +568,10 @@
     "rule": "No actuar si drawdown > -10% y VIX < 20"
   },
   "data_freshness": {
-    "cape_days": 8,
-    "pmi_days": 8,
-    "lei_days": 8,
-    "per_global_days": 8,
+    "cape_days": 9,
+    "pmi_days": 9,
+    "lei_days": 9,
+    "per_global_days": 9,
     "nav_days": 0,
     "vix_days": 0,
     "status": "Datos frescos"
