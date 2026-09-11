@@ -1,22 +1,22 @@
 {
-  "timestamp": "2026-09-08T20:00:00+00:00",
-  "updated_at": "2026-09-08T20:00:00+00:00",
-  "nav_date": "2026-09-08",
-  "nav": 62.3243,
-  "previous_nav_close": 62.6637,
-  "nav_change_1d": -0.005416,
+  "timestamp": "2026-09-09T20:00:00+00:00",
+  "updated_at": "2026-09-09T20:00:00+00:00",
+  "nav_date": "2026-09-09",
+  "nav": 61.8895,
+  "previous_nav_close": 62.6797,
+  "nav_change_1d": -0.012607,
   "max52": 63.596,
-  "drop_pct": -0.019997,
-  "drop_percent_display": -2.0,
+  "drop_pct": -0.026833,
+  "drop_percent_display": -2.68,
   "scenario_code": "SC3_SOBREVALORACION",
   "scenario": "🟠 Escenario 3 · Sobrevaloración",
   "scenario_source": "automatic",
   "scenario_override_active": false,
   "scenario_mode": "automatic",
-  "signal": "NO HACER NADA",
-  "vix": 16.46,
-  "previous_vix_close": 15.72,
-  "vix_date": "2026-09-09",
+  "signal": "SISTEMA BLOQUEADO",
+  "vix": 17.84,
+  "previous_vix_close": 16.46,
+  "vix_date": "2026-09-10",
   "phase": "Fase 0 · Normal",
   "entry_label": "Sin entrada",
   "next_trigger": "-5%",
@@ -294,8 +294,8 @@
   "flash_crash": {
     "active": false,
     "reason": "Sin flash crash",
-    "nav_change_1d": -0.0054162154995280876,
-    "vix_jump": 0.7399997329711923,
+    "nav_change_1d": -0.012606935856482537,
+    "vix_jump": 1.3800009155273436,
     "wait_hours": 48,
     "entry_mode": "progresiva",
     "blocking_window_active": false,
@@ -411,7 +411,7 @@
     "market_plus_20_from_low_required": true,
     "market_plus_20_from_low": false,
     "market_low_reference": 56.1337,
-    "market_rebound_from_low": 0.110283,
+    "market_rebound_from_low": 0.102537,
     "action": "Aumentar liquidez 5–10% y reducir RV progresivamente",
     "active_now": false
   },
@@ -568,23 +568,23 @@
     "rule": "No actuar si drawdown > -10% y VIX < 20"
   },
   "data_freshness": {
-    "cape_days": 35,
-    "pmi_days": 35,
-    "lei_days": 35,
-    "per_global_days": 35,
+    "cape_days": 36,
+    "pmi_days": 36,
+    "lei_days": 36,
+    "per_global_days": 36,
     "nav_days": 0,
     "vix_days": 0,
     "status": "Datos frescos"
   },
   "decision_status": {
-    "blocked": false,
-    "reasons": [],
-    "warnings": [
-      "CAPE > 7 días",
-      "PMI > 7 días",
-      "LEI > 7 días",
-      "PER > 7 días"
-    ]
+    "blocked": true,
+    "reasons": [
+      "CAPE > 35 días",
+      "PMI > 35 días",
+      "LEI > 35 días",
+      "PER > 35 días"
+    ],
+    "warnings": []
   },
   "rotation_state": {
     "executed_levels": [],
