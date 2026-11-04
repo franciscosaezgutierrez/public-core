@@ -26,15 +26,15 @@ OPERATIONAL_RULES = {
 
 TARGET_WEIGHTS = {
     "core": 0.32,
-    "quality": 0.14,
-    "emerging": 0.07,
-    "kopernik": 0.07,
+    "quality": 0.1275,
+    "emerging": 0.525,
+    "kopernik": 0.780,
     "pensions": 0.02,
     "dnca": 0.12,
-    "jupiter": 0.065,
+    "jupiter": 0.820,
     "dws": 0.15,
     "cash_real": 0.025,
-    "gold": 0.02,
+    "gold": 0.025,
 }
 
 # Compatibilidad: el código existente usa TOTAL_TARGET_WEIGHTS.
