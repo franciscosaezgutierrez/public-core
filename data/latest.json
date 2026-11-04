@@ -1,22 +1,22 @@
 {
-  "timestamp": "2026-10-30T21:00:00+00:00",
-  "updated_at": "2026-10-30T21:00:00+00:00",
-  "nav_date": "2026-10-30",
-  "nav": 63.6545,
-  "previous_nav_close": 64.6166,
-  "nav_change_1d": -0.014889,
+  "timestamp": "2026-11-02T21:00:00+00:00",
+  "updated_at": "2026-11-02T21:00:00+00:00",
+  "nav_date": "2026-11-02",
+  "nav": 63.226,
+  "previous_nav_close": 63.6545,
+  "nav_change_1d": -0.006732,
   "max52": 64.9043,
-  "drop_pct": -0.019256,
-  "drop_percent_display": -1.93,
+  "drop_pct": -0.025858,
+  "drop_percent_display": -2.59,
   "scenario_code": "SC3_SOBREVALORACION",
   "scenario": "🟠 Escenario 3 · Sobrevaloración",
   "scenario_source": "automatic",
   "scenario_override_active": false,
   "scenario_mode": "automatic",
-  "signal": "DEFENSIVO",
-  "vix": 21.45,
-  "previous_vix_close": 21.15,
-  "vix_date": "2026-11-03",
+  "signal": "NO HACER NADA",
+  "vix": 19.06,
+  "previous_vix_close": 20.83,
+  "vix_date": "2026-11-04",
   "phase": "Fase 0 · Normal",
   "entry_label": "Sin entrada",
   "next_trigger": "-5%",
@@ -294,8 +294,8 @@
   "flash_crash": {
     "active": false,
     "reason": "Sin flash crash",
-    "nav_change_1d": -0.014889363353624785,
-    "vix_jump": 0.30000038146972585,
+    "nav_change_1d": -0.006731638145355157,
+    "vix_jump": -1.769999923706056,
     "wait_hours": 48,
     "entry_mode": "progresiva",
     "blocking_window_active": false,
@@ -343,31 +343,41 @@
     "flows": "dinero nuevo",
     "do_not_mix": true
   },
-  "allowed_assets": [
+  "allowed_assets": [],
+  "blocked_assets": [
     "core",
     "quality",
     "emerging",
-    "kopernik"
-  ],
-  "blocked_assets": [
+    "kopernik",
     "gold",
     "pensions",
     "dnca",
     "jupiter"
   ],
-  "allowed_assets_dynamic": [
+  "allowed_assets_dynamic": [],
+  "blocked_assets_dynamic": [
     "core",
     "quality",
     "emerging",
-    "kopernik"
-  ],
-  "blocked_assets_dynamic": [
+    "kopernik",
     "gold",
     "pensions",
     "dnca",
     "jupiter"
   ],
   "blocked_reasons_by_asset": {
+    "core": [
+      "modo pausa activo"
+    ],
+    "quality": [
+      "modo pausa activo"
+    ],
+    "emerging": [
+      "modo pausa activo"
+    ],
+    "kopernik": [
+      "modo pausa activo"
+    ],
     "gold": [
       "oro no participa en rotación ni financia compras"
     ],
@@ -400,7 +410,7 @@
     "market_plus_20_from_low_required": true,
     "market_plus_20_from_low": false,
     "market_low_reference": 56.1337,
-    "market_rebound_from_low": 0.13398,
+    "market_rebound_from_low": 0.126347,
     "action": "Aumentar liquidez 5–10% y reducir RV progresivamente",
     "active_now": false
   },
@@ -552,15 +562,15 @@
     "limits": "RV máx 70% · liquidez 10–25% · oro máx 7% · emergentes máx 8% · límites dinámicos según capa/escenario"
   },
   "pause_mode": {
-    "active": false,
-    "reason": "Sin pausa",
+    "active": true,
+    "reason": "Drawdown insuficiente y VIX por debajo de validación",
     "rule": "No actuar si drawdown > -10% y VIX < 20"
   },
   "data_freshness": {
-    "cape_days": 26,
-    "pmi_days": 26,
-    "lei_days": 26,
-    "per_global_days": 26,
+    "cape_days": 29,
+    "pmi_days": 29,
+    "lei_days": 29,
+    "per_global_days": 29,
     "nav_days": 0,
     "vix_days": 0,
     "status": "Datos frescos"
