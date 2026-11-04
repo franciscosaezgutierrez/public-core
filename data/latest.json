@@ -14,7 +14,7 @@
   "scenario_override_active": false,
   "scenario_mode": "automatic",
   "signal": "NO HACER NADA",
-  "vix": 18.29,
+  "vix": 18.31,
   "previous_vix_close": 20.83,
   "vix_date": "2026-11-04",
   "phase": "Fase 0 · Normal",
@@ -72,11 +72,11 @@
   "composition_target": {
     "vanguard_global_stock": 0.32,
     "robeco_bp_global_premium": 0.1275,
-    "robeco_qi_emerging_conservative": 0.525,
-    "heptagon_kopernik": 0.78,
+    "robeco_qi_emerging_conservative": 0.0525,
+    "heptagon_kopernik": 0.078,
     "plan_pensiones_caixabank": 0.02,
     "dnca_alpha_bonds": 0.12,
-    "jupiter_global_equity_absolute_return": 0.82,
+    "jupiter_global_equity_absolute_return": 0.082,
     "dws_euro_ultra_short": 0.15,
     "cash_real": 0.025,
     "invesco_physical_gold": 0.025
@@ -96,11 +96,11 @@
   "target_weights": {
     "core": 0.32,
     "quality": 0.1275,
-    "emerging": 0.525,
-    "kopernik": 0.78,
+    "emerging": 0.0525,
+    "kopernik": 0.078,
     "pensions": 0.02,
     "dnca": 0.12,
-    "jupiter": 0.82,
+    "jupiter": 0.082,
     "dws": 0.15,
     "cash_real": 0.025,
     "gold": 0.025
@@ -108,8 +108,8 @@
   "operable_target_weights": {
     "core": 0.32,
     "quality": 0.1275,
-    "emerging": 0.525,
-    "kopernik": 0.78
+    "emerging": 0.0525,
+    "kopernik": 0.078
   },
   "aggregate_current": {
     "rv_total": 0.5831,
@@ -203,8 +203,8 @@
   "deviations_pp": {
     "core": -0.0262,
     "quality": 0.0018,
-    "emerging": -0.4552,
-    "kopernik": -0.7119
+    "emerging": 0.0173,
+    "kopernik": -0.0099
   },
   "priority_of_purchase": [
     "Core",
@@ -295,7 +295,7 @@
     "active": false,
     "reason": "Sin flash crash",
     "nav_change_1d": -0.006731638145355157,
-    "vix_jump": -2.5399999237060555,
+    "vix_jump": -2.519999923706056,
     "wait_hours": 48,
     "entry_mode": "progresiva",
     "blocking_window_active": false,
@@ -453,13 +453,13 @@
       "core": 0.32,
       "quality": 0.1275,
       "emerging": 0.08,
-      "kopernik": 0.78
+      "kopernik": 0.078
     },
     "rotation": {
       "core": 0.32,
       "quality": 0.1275,
       "emerging": 0.08,
-      "kopernik": 0.78
+      "kopernik": 0.078
     }
   },
   "purchase_capacity": {
@@ -467,13 +467,13 @@
       "core": 2620.0,
       "quality": 0.0,
       "emerging": 1020.0,
-      "kopernik": 71190.0
+      "kopernik": 990.0
     },
     "rotation": {
       "core": 2620.0,
       "quality": 0.0,
       "emerging": 1020.0,
-      "kopernik": 71190.0
+      "kopernik": 990.0
     }
   },
   "purchase_plan_example": {
@@ -488,34 +488,33 @@
         "core": 2620.0,
         "quality": 0.0,
         "emerging": 1020.0,
-        "kopernik": 71190.0
+        "kopernik": 990.0
       },
       "target_gap_by_asset": {
         "core": 2620.0,
         "quality": 0.0,
-        "emerging": 1020.0,
-        "kopernik": 71190.0
+        "emerging": 0.0,
+        "kopernik": 990.0
       },
       "theoretical_by_asset": {
-        "core": 262.6,
+        "core": 2620.0,
         "quality": 0.0,
-        "emerging": 102.23,
-        "kopernik": 7135.17
+        "emerging": 0.0,
+        "kopernik": 990.0
       },
       "executed_by_asset": {
-        "core": 262.6,
-        "emerging": 102.23,
-        "kopernik": 7135.17
+        "core": 2620.0,
+        "kopernik": 990.0
       },
-      "executed_total": 7500.0,
+      "executed_total": 3610.0,
       "purchase_reasons_by_asset": {
         "core": "compra",
         "quality": "bloqueado",
-        "emerging": "compra",
+        "emerging": "bloqueado",
         "kopernik": "compra"
       },
-      "blocked_total": 0,
-      "surplus_to_liquidity": 0,
+      "blocked_total": 3890.0,
+      "surplus_to_liquidity": 3890.0,
       "do_not_force_investment": true
     },
     "rotation_7500": {
@@ -529,34 +528,33 @@
         "core": 2620.0,
         "quality": 0.0,
         "emerging": 1020.0,
-        "kopernik": 71190.0
+        "kopernik": 990.0
       },
       "target_gap_by_asset": {
         "core": 2620.0,
         "quality": 0.0,
-        "emerging": 1020.0,
-        "kopernik": 71190.0
+        "emerging": 0.0,
+        "kopernik": 990.0
       },
       "theoretical_by_asset": {
-        "core": 262.6,
+        "core": 2620.0,
         "quality": 0.0,
-        "emerging": 102.23,
-        "kopernik": 7135.17
+        "emerging": 0.0,
+        "kopernik": 990.0
       },
       "executed_by_asset": {
-        "core": 262.6,
-        "emerging": 102.23,
-        "kopernik": 7135.17
+        "core": 2620.0,
+        "kopernik": 990.0
       },
-      "executed_total": 7500.0,
+      "executed_total": 3610.0,
       "purchase_reasons_by_asset": {
         "core": "compra",
         "quality": "bloqueado",
-        "emerging": "compra",
+        "emerging": "bloqueado",
         "kopernik": "compra"
       },
-      "blocked_total": 0,
-      "surplus_to_liquidity": 0,
+      "blocked_total": 3890.0,
+      "surplus_to_liquidity": 3890.0,
       "do_not_force_investment": true
     }
   },
