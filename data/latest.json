@@ -14,13 +14,13 @@
   "scenario_override_active": false,
   "scenario_mode": "automatic",
   "signal": "DEFENSIVO",
-  "vix": 25.64,
-  "previous_vix_close": 28.18,
-  "vix_date": "2026-11-06",
+  "vix": 24.58,
+  "previous_vix_close": 25.64,
+  "vix_date": "2026-11-09",
   "phase": "Fase 0 · Normal",
   "entry_label": "Sin entrada",
   "next_trigger": "-5%",
-  "score": 0,
+  "score": -1,
   "score_text": "Neutral",
   "cape": 40.58,
   "cape_date": "2026-10-04",
@@ -34,12 +34,12 @@
     "value_3m_ago": 99.4,
     "trend_3m": 2.0
   },
-  "macro_signal": "CAPE alto · PMI OK · LEI OK · VIX alto",
+  "macro_signal": "CAPE alto · PMI OK · LEI OK · VIX normal",
   "score_components": {
     "cape": -1,
     "pmi": 0,
     "lei": 0,
-    "vix": 1
+    "vix": 0
   },
   "valuation": {
     "cape_sp500": 40.58,
@@ -295,7 +295,7 @@
     "active": false,
     "reason": "Sin flash crash",
     "nav_change_1d": -0.032170394283316694,
-    "vix_jump": -2.5400003051757807,
+    "vix_jump": -1.0599993896484392,
     "wait_hours": 48,
     "entry_mode": "progresiva",
     "blocking_window_active": false,
