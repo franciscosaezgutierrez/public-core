@@ -14,9 +14,9 @@
   "scenario_override_active": false,
   "scenario_mode": "automatic",
   "signal": "SISTEMA BLOQUEADO",
-  "vix": 19.3,
-  "previous_vix_close": 18.7,
-  "vix_date": "2026-11-13",
+  "vix": 20.06,
+  "previous_vix_close": 19.3,
+  "vix_date": "2026-11-16",
   "phase": "Fase 0 · Normal",
   "entry_label": "Sin entrada",
   "next_trigger": "-5%",
@@ -295,7 +295,7 @@
     "active": false,
     "reason": "Sin flash crash",
     "nav_change_1d": -0.0003946099343241638,
-    "vix_jump": 0.5999992370605476,
+    "vix_jump": 0.7600007629394518,
     "wait_hours": 48,
     "entry_mode": "progresiva",
     "blocking_window_active": false,
@@ -343,41 +343,33 @@
     "flows": "dinero nuevo",
     "do_not_mix": true
   },
-  "allowed_assets": [],
-  "blocked_assets": [
+  "allowed_assets": [
     "core",
-    "quality",
     "emerging",
-    "kopernik",
+    "kopernik"
+  ],
+  "blocked_assets": [
+    "quality",
     "gold",
     "pensions",
     "dnca",
     "jupiter"
   ],
-  "allowed_assets_dynamic": [],
-  "blocked_assets_dynamic": [
+  "allowed_assets_dynamic": [
     "core",
-    "quality",
     "emerging",
-    "kopernik",
+    "kopernik"
+  ],
+  "blocked_assets_dynamic": [
+    "quality",
     "gold",
     "pensions",
     "dnca",
     "jupiter"
   ],
   "blocked_reasons_by_asset": {
-    "core": [
-      "modo pausa activo"
-    ],
     "quality": [
-      "modo pausa activo",
       "peso actual igual o superior al límite aplicable"
-    ],
-    "emerging": [
-      "modo pausa activo"
-    ],
-    "kopernik": [
-      "modo pausa activo"
     ],
     "gold": [
       "oro no participa en rotación ni financia compras"
@@ -563,8 +555,8 @@
     "limits": "RV máx 70% · liquidez 10–25% · oro máx 7% · emergentes máx 8% · límites dinámicos según capa/escenario"
   },
   "pause_mode": {
-    "active": true,
-    "reason": "Drawdown insuficiente y VIX por debajo de validación",
+    "active": false,
+    "reason": "Sin pausa",
     "rule": "No actuar si drawdown > -10% y VIX < 20"
   },
   "data_freshness": {
