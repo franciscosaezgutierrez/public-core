@@ -1,23 +1,23 @@
 {
-  "timestamp": "2026-11-19T21:00:00+00:00",
-  "updated_at": "2026-11-19T21:00:00+00:00",
-  "nav_date": "2026-11-19",
-  "nav": 61.4605,
-  "previous_nav_close": 62.5697,
-  "nav_change_1d": -0.017727,
+  "timestamp": "2026-11-20T21:00:00+00:00",
+  "updated_at": "2026-11-20T21:00:00+00:00",
+  "nav_date": "2026-11-20",
+  "nav": 59.3902,
+  "previous_nav_close": 61.4605,
+  "nav_change_1d": -0.033685,
   "max52": 64.9043,
-  "drop_pct": -0.05306,
-  "drop_percent_display": -5.31,
-  "scenario_code": "SC4_CORRECCION",
-  "scenario": "🔴 Escenario 4 · Corrección",
+  "drop_pct": -0.084957,
+  "drop_percent_display": -8.5,
+  "scenario_code": "SC3_SOBREVALORACION",
+  "scenario": "🟠 Escenario 3 · Sobrevaloración",
   "scenario_source": "automatic",
   "scenario_override_active": false,
   "scenario_mode": "automatic",
   "signal": "SISTEMA BLOQUEADO",
-  "vix": 30.15,
-  "previous_vix_close": 35.89,
-  "vix_date": "2026-11-23",
-  "phase": "Fase 2 · Entradas",
+  "vix": 28.59,
+  "previous_vix_close": 26.62,
+  "vix_date": "2026-11-24",
+  "phase": "Fase 1 · Preparación",
   "entry_label": "Preparación",
   "next_trigger": "-10%",
   "score": 0,
@@ -55,9 +55,9 @@
     "multiplier": 0.75
   },
   "allocations": {
-    "rv": "60–70%",
-    "bonos": "0–10%",
-    "liquidez": "10–25%",
+    "rv": "60–62%",
+    "bonos": "15%",
+    "liquidez": "15–18%",
     "oro": "2–3%"
   },
   "system_limits": {
@@ -213,22 +213,25 @@
     "Kopernik"
   ],
   "new_money_rule": {
-    "invest_pct": 0.675,
-    "reserve_pct": 0.325,
-    "rv_pct": 0.675,
-    "defensive_pct": 0.0,
-    "liquidity_pct": 0.325,
+    "invest_pct": 0.45,
+    "reserve_pct": 0.55,
+    "rv_pct": 0.3,
+    "defensive_pct": 0.15,
+    "liquidity_pct": 0.55,
     "rv_distribution": {
-      "core": 0.4,
-      "quality": 0.25,
-      "emerging": 0.2,
-      "kopernik": 0.15
+      "core": 0.55,
+      "quality": 0.35,
+      "emerging": 0.07,
+      "kopernik": 0.03
     },
-    "defensive_distribution": null,
-    "note": "Corrección: ofensivo, sin compras defensivas.",
+    "defensive_distribution": {
+      "dnca": 0.6,
+      "jupiter": 0.4
+    },
+    "note": "Sobrevaloración: parte de la inversión nueva puede ir a defensivos.",
     "distribution_mode": "gap_weighted",
-    "base_invest_pct": 0.9,
-    "base_reserve_pct": 0.1,
+    "base_invest_pct": 0.6,
+    "base_reserve_pct": 0.4,
     "effective_multiplier": 0.75,
     "valuation_adjustment": {
       "valuation_state": "MUY_CARO",
@@ -240,22 +243,25 @@
   "new_money_rules": {
     "state": "MUY_CARO",
     "scenario_based": true,
-    "invest_pct": 0.675,
-    "reserve_pct": 0.325,
-    "rv_pct": 0.675,
-    "defensive_pct": 0.0,
-    "liquidity_pct": 0.325,
+    "invest_pct": 0.45,
+    "reserve_pct": 0.55,
+    "rv_pct": 0.3,
+    "defensive_pct": 0.15,
+    "liquidity_pct": 0.55,
     "rv_distribution": {
-      "core": 0.4,
-      "quality": 0.25,
-      "emerging": 0.2,
-      "kopernik": 0.15
+      "core": 0.55,
+      "quality": 0.35,
+      "emerging": 0.07,
+      "kopernik": 0.03
     },
-    "defensive_distribution": null,
-    "note": "Corrección: ofensivo, sin compras defensivas.",
+    "defensive_distribution": {
+      "dnca": 0.6,
+      "jupiter": 0.4
+    },
+    "note": "Sobrevaloración: parte de la inversión nueva puede ir a defensivos.",
     "distribution_mode": "gap_weighted",
-    "base_invest_pct": 0.9,
-    "base_reserve_pct": 0.1,
+    "base_invest_pct": 0.6,
+    "base_reserve_pct": 0.4,
     "effective_multiplier": 0.75,
     "valuation_adjustment": {
       "valuation_state": "MUY_CARO",
@@ -265,18 +271,13 @@
     }
   },
   "rotation_plan": {
-    "active": true,
+    "active": false,
     "manual_correction_active": false,
-    "market_trigger_active": true,
-    "matrix": {
-      "core": 0.4,
-      "quality": 0.25,
-      "emerging": 0.2,
-      "kopernik": 0.15
-    },
+    "market_trigger_active": false,
+    "matrix": null,
     "blocked_by_flash_crash": false,
     "intensity": {
-      "base": "agresiva",
+      "base": "progresiva",
       "valuation_state": "MUY_CARO",
       "bias": "reducida",
       "multiplier": 0.75
@@ -285,7 +286,7 @@
     "deployment_bias": "reducida"
   },
   "rotation_intensity": {
-    "base": "agresiva",
+    "base": "progresiva",
     "valuation_state": "MUY_CARO",
     "bias": "reducida",
     "multiplier": 0.75
@@ -293,8 +294,8 @@
   "flash_crash": {
     "active": false,
     "reason": "Sin flash crash",
-    "nav_change_1d": -0.017727404211282605,
-    "vix_jump": -5.739999389648439,
+    "nav_change_1d": -0.033685031034662805,
+    "vix_jump": 1.9699991607666014,
     "wait_hours": 48,
     "entry_mode": "progresiva",
     "blocking_window_active": false,
@@ -402,7 +403,7 @@
     "market_plus_20_from_low_required": true,
     "market_plus_20_from_low": false,
     "market_low_reference": 56.1337,
-    "market_rebound_from_low": 0.094895,
+    "market_rebound_from_low": 0.058013,
     "action": "Aumentar liquidez 5–10% y reducir RV progresivamente",
     "active_now": false
   },
@@ -559,10 +560,10 @@
     "rule": "No actuar si drawdown > -10% y VIX < 20"
   },
   "data_freshness": {
-    "cape_days": 46,
-    "pmi_days": 46,
-    "lei_days": 46,
-    "per_global_days": 46,
+    "cape_days": 47,
+    "pmi_days": 47,
+    "lei_days": 47,
+    "per_global_days": 47,
     "nav_days": 0,
     "vix_days": 0,
     "status": "Datos frescos"
